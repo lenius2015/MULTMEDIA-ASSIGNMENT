@@ -8,7 +8,7 @@
 const db = require('./db');
 
 async function seedOrders() {
-    try {
+de    try {
         console.log('🌱 Starting order seed...');
         
         // Check if users exist
