@@ -1,0 +1,53 @@
+<header class="admin-header">
+    <div class="header-left">
+        <button class="sidebar-toggle-header" id="sidebar-toggle-header" title="Toggle Sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="page-title"><%= pageTitle || 'Dashboard' %></h1>
+    </div>
+    <div class="header-center">
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search products, orders, users..." id="global-search">
+        </div>
+    </div>
+    <div class="header-right">
+        <button class="notification-btn" id="notification-btn">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge" id="notification-badge">0</span>
+        </button>
+        <div class="notification-dropdown" id="notification-dropdown">
+            <div class="notification-header">
+                <h4>Notifications</h4>
+                <button class="mark-all-read" id="mark-all-read">Mark all read</button>
+            </div>
+            <div class="notification-list" id="notification-list">
+                <div class="notification-item loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Loading notifications...
+                </div>
+            </div>
+            <div class="notification-footer">
+                <a href="/admin/notifications" class="view-all">View All Notifications</a>
+            </div>
+        </div>
+        <div class="profile-dropdown">
+            <button class="profile-btn" id="profile-btn">
+                <% if (typeof admin !== 'undefined' && admin && admin.profile_picture) { %>
+                    <img src="<%= admin.profile_picture %>" alt="Admin Avatar" class="avatar">
+                <% } else { %>
+                    <div class="avatar" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                <% } %>
+                <span><%= typeof admin !== 'undefined' && admin ? admin.name : 'Admin User' %></span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu" id="profile-dropdown">
+                <a href="/admin/profile"><i class="fas fa-user"></i> My Profile</a>
+                <a href="/admin/change-password"><i class="fas fa-key"></i> Change Password</a>
+                <a href="/admin/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+    </div>
+</header>

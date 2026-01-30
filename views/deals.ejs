@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deals - OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Deals Page Specific Styles */
+        :root {
+            --primary-orange: #ff6b35;
+            --primary-blue: #004e89;
+            --accent-amber: #f77f00;
+            --soft-orange: #ff8a65;
+            --very-light-orange: #fff3e0;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #666;
+            --darker-gray: #1a1a1a;
+            --success-green: #28a745;
+            --error-red: #dc3545;
+            --warning-orange: #ffc107;
+            --shadow: 0 2px 4px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-gray);
+            color: var(--darker-gray);
+            line-height: 1.6;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .navbar.sticky {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .logo-sixteen {
+            color: var(--primary-orange);
+        }
+
+        .logo-clothing {
+            color: var(--primary-blue);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--dark-gray);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-orange);
+            background-color: var(--soft-orange);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-login, .btn-signup {
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .btn-login {
+            color: var(--light-blue);
+            border: 1px solid var(--light-blue);
+        }
+
+        .btn-login:hover {
+            background-color: var(--light-blue);
+            color: var(--white);
+        }
+
+        .btn-signup {
+            background-color: var(--light-blue);
+            color: var(--white);
+            border: 1px solid var(--light-blue);
+        }
+
+        .btn-signup:hover {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+        }
+
+        .cart-icon {
+            color: var(--dark-gray);
+            font-size: 20px;
+            padding: 8px;
+            border-radius: 50%;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .cart-icon:hover {
+            background-color: var(--soft-blue);
+            color: var(--light-blue);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 80px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--primary-orange);
+            margin-bottom: 16px;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--dark-gray);
+            margin-bottom: 40px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--warning-orange);
+            color: var(--white);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 18px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Deals Section */
+        .deals-section {
+            padding: 80px 0;
+            background: var(--white);
+        }
+
+        .deals-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .deals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .deal-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .deal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .deal-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: var(--error-red);
+            color: var(--white);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .deal-image {
+            width: 100%;
+            height: 200px;
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .deal-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .deal-placeholder {
+            font-size: 48px;
+            color: var(--medium-gray);
+        }
+
+        .deal-content {
+            padding: 20px;
+        }
+
+        .deal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--darker-gray);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .deal-price {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .current-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-orange);
+        }
+
+        .original-price {
+            font-size: 16px;
+            color: var(--medium-gray);
+            text-decoration: line-through;
+        }
+
+        .discount-percent {
+            background: var(--error-red);
+            color: var(--white);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .deal-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .stars {
+            color: var(--accent-amber);
+            font-size: 14px;
+        }
+
+        .rating-text {
+            font-size: 14px;
+            color: var(--dark-gray);
+        }
+
+        .deal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-deal {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-orange);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-amber);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--primary-orange);
+            border: 1px solid var(--primary-orange);
+        }
+
+        .btn-secondary:hover {
+            background: var(--soft-orange);
+        }
+
+        /* Countdown Timer */
+        .countdown-section {
+            background: linear-gradient(135deg, var(--primary-orange), var(--primary-blue));
+            padding: 60px 0;
+            text-align: center;
+            color: var(--white);
+        }
+
+        .countdown-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .countdown-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .countdown-subtitle {
+            font-size: 18px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .time-block {
+            text-align: center;
+        }
+
+        .time-value {
+            font-size: 48px;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .time-label {
+            font-size: 14px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--darker-gray);
+            color: var(--white);
+            padding: 60px 0 30px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .footer-brand h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .footer-brand p {
+            color: var(--medium-gray);
+            line-height: 1.6;
+        }
+
+        .footer-links h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 8px;
+        }
+
+        .footer-links a {
+            color: var(--medium-gray);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--white);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: var(--medium-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .social-link:hover {
+            background: var(--primary-orange);
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid var(--medium-gray);
+            color: var(--medium-gray);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 15px;
+                height: 60px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .hero-subtitle {
+                font-size: 16px;
+            }
+
+            .deals-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .countdown-timer {
+                gap: 20px;
+            }
+
+            .time-value {
+                font-size: 36px;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .deal-actions {
+                flex-direction: column;
+            }
+
+            .countdown-timer {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .modal-content {
+                padding: 24px;
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-sixteen">OMUNJU</span>
+                <span class="logo-clothing">SHOPPERS</span>
+            </div>
+
+            <div class="nav-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/categories" class="nav-link">Categories</a>
+                <a href="/deals" class="nav-link active">Deals</a>
+                <a href="/about" class="nav-link">About Us</a>
+                <a href="/contact" class="nav-link">Contact</a>
+            </div>
+
+            <div class="nav-actions">
+                <% if (!user) { %>
+                    <a href="/login" class="btn-login">Login</a>
+                    <a href="/signup" class="btn-signup">Sign Up</a>
+                <% } %>
+                <div class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-container">
+            <h1 class="hero-title">Amazing Deals</h1>
+            <p class="hero-subtitle">Don't miss out on our limited-time offers and discounts</p>
+            <div class="hero-badge">
+                <i class="fas fa-fire"></i> UP TO 70% OFF
+            </div>
+        </div>
+    </section>
+
+    <!-- Countdown Timer Section -->
+    <section class="countdown-section">
+        <div class="countdown-container">
+            <h2 class="countdown-title">Flash Sale Ends In</h2>
+            <p class="countdown-subtitle">Hurry up! These deals won't last long</p>
+            <div class="countdown-timer" id="countdown">
+                <div class="time-block">
+                    <span class="time-value" id="days">02</span>
+                    <span class="time-label">Days</span>
+                </div>
+                <div class="time-block">
+                    <span class="time-value" id="hours">14</span>
+                    <span class="time-label">Hours</span>
+                </div>
+                <div class="time-block">
+                    <span class="time-value" id="minutes">35</span>
+                    <span class="time-label">Minutes</span>
+                </div>
+                <div class="time-block">
+                    <span class="time-value" id="seconds">42</span>
+                    <span class="time-label">Seconds</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Deals Section -->
+    <section class="deals-section">
+        <div class="deals-container">
+            <div class="deals-grid">
+                <!-- Deal 1 -->
+                <div class="deal-card">
+                    <div class="deal-badge">70% OFF</div>
+                    <div class="deal-image">
+                        <i class="fas fa-mobile-alt deal-placeholder"></i>
+                    </div>
+                    <div class="deal-content">
+                        <h3 class="deal-title">Samsung Galaxy S23 Ultra</h3>
+                        <div class="deal-price">
+                            <span class="current-price">TSH 85,000</span>
+                            <span class="original-price">TSH 120,000</span>
+                            <span class="discount-percent">30%</span>
+                        </div>
+                        <div class="deal-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="rating-text">(4.5) 125 reviews</span>
+                        </div>
+                        <div class="deal-actions">
+                            <button class="btn-deal btn-primary">Add to Cart</button>
+                            <button class="btn-deal btn-secondary">View Details</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deal 2 -->
+                <div class="deal-card">
+                    <div class="deal-badge">50% OFF</div>
+                    <div class="deal-image">
+                        <i class="fas fa-laptop deal-placeholder"></i>
+                    </div>
+                    <div class="deal-content">
+                        <h3 class="deal-title">MacBook Air M2</h3>
+                        <div class="deal-price">
+                            <span class="current-price">TSH 95,000</span>
+                            <span class="original-price">TSH 190,000</span>
+                            <span class="discount-percent">50%</span>
+                        </div>
+                        <div class="deal-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="rating-text">(5.0) 89 reviews</span>
+                        </div>
+                        <div class="deal-actions">
+                            <button class="btn-deal btn-primary">Add to Cart</button>
+                            <button class="btn-deal btn-secondary">View Details</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deal 3 -->
+                <div class="deal-card">
+                    <div class="deal-badge">40% OFF</div>
+                    <div class="deal-image">
+                        <i class="fas fa-headphones deal-placeholder"></i>
+                    </div>
+                    <div class="deal-content">
+                        <h3 class="deal-title">Sony WH-1000XM4 Headphones</h3>
+                        <div class="deal-price">
+                            <span class="current-price">TSH 18,000</span>
+                            <span class="original-price">TSH 30,000</span>
+                            <span class="discount-percent">40%</span>
+                        </div>
+                        <div class="deal-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="rating-text">(4.7) 203 reviews</span>
+                        </div>
+                        <div class="deal-actions">
+                            <button class="btn-deal btn-primary">Add to Cart</button>
+                            <button class="btn-deal btn-secondary">View Details</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deal 4 -->
+                <div class="deal-card">
+                    <div class="deal-badge">60% OFF</div>
+                    <div class="deal-image">
+                        <i class="fas fa-tshirt deal-placeholder"></i>
+                    </div>
+                    <div class="deal-content">
+                        <h3 class="deal-title">Nike Air Max 270</h3>
+                        <div class="deal-price">
+                            <span class="current-price">TSH 8,000</span>
+                            <span class="original-price">TSH 20,000</span>
+                            <span class="discount-percent">60%</span>
+                        </div>
+                        <div class="deal-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="rating-text">(4.9) 156 reviews</span>
+                        </div>
+                        <div class="deal-actions">
+                            <button class="btn-deal btn-primary">Add to Cart</button>
+                            <button class="btn-deal btn-secondary">View Details</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deal 5 -->
+                <div class="deal-card">
+                    <div class="deal-badge">35% OFF</div>
+                    <div class="deal-image">
+                        <i class="fas fa-couch deal-placeholder"></i>
+                    </div>
+                    <div class="deal-content">
+                        <h3 class="deal-title">Modern Sofa Set</h3>
+                        <div class="deal-price">
+                            <span class="current-price">TSH 45,000</span>
+                            <span class="original-price">TSH 70,000</span>
+                            <span class="discount-percent">35%</span>
+                        </div>
+                        <div class="deal-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="rating-text">(4.3) 78 reviews</span>
+                        </div>
+                        <div class="deal-actions">
+                            <button class="btn-deal btn-primary">Add to Cart</button>
+                            <button class="btn-deal btn-secondary">View Details</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deal 6 -->
+                <div class="deal-card">
+                    <div class="deal-badge">55% OFF</div>
+                    <div class="deal-image">
+                        <i class="fas fa-gamepad deal-placeholder"></i>
+                    </div>
+                    <div class="deal-content">
+                        <h3 class="deal-title">PlayStation 5 Console</h3>
+                        <div class="deal-price">
+                            <span class="current-price">TSH 35,000</span>
+                            <span class="original-price">TSH 78,000</span>
+                            <span class="discount-percent">55%</span>
+                        </div>
+                        <div class="deal-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="rating-text">(4.8) 312 reviews</span>
+                        </div>
+                        <div class="deal-actions">
+                            <button class="btn-deal btn-primary">Add to Cart</button>
+                            <button class="btn-deal btn-secondary">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="logo">
+                    <span class="logo-sixteen">OMUNJU</span>
+                    <span class="logo-clothing">SHOPPERS</span>
+                </div>
+                <p>Your trusted online marketplace for quality products across Tanzania and East Africa.</p>
+            </div>
+
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/categories">Categories</a></li>
+                    <li><a href="/deals">Deals</a></li>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Customer Service</h4>
+                <ul>
+                    <li><a href="/help">Help Center</a></li>
+                    <li><a href="/shipping">Shipping Info</a></li>
+                    <li><a href="/returns">Returns</a></li>
+                    <li><a href="/faq">FAQ</a></li>
+                    <li><a href="/support">Contact Support</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2024 OMUNJU SHOPPERS. All rights reserved. | we make you smile.</p>
+        </div>
+    </footer>
+
+    <!-- Shared Chatbot Widget -->
+    <script src="/chatbot.js"></script>
+    <script>
+        // Initialize the shared chatbot
+        document.addEventListener('DOMContentLoaded', function() {
+            // The chatbot auto-initializes, but we can pass options here if needed
+            window.chatbot = new Chatbot();
+        });
+    </script>
+
+    <script>
+        // Sticky navbar functionality
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 0) {
+                navbar.classList.add('sticky');
+            } else {
+                navbar.classList.remove('sticky');
+            }
+        });
+
+        // Countdown timer functionality
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const endDate = new Date('2024-12-31T23:59:59').getTime(); // Set your end date here
+            const timeLeft = endDate - now;
+
+            if (timeLeft > 0) {
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                document.getElementById('days').textContent = days.toString().padStart(2, '0');
+                document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+                document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+            } else {
+                // Countdown finished
+                document.getElementById('countdown').innerHTML = '<div class="time-block"><span class="time-value">EXPIRED</span></div>';
+            }
+        }
+
+        // Update countdown every second
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href.startsWith('#')) {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Management - OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <%- include('./partials/sidebar', { currentPage: 'categories' }) %>
+
+        <div class="admin-main">
+            <%- include('./partials/header', { pageTitle: 'Category Management' }) %>
+
+            <main class="admin-content">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Categories</h2>
+                        <button class="btn btn-primary" onclick="showModal('add-category-modal')">
+                            <i class="fas fa-plus"></i>
+                            Add Category
+                        </button>
+                    </div>
+
+                    <!-- Categories Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px;">
+                        <% categories.forEach(category => { %>
+                        <div class="admin-card category-card" style="cursor: pointer;" data-category-id="<%= category.id %>">
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <img src="<%= category.image_url || '/images/category-placeholder.jpg' %>"
+                                     alt="<%= category.name %>"
+                                     style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover; background: #e9ecef;"
+                                     onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect width=%22400%22 height=%22300%22 fill=%22%23e9ecef%22/%3E%3Ctext x=%22200%22 y=%22150%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2224%22 fill=%22%236c757d%22%3ECategory%3C/text%3E%3C/svg%3E'">
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0; font-size: 1.125rem;"><%= category.name %></h3>
+                                    <p style="margin: 4px 0 0 0; color: #64748b;"><%= category.product_count %> products</p>
+                                    <% if (!category.is_active) { %>
+                                    <span class="status cancelled" style="font-size: 0.75rem;">Inactive</span>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <div style="margin-top: 16px; display: flex; gap: 8px;">
+                                <button class="btn btn-secondary btn-sm edit-category-btn">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm delete-category-btn">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <% }); %>
+
+                        <% if (categories.length === 0) { %>
+                        <div class="admin-card" style="text-align: center; padding: 40px;">
+                            <i class="fas fa-folder-open" style="font-size: 3rem; color: #64748b; margin-bottom: 16px;"></i>
+                            <h3 style="margin: 0 0 8px 0; color: #64748b;">No Categories Found</h3>
+                            <p style="margin: 0; color: #64748b;">Create your first category to get started.</p>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add/Edit Category Modal -->
+    <div class="modal" id="add-category-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="category-modal-title">Add New Category</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="category-form">
+                <div class="form-group">
+                    <label for="category-name">Category Name *</label>
+                    <input type="text" id="category-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="category-description">Description</label>
+                    <textarea id="category-description" name="description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="category-image">Category Image</label>
+                    <input type="file" id="category-image" name="image" accept="image/*">
+                    <small>Recommended size: 400x400px</small>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="category-status" name="status" checked>
+                        Active (visible to customers)
+                    </label>
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="hideModal('add-category-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    </body>
+</html>

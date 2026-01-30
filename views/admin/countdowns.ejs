@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Events - OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        .countdowns-container {
+            padding: 20px;
+        }
+
+        .countdowns-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .countdowns-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .countdowns-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+        }
+
+        .btn-create {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
+        }
+
+        .countdowns-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .countdown-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .countdown-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .countdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .countdown-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .countdown-type {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .type-auction { background: #fee; color: #e74c3c; }
+        .type-promotion { background: #e8f4fd; color: #3498db; }
+        .type-flash_sale { background: #fff3cd; color: #f39c12; }
+        .type-announcement { background: #d4edda; color: #27ae60; }
+        .type-launch { background: #e2e3e5; color: #6c757d; }
+
+        .countdown-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status-active { background: #d4edda; color: #155724; }
+        .status-inactive { background: #f8d7da; color: #721c24; }
+        .status-expired { background: #e2e3e5; color: #383d41; }
+
+        .countdown-description {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .countdown-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            text-align: center;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .countdown-timer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-title {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .timer-display {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        .countdown-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-view { background: #3498db; color: white; }
+        .btn-view:hover { background: #2980b9; }
+
+        .btn-edit { background: #f39c12; color: white; }
+        .btn-edit:hover { background: #e67e22; }
+
+        .btn-start { background: #27ae60; color: white; }
+        .btn-start:hover { background: #229954; }
+
+        .btn-stop { background: #e67e22; color: white; }
+        .btn-stop:hover { background: #d35400; }
+
+        .btn-edit { background: #f39c12; color: white; }
+        .btn-edit:hover { background: #e67e22; }
+
+        .btn-delete { background: #e74c3c; color: white; }
+        .btn-delete:hover { background: #c0392b; }
+
+        .visibility-badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .visibility-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-homepage { background: #e8f4fd; color: #3498db; }
+        .badge-product { background: #fff3cd; color: #f39c12; }
+
+        .no-countdowns {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+
+        .no-countdowns i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #2c3e50;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-btn:hover,
+        .pagination-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        @media (max-width: 768px) {
+            .countdowns-header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+
+            .countdowns-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .countdown-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .countdown-actions {
+                justify-content: center;
+            }
+
+            .countdown-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('./partials/sidebar', { currentPage: 'countdowns' }) %>
+
+    <div class="admin-main">
+        <%- include('./partials/header', { pageTitle: 'Countdown Events Management' }) %>
+
+        <main class="admin-content">
+            <div class="countdowns-container">
+                <!-- Header -->
+                <div class="countdowns-header">
+                    <h1 class="countdowns-title">Countdown Events</h1>
+                    <div class="countdowns-controls">
+                        <select class="filter-select" id="typeFilter" onchange="filterCountdowns()">
+                            <option value="all" <%= type === 'all' ? 'selected' : '' %>>All Types</option>
+                            <option value="auction" <%= type === 'auction' ? 'selected' : '' %>>Auctions</option>
+                            <option value="promotion" <%= type === 'promotion' ? 'selected' : '' %>>Promotions</option>
+                            <option value="flash_sale" <%= type === 'flash_sale' ? 'selected' : '' %>>Flash Sales</option>
+                            <option value="announcement" <%= type === 'announcement' ? 'selected' : '' %>>Announcements</option>
+                            <option value="launch" <%= type === 'launch' ? 'selected' : '' %>>Launches</option>
+                        </select>
+                        <select class="filter-select" id="statusFilter" onchange="filterCountdowns()">
+                            <option value="all" <%= status === 'all' ? 'selected' : '' %>>All Status</option>
+                            <option value="active" <%= status === 'active' ? 'selected' : '' %>>Active</option>
+                            <option value="inactive" <%= status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+                            <option value="expired" <%= status === 'expired' ? 'selected' : '' %>>Expired</option>
+                        </select>
+                        <a href="/admin/countdowns/create" class="btn-create">
+                            <i class="fas fa-plus"></i>
+                            Create Event
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Countdowns Grid -->
+                <% if (events && events.length > 0) { %>
+                    <div class="countdowns-grid">
+                        <% events.forEach(event => { %>
+                            <div class="countdown-card" data-event-id="<%= event.id %>">
+                                <div class="countdown-header">
+                                    <h3 class="countdown-title"><%= event.title %></h3>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span class="countdown-type type-<%= event.event_type %>">
+                                            <%= event.event_type.replace('_', ' ') %>
+                                        </span>
+                                        <% if (event.is_active && new Date(event.end_date) > new Date()) { %>
+                                            <span class="countdown-status status-active">Active</span>
+                                        <% } else if (!event.is_active) { %>
+                                            <span class="countdown-status status-inactive">Inactive</span>
+                                        <% } else { %>
+                                            <span class="countdown-status status-expired">Expired</span>
+                                        <% } %>
+                                    </div>
+                                </div>
+
+                                <% if (event.description) { %>
+                                    <div class="countdown-description">
+                                        <%= event.description.length > 150 ? event.description.substring(0, 150) + '...' : event.description %>
+                                    </div>
+                                <% } %>
+
+                                <div class="visibility-badges">
+                                    <% if (event.display_on_homepage) { %>
+                                        <span class="visibility-badge badge-homepage">Homepage</span>
+                                    <% } %>
+                                    <% if (event.display_on_product) { %>
+                                        <span class="visibility-badge badge-product">Product Page</span>
+                                    <% } %>
+                                </div>
+
+                                <div class="countdown-timer">
+                                    <div class="timer-title">Time Remaining</div>
+                                    <div class="timer-display" id="timer-<%= event.id %>">
+                                        <%= new Date(event.end_date) > new Date() ? 'Loading...' : 'Expired' %>
+                                    </div>
+                                </div>
+
+                                <div class="countdown-details">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Start Date</div>
+                                        <div class="detail-value"><%= new Date(event.start_date).toLocaleDateString() %></div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">End Date</div>
+                                        <div class="detail-value"><%= new Date(event.end_date).toLocaleDateString() %></div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">Created By</div>
+                                        <div class="detail-value"><%= event.created_by_name || 'Unknown' %></div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">Related Items</div>
+                                        <div class="detail-value">
+                                            <% if (event.related_auction_title) { %>
+                                                Auction: <%= event.related_auction_title %>
+                                            <% } else if (event.related_product_name) { %>
+                                                Product: <%= event.related_product_name %>
+                                            <% } else { %>
+                                                None
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="countdown-actions">
+                                    <% if (!event.is_active || new Date(event.end_date) <= new Date()) { %>
+                                        <button class="btn-action btn-start" data-action="start" data-id="<%= event.id %>">
+                                            <i class="fas fa-play"></i>
+                                            Start
+                                        </button>
+                                    <% } else { %>
+                                        <button class="btn-action btn-stop" data-action="stop" data-id="<%= event.id %>">
+                                            <i class="fas fa-stop"></i>
+                                            Stop
+                                        </button>
+                                    <% } %>
+
+                                    <button class="btn-action btn-edit" data-action="edit" data-id="<%= event.id %>">
+                                        <i class="fas fa-edit"></i>
+                                        Edit
+                                    </button>
+
+                                    <button class="btn-action btn-delete" data-action="delete" data-id="<%= event.id %>" data-title="<%= event.title.replace(/"/g, '"') %>">
+                                        <i class="fas fa-trash"></i>
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+
+                    <!-- Pagination -->
+                    <% if (totalPages > 1) { %>
+                        <div class="pagination">
+                            <% if (page > 1) { %>
+                                <a href="?page=<%= page - 1 %>&type=<%= type %>&status=<%= status %>" class="pagination-btn">Previous</a>
+                            <% } %>
+
+                            <% for (let i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) { %>
+                                <a href="?page=<%= i %>&type=<%= type %>&status=<%= status %>" class="pagination-btn <%= i === page ? 'active' : '' %>"><%= i %></a>
+                            <% } %>
+
+                            <% if (page < totalPages) { %>
+                                <a href="?page=<%= page + 1 %>&type=<%= type %>&status=<%= status %>" class="pagination-btn">Next</a>
+                            <% } %>
+                        </div>
+                    <% } %>
+                <% } else { %>
+                    <div class="no-countdowns">
+                        <i class="fas fa-clock"></i>
+                        <h3>No countdown events found</h3>
+                        <p>Create your first countdown event to engage your customers with time-sensitive offers.</p>
+                        <a href="/admin/countdowns/create" class="btn-create" style="margin-top: 20px;">
+                            <i class="fas fa-plus"></i>
+                            Create First Event
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let socket;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTimers();
+            setupActionHandlers();
+            initializeSocket();
+        });
+
+        function initializeSocket() {
+            socket = io();
+
+            socket.on('connect', () => {
+                console.log('Connected to server');
+            });
+
+            socket.on('countdown_updated', (data) => {
+                console.log('Countdown updated:', data);
+                // Refresh the page to show updated status
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
+            });
+
+            socket.on('error', (data) => {
+                console.error('Socket error:', data.message);
+                alert('Error: ' + data.message);
+            });
+        }
+
+        function initializeTimers() {
+            const timerElements = document.querySelectorAll('[id^="timer-"]');
+
+            timerElements.forEach(element => {
+                const eventId = element.id.replace('timer-', '');
+                const eventCard = element.closest('.countdown-card');
+                const endDate = new Date(eventCard.dataset.endDate);
+
+                updateTimer(eventId, endDate);
+            });
+        }
+
+        function updateTimer(eventId, endDate) {
+            const element = document.getElementById(`timer-${eventId}`);
+            if (!element) return;
+
+            const now = new Date();
+            const timeLeft = endDate - now;
+
+            if (timeLeft <= 0) {
+                element.textContent = 'EXPIRED';
+                element.style.color = '#e74c3c';
+                return;
+            }
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            if (days > 0) {
+                element.textContent = `${days}d ${hours}h ${minutes}m`;
+            } else if (hours > 0) {
+                element.textContent = `${hours}h ${minutes}m ${seconds}s`;
+            } else {
+                element.textContent = `${minutes}m ${seconds}s`;
+            }
+        }
+
+        function setupActionHandlers() {
+            document.addEventListener('click', function(e) {
+                const button = e.target.closest('.btn-action');
+                if (!button) return;
+
+                const action = button.dataset.action;
+                const id = button.dataset.id;
+                const title = button.dataset.title;
+
+                switch(action) {
+                    case 'start':
+                        startCountdown(id);
+                        break;
+                    case 'stop':
+                        stopCountdown(id);
+                        break;
+                    case 'edit':
+                        editEvent(id);
+                        break;
+                    case 'delete':
+                        deleteEvent(id, title);
+                        break;
+                }
+            });
+        }
+
+        function filterCountdowns() {
+            const type = document.getElementById('typeFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            window.location.href = `/admin/countdowns?type=${type}&status=${status}`;
+        }
+
+        function startCountdown(id) {
+            if (socket && socket.connected) {
+                socket.emit('start_countdown', { eventId: id });
+            } else {
+                alert('Connection lost. Please refresh the page.');
+            }
+        }
+
+        function stopCountdown(id) {
+            if (socket && socket.connected) {
+                socket.emit('stop_countdown', { eventId: id });
+            } else {
+                alert('Connection lost. Please refresh the page.');
+            }
+        }
+
+        function editEvent(id) {
+            // For now, redirect to create page with edit mode (can be enhanced later)
+            window.location.href = `/admin/countdowns/create?edit=${id}`;
+        }
+
+        function deleteEvent(id, title) {
+            if (confirm(`Are you sure you want to delete the countdown event "${title}"? This action cannot be undone.`)) {
+                if (socket && socket.connected) {
+                    socket.emit('delete_countdown', { eventId: id });
+                } else {
+                    alert('Connection lost. Please refresh the page.');
+                }
+            }
+        }
+
+        // Update timers every second
+        setInterval(() => {
+            const timerElements = document.querySelectorAll('[id^="timer-"]');
+            timerElements.forEach(element => {
+                const eventId = element.id.replace('timer-', '');
+                const eventCard = element.closest('.countdown-card');
+                // In a real implementation, you'd store the end date in a data attribute
+                // For now, we'll just refresh the page periodically for active timers
+            });
+        }, 1000);
+
+        // Auto-refresh every 30 seconds to update expired timers
+        setInterval(() => {
+            location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>

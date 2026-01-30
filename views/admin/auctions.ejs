@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auction Management - OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin.css">
+    <style>
+        .auctions-container {
+            padding: 20px;
+        }
+
+        .auctions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .auctions-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .auctions-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+        }
+
+        .btn-create {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+        }
+
+        .auctions-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .auction-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .auction-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .auction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .auction-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .auction-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-draft { background: #ecf0f1; color: #7f8c8d; }
+        .status-active { background: #d4edda; color: #155724; }
+        .status-ended { background: #cce5ff; color: #004085; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+
+        .auction-product {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .product-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .product-info h4 {
+            margin: 0 0 5px 0;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .product-price {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .auction-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            text-align: center;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .detail-value.currency {
+            color: #27ae60;
+        }
+
+        .auction-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-view { background: #3498db; color: white; }
+        .btn-view:hover { background: #2980b9; }
+
+        .btn-edit { background: #f39c12; color: white; }
+        .btn-edit:hover { background: #e67e22; }
+
+        .btn-activate { background: #27ae60; color: white; }
+        .btn-activate:hover { background: #229954; }
+
+        .btn-pause { background: #e74c3c; color: white; }
+        .btn-pause:hover { background: #c0392b; }
+
+        .btn-extend { background: #9b59b6; color: white; }
+        .btn-extend:hover { background: #8e44ad; }
+
+        .btn-delete { background: #e74c3c; color: white; }
+        .btn-delete:hover { background: #c0392b; }
+
+        .auction-timing {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .timing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .timing-item {
+            text-align: center;
+        }
+
+        .timing-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .timing-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .countdown {
+            color: #e74c3c;
+            font-weight: 700;
+        }
+
+        .no-auctions {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+
+        .no-auctions i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #2c3e50;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-btn:hover,
+        .pagination-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        @media (max-width: 768px) {
+            .auctions-header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+
+            .auctions-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .auction-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .auction-actions {
+                justify-content: center;
+            }
+
+            .auction-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('./partials/sidebar', { currentPage: 'auctions' }) %>
+
+    <div class="admin-main">
+        <%- include('./partials/header', { pageTitle: 'Auction Management' }) %>
+
+        <main class="admin-content">
+            <div class="auctions-container">
+                <!-- Header -->
+                <div class="auctions-header">
+                    <h1 class="auctions-title">Auction Management</h1>
+                    <div class="auctions-controls">
+                        <select class="filter-select" id="statusFilter" onchange="filterAuctions()">
+                            <option value="all" <%= status === 'all' ? 'selected' : '' %>>All Auctions</option>
+                            <option value="draft" <%= status === 'draft' ? 'selected' : '' %>>Draft</option>
+                            <option value="active" <%= status === 'active' ? 'selected' : '' %>>Active</option>
+                            <option value="ended" <%= status === 'ended' ? 'selected' : '' %>>Ended</option>
+                            <option value="cancelled" <%= status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                        </select>
+                        <a href="/admin/auctions/create" class="btn-create">
+                            <i class="fas fa-plus"></i>
+                            Create Auction
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Auctions Grid -->
+                <% if (auctions && auctions.length > 0) { %>
+                    <div class="auctions-grid">
+                        <% auctions.forEach(auction => { %>
+                            <div class="auction-card">
+                                <div class="auction-header">
+                                    <h3 class="auction-title"><%= auction.title %></h3>
+                                    <span class="auction-status status-<%= auction.status %>">
+                                        <%= auction.status %>
+                                    </span>
+                                </div>
+
+                                <% if (auction.product_name) { %>
+                                    <div class="auction-product">
+                                        <% if (auction.product_image) { %>
+                                            <img src="<%= auction.product_image %>" alt="<%= auction.product_name %>" class="product-image">
+                                        <% } else { %>
+                                            <div class="product-image" style="background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-image" style="color: #7f8c8d; font-size: 1.5rem;"></i>
+                                            </div>
+                                        <% } %>
+                                        <div class="product-info">
+                                            <h4><%= auction.product_name %></h4>
+                                            <div class="product-price">Regular Price: $<%= auction.product_price %></div>
+                                        </div>
+                                    </div>
+                                <% } %>
+
+                                <div class="auction-timing">
+                                    <div class="timing-grid">
+                                        <div class="timing-item">
+                                            <div class="timing-label">Start Date</div>
+                                            <div class="timing-value"><%= new Date(auction.start_date).toLocaleDateString() %></div>
+                                        </div>
+                                        <div class="timing-item">
+                                            <div class="timing-label">End Date</div>
+                                            <div class="timing-value"><%= new Date(auction.end_date).toLocaleDateString() %></div>
+                                        </div>
+                                        <div class="timing-item">
+                                            <div class="timing-label">Time Left</div>
+                                            <div class="timing-value countdown" id="countdown-<%= auction.id %>">
+                                                <%= auction.status === 'active' ? 'Loading...' : 'Not started' %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="auction-details">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Starting Bid</div>
+                                        <div class="detail-value currency">$<%= auction.starting_bid %></div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">Current Bid</div>
+                                        <div class="detail-value currency">$<%= auction.current_bid || auction.starting_bid %></div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">Total Bids</div>
+                                        <div class="detail-value"><%= auction.total_bids || 0 %></div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">Bidders</div>
+                                        <div class="detail-value"><%= auction.total_bidders || 0 %></div>
+                                    </div>
+                                </div>
+
+                                <div class="auction-actions">
+                                    <a href="/admin/auctions/<%= auction.id %>" class="btn-action btn-view">
+                                        <i class="fas fa-eye"></i>
+                                        View
+                                    </a>
+
+                                    <% if (auction.status === 'draft') { %>
+                                        <button class="btn-action btn-activate" data-action="activate" data-id="<%= auction.id %>">
+                                            <i class="fas fa-play"></i>
+                                            Activate
+                                        </button>
+                                    <% } %>
+
+                                    <% if (auction.status === 'active') { %>
+                                        <button class="btn-action btn-extend" data-action="extend" data-id="<%= auction.id %>">
+                                            <i class="fas fa-clock"></i>
+                                            Extend
+                                        </button>
+                                        <button class="btn-action btn-pause" data-action="end" data-id="<%= auction.id %>">
+                                            <i class="fas fa-stop"></i>
+                                            End Now
+                                        </button>
+                                    <% } %>
+
+                                    <button class="btn-action btn-edit" data-action="edit" data-id="<%= auction.id %>">
+                                        <i class="fas fa-edit"></i>
+                                        Edit
+                                    </button>
+
+                                    <button class="btn-action btn-delete" data-action="delete" data-id="<%= auction.id %>" data-title="<%= auction.title.replace(/"/g, '"') %>">
+                                        <i class="fas fa-trash"></i>
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+
+                    <!-- Pagination -->
+                    <% if (totalPages > 1) { %>
+                        <div class="pagination">
+                            <% if (page > 1) { %>
+                                <a href="?page=<%= page - 1 %>&status=<%= status %>" class="pagination-btn">Previous</a>
+                            <% } %>
+
+                            <% for (let i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) { %>
+                                <a href="?page=<%= i %>&status=<%= status %>" class="pagination-btn <%= i === page ? 'active' : '' %>"><%= i %></a>
+                            <% } %>
+
+                            <% if (page < totalPages) { %>
+                                <a href="?page=<%= page + 1 %>&status=<%= status %>" class="pagination-btn">Next</a>
+                            <% } %>
+                        </div>
+                    <% } %>
+                <% } else { %>
+                    <div class="no-auctions">
+                        <i class="fas fa-gavel"></i>
+                        <h3>No auctions found</h3>
+                        <p>Create your first auction to get started with auction management.</p>
+                        <a href="/admin/auctions/create" class="btn-create" style="margin-top: 20px;">
+                            <i class="fas fa-plus"></i>
+                            Create First Auction
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize countdown timers for active auctions
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCountdowns();
+        });
+
+        function initializeCountdowns() {
+            const countdownElements = document.querySelectorAll('[id^="countdown-"]');
+
+            countdownElements.forEach(element => {
+                const auctionId = element.id.replace('countdown-', '');
+                updateCountdown(auctionId);
+            });
+        }
+
+        function updateCountdown(auctionId) {
+            // In a real implementation, you would fetch the end date from the server
+            // For now, we'll just show a placeholder
+            const element = document.getElementById(`countdown-${auctionId}`);
+            if (element) {
+                element.textContent = 'Real-time countdown would go here';
+            }
+        }
+
+        function filterAuctions() {
+            const status = document.getElementById('statusFilter').value;
+            window.location.href = `/admin/auctions?status=${status}`;
+        }
+
+        function activateAuction(auctionId) {
+            if (confirm('Are you sure you want to activate this auction?')) {
+                fetch(`/admin/auctions/${auctionId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: 'active' })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Auction activated successfully');
+                        location.reload();
+                    } else {
+                        alert('Failed to activate auction: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error activating auction:', error);
+                    alert('Error activating auction');
+                });
+            }
+        }
+
+        function extendAuction(auctionId) {
+            const minutes = prompt('Enter extension time in minutes (1-1440):');
+            if (minutes && minutes >= 1 && minutes <= 1440) {
+                fetch(`/admin/auctions/${auctionId}/extend`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ minutes: parseInt(minutes) })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Auction extended successfully');
+                        location.reload();
+                    } else {
+                        alert('Failed to extend auction: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error extending auction:', error);
+                    alert('Error extending auction');
+                });
+            }
+        }
+
+        function endAuction(auctionId) {
+            if (confirm('Are you sure you want to end this auction now?')) {
+                fetch(`/admin/auctions/${auctionId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: 'ended' })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Auction ended successfully');
+                        location.reload();
+                    } else {
+                        alert('Failed to end auction: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error ending auction:', error);
+                    alert('Error ending auction');
+                });
+            }
+        }
+
+        function editAuction(auctionId) {
+            // Redirect to edit page (to be implemented)
+            alert('Edit functionality will be implemented in the next update');
+        }
+
+        function deleteAuction(auctionId, title) {
+            if (confirm(`Are you sure you want to delete the auction "${title}"? This action cannot be undone.`)) {
+                fetch(`/admin/auctions/${auctionId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Auction deleted successfully');
+                        location.reload();
+                    } else {
+                        alert('Failed to delete auction: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting auction:', error);
+                    alert('Error deleting auction');
+                });
+            }
+        }
+
+        // Event delegation for action buttons
+        document.addEventListener('click', function(e) {
+            const button = e.target.closest('.btn-action');
+            if (!button) return;
+
+            const action = button.dataset.action;
+            const id = button.dataset.id;
+            const title = button.dataset.title;
+
+            switch(action) {
+                case 'activate':
+                    activateAuction(id);
+                    break;
+                case 'extend':
+                    extendAuction(id);
+                    break;
+                case 'end':
+                    endAuction(id);
+                    break;
+                case 'edit':
+                    editAuction(id);
+                    break;
+                case 'delete':
+                    deleteAuction(id, title);
+                    break;
+            }
+        });
+
+        // Auto-refresh active auctions every 30 seconds
+        setInterval(() => {
+            // Refresh countdowns and bid data for active auctions
+            initializeCountdowns();
+        }, 30000);
+    </script>
+</body>
+</html>

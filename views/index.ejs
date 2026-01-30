@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OMUNJU SHOPPERS - Your Premier E-Commerce Destination</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <!-- Notification Bar -->
+  <div class="notification-bar">
+    <div class="notification-content">
+      <i class="fas fa-shipping-fast"></i>
+      <span>Free shipping on orders above Tsh 50,000 | Use code: OMUNJU01</span>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar-header">
+    <nav class="navbar">
+      <div class="nav-container">
+        <!-- Logo -->
+        <div class="logo">
+          <i class="fas fa-shopping-bag logo-icon"></i>
+          <div class="logo-text">
+            <span class="logo-main">OMUNJU</span>
+            <span class="logo-sub">SHOPPERS</span>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-bar">
+          <select class="search-category">
+            <option value="all">All Categories</option>
+            <option value="electronics">Electronics</option>
+            <option value="fashion">Fashion</option>
+            <option value="home">Home & Garden</option>
+            <option value="sports">Sports</option>
+            <option value="beauty">Beauty</option>
+          </select>
+          <input type="text" id="globalSearch" placeholder="Search for products, brands and more..." aria-label="Search products">
+          <button type="button" id="searchBtn" aria-label="Search">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+
+        <!-- Mobile Hamburger -->
+        <div class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <!-- Navigation Links -->
+        <ul class="nav-links" id="navLinks">
+          <li><a href="/" class="active"><i class="fas fa-home"></i> Home</a></li>
+          <li><a href="#categories"><i class="fas fa-th-large"></i> Categories</a></li>
+          <li><a href="#deals"><i class="fas fa-tags"></i> Deals</a></li>
+          <li><a href="/about"><i class="fas fa-info-circle"></i> About Us</a></li>
+          <li><a href="/contact"><i class="fas fa-envelope"></i> Contact</a></li>
+        </ul>
+
+        <!-- Right Side Icons -->
+        <div class="nav-icons">
+          <% if (user) { %>
+            <a href="/profile" class="nav-icon-link" title="My Account">
+              <i class="fas fa-user-circle"></i>
+              <span class="icon-label">Account</span>
+            </a>
+          <% } else { %>
+            <a href="/login" class="nav-icon-link" title="Login">
+              <i class="fas fa-user"></i>
+              <span class="icon-label">Login</span>
+            </a>
+          <% } %>
+          
+          <button class="nav-icon-link cart-icon" id="cartBtn" title="Shopping Cart">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-badge">0</span>
+            <span class="icon-label">Cart</span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Secondary Navigation -->
+    <div class="secondary-nav">
+      <div class="nav-container">
+        <div class="category-menu">
+          <button class="category-menu-btn">
+            <i class="fas fa-bars"></i>
+            All Categories
+          </button>
+          <div class="category-dropdown">
+            <a href="#" class="category-dropdown-item">
+              <i class="fas fa-laptop"></i> Electronics
+            </a>
+            <a href="#" class="category-dropdown-item">
+              <i class="fas fa-tshirt"></i> Fashion & Apparel
+            </a>
+            <a href="#" class="category-dropdown-item">
+              <i class="fas fa-home"></i> Home & Garden
+            </a>
+            <a href="#" class="category-dropdown-item">
+              <i class="fas fa-dumbbell"></i> Sports & Outdoors
+            </a>
+            <a href="#" class="category-dropdown-item">
+              <i class="fas fa-spa"></i> Beauty & Health
+            </a>
+            <a href="#" class="category-dropdown-item">
+              <i class="fas fa-baby"></i> Baby & Kids
+            </a>
+            <a href="#" class="category-dropdown-item">
+              <i class="fas fa-book"></i> Books & Media
+            </a>
+            <a href="#" class="category-dropdown-item">
+              <i class="fas fa-gamepad"></i> Toys & Games
+            </a>
+          </div>
+        </div>
+        <div class="quick-links">
+          <a href="#deals">Today's Deals</a>
+          <a href="#new">New Arrivals</a>
+          <a href="#trending">Trending</a>
+          <a href="#bestsellers">Best Sellers</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section with Slider -->
+  <section class="hero-slider" id="home">
+    <div class="slider-container">
+      <div class="slider-wrapper">
+        <!-- Slide 1 -->
+        <div class="slider-item active" style="background: linear-gradient(135deg, #ff6b35 0%, #004e89 100%);">
+          <div class="slider-content">
+            <div class="slider-text">
+              <span class="slider-badge">MEGA SALE</span>
+              <h1 class="slider-title">Summer Collection 2026</h1>
+              <p class="slider-subtitle">Up to 70% OFF on selected items</p>
+              <button class="cta-button">
+                Shop Now
+                <i class="fas fa-arrow-right"></i>
+              </button>
+            </div>
+            <div class="slider-image">
+              <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=600&fit=crop" alt="Shopping">
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slider-item" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+          <div class="slider-content">
+            <div class="slider-text">
+              <span class="slider-badge">NEW ARRIVAL</span>
+              <h1 class="slider-title">Latest Electronics</h1>
+              <p class="slider-subtitle">Discover cutting-edge technology</p>
+              <button class="cta-button">
+                View Deals
+                <i class="fas fa-arrow-right"></i>
+              </button>
+            </div>
+            <div class="slider-image">
+              <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop" alt="Electronics">
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slider-item" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+          <div class="slider-content">
+            <div class="slider-text">
+              <span class="slider-badge">EXCLUSIVE</span>
+              <h1 class="slider-title">Home Essentials</h1>
+              <p class="slider-subtitle">Transform your living space</p>
+              <button class="cta-button">
+                Explore Now
+                <i class="fas fa-arrow-right"></i>
+              </button>
+            </div>
+            <div class="slider-image">
+              <img src="https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=600&h=600&fit=crop" alt="Home">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slider Controls -->
+      <button class="slider-btn slider-prev">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button class="slider-btn slider-next">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+
+      <!-- Slider Dots -->
+      <div class="slider-dots">
+        <span class="dot active" data-slide="0"></span>
+        <span class="dot" data-slide="1"></span>
+        <span class="dot" data-slide="2"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="categories-section" id="categories">
+    <div class="container">
+      <div class="section-header">
+        <h2>Shop by Category</h2>
+        <p>Browse through our wide range of product categories</p>
+      </div>
+      
+      <div class="categories-grid">
+        <div class="category-card">
+          <div class="category-image">
+            <img src="https://images.unsplash.com/photo-1498049794561-7780e7231661?w=300&h=300&fit=crop" alt="Electronics">
+            <div class="category-overlay">
+              <button class="category-btn" onclick="exploreCategory('electronics')">Explore</button>
+            </div>
+          </div>
+          <div class="category-info">
+            <h3>Electronics</h3>
+            <p>2,450+ items</p>
+          </div>
+        </div>
+
+        <div class="category-card">
+          <div class="category-image">
+            <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=300&h=300&fit=crop" alt="Fashion">
+            <div class="category-overlay">
+              <button class="category-btn" onclick="exploreCategory('fashion')">Explore</button>
+            </div>
+          </div>
+          <div class="category-info">
+            <h3>Fashion & Apparel</h3>
+            <p>5,890+ items</p>
+          </div>
+        </div>
+
+        <div class="category-card">
+          <div class="category-image">
+            <img src="https://images.unsplash.com/photo-1556911220-bff31c812dba?w=300&h=300&fit=crop" alt="Home">
+            <div class="category-overlay">
+              <button class="category-btn" onclick="exploreCategory('home')">Explore</button>
+            </div>
+          </div>
+          <div class="category-info">
+            <h3>Home & Garden</h3>
+            <p>1,230+ items</p>
+          </div>
+        </div>
+
+        <div class="category-card">
+          <div class="category-image">
+            <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300&h=300&fit=crop" alt="Sports">
+            <div class="category-overlay">
+              <button class="category-btn" onclick="exploreCategory('sports')">Explore</button>
+            </div>
+          </div>
+          <div class="category-info">
+            <h3>Sports & Outdoors</h3>
+            <p>980+ items</p>
+          </div>
+        </div>
+
+        <div class="category-card">
+          <div class="category-image">
+            <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&h=300&fit=crop" alt="Beauty">
+            <div class="category-overlay">
+              <button class="category-btn" onclick="exploreCategory('beauty')">Explore</button>
+            </div>
+          </div>
+          <div class="category-info">
+            <h3>Beauty & Health</h3>
+            <p>3,450+ items</p>
+          </div>
+        </div>
+
+        <div class="category-card">
+          <div class="category-image">
+            <img src="https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=300&h=300&fit=crop" alt="Baby">
+            <div class="category-overlay">
+              <button class="category-btn" onclick="exploreCategory('baby')">Explore</button>
+            </div>
+          </div>
+          <div class="category-info">
+            <h3>Baby & Kids</h3>
+            <p>1,670+ items</p>
+          </div>
+        </div>
+
+        <div class="category-card">
+          <div class="category-image">
+            <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&h=300&fit=crop" alt="Books">
+            <div class="category-overlay">
+              <button class="category-btn" onclick="exploreCategory('books')">Explore</button>
+            </div>
+          </div>
+          <div class="category-info">
+            <h3>Books & Media</h3>
+            <p>890+ items</p>
+          </div>
+        </div>
+
+        <div class="category-card">
+          <div class="category-image">
+            <img src="https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=300&h=300&fit=crop" alt="Toys">
+            <div class="category-overlay">
+              <button class="category-btn" onclick="exploreCategory('toys')">Explore</button>
+            </div>
+          </div>
+          <div class="category-info">
+            <h3>Toys & Games</h3>
+            <p>2,100+ items</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Account Section -->
+  <section class="account-section">
+    <div class="container">
+      <div class="account-container">
+        <% if (user) { %>
+          <!-- Logged In User -->
+          <div class="account-card logged-in">
+            <div class="account-icon">
+              <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="account-content">
+              <h3>Welcome back, <%= user.name %>!</h3>
+              <p>Manage your account and track your orders</p>
+              <div class="account-actions">
+                <a href="/dashboard" class="account-btn primary-btn">
+                  <i class="fas fa-user-cog"></i>
+                  View My Account
+                </a>
+                <button class="account-btn logout-btn" onclick="logout()">
+                  <i class="fas fa-sign-out-alt"></i>
+                  Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        <% } else { %>
+          <!-- Not Logged In User -->
+          <div class="account-card not-logged-in">
+            <div class="account-icon">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="account-content">
+              <h3>Join OMUNJU SHOPPERS</h3>
+              <p>Create an account to enjoy personalized shopping, order tracking, and exclusive deals</p>
+              <div class="account-actions">
+                <a href="/login" class="account-btn primary-btn">
+                  <i class="fas fa-sign-in-alt"></i>
+                  Login Now
+                </a>
+                <a href="/signup" class="account-btn secondary-btn">
+                  <i class="fas fa-user-plus"></i>
+                  Create Account
+                </a>
+              </div>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products Section -->
+  <section class="featured-products-section" id="featured">
+    <div class="container">
+      <div class="section-header">
+        <h2>Featured Products</h2>
+        <p>Handpicked items just for you</p>
+      </div>
+
+      <div class="products-grid">
+        <!-- Product 1 -->
+        <div class="product-card" data-product-id="1">
+          <div class="product-badges">
+            <span class="badge badge-hot">HOT</span>
+            <span class="badge badge-discount">-25%</span>
+          </div>
+          <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop" alt="Product">
+            <div class="product-overlay">
+              <button class="quick-view-btn">
+                <i class="fas fa-eye"></i> Quick View
+              </button>
+            </div>
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Premium Wireless Headphones</h3>
+            <div class="product-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+              <span class="rating-count">(4.5)</span>
+            </div>
+            <div class="product-price">
+              <span class="price-current">Tsh 187,475</span>
+              <span class="price-original">Tsh 249,975</span>
+            </div>
+            <button class="add-to-cart-btn">
+              <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="product-card" data-product-id="2">
+          <div class="product-badges">
+            <span class="badge badge-new">NEW</span>
+          </div>
+          <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop" alt="Product">
+            <div class="product-overlay">
+              <button class="quick-view-btn">
+                <i class="fas fa-eye"></i> Quick View
+              </button>
+            </div>
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Classic Running Shoes</h3>
+            <div class="product-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="far fa-star"></i>
+              <span class="rating-count">(4.0)</span>
+            </div>
+            <div class="product-price">
+              <span class="price-current">Tsh 224,975</span>
+            </div>
+            <button class="add-to-cart-btn">
+              <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="product-card" data-product-id="3">
+          <div class="product-badges">
+            <span class="badge badge-discount">-40%</span>
+          </div>
+          <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=400&h=400&fit=crop" alt="Product">
+            <div class="product-overlay">
+              <button class="quick-view-btn">
+                <i class="fas fa-eye"></i> Quick View
+              </button>
+            </div>
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Smart Watch Series 5</h3>
+            <div class="product-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <span class="rating-count">(5.0)</span>
+            </div>
+            <div class="product-price">
+              <span class="price-current">$179.99</span>
+              <span class="price-original">$299.99</span>
+            </div>
+            <button class="add-to-cart-btn">
+              <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="product-card" data-product-id="4">
+          <div class="product-badges">
+            <span class="badge badge-hot">HOT</span>
+          </div>
+          <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=400&fit=crop" alt="Product">
+            <div class="product-overlay">
+              <button class="quick-view-btn">
+                <i class="fas fa-eye"></i> Quick View
+              </button>
+            </div>
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Designer Sunglasses</h3>
+            <div class="product-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+              <span class="rating-count">(4.7)</span>
+            </div>
+            <div class="product-price">
+              <span class="price-current">$49.99</span>
+            </div>
+            <button class="add-to-cart-btn">
+              <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-card" data-product-id="5">
+          <div class="product-badges">
+            <span class="badge badge-new">NEW</span>
+            <span class="badge badge-discount">-15%</span>
+          </div>
+          <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400&h=400&fit=crop" alt="Product">
+            <div class="product-overlay">
+              <button class="quick-view-btn">
+                <i class="fas fa-eye"></i> Quick View
+              </button>
+            </div>
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Leather Backpack</h3>
+            <div class="product-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="far fa-star"></i>
+              <span class="rating-count">(4.2)</span>
+            </div>
+            <div class="product-price">
+              <span class="price-current">$67.99</span>
+              <span class="price-original">$79.99</span>
+            </div>
+            <button class="add-to-cart-btn">
+              <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Product 6 -->
+        <div class="product-card" data-product-id="6">
+          <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop" alt="Product">
+            <div class="product-overlay">
+              <button class="quick-view-btn">
+                <i class="fas fa-eye"></i> Quick View
+              </button>
+            </div>
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Wireless Speaker</h3>
+            <div class="product-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <span class="rating-count">(4.9)</span>
+            </div>
+            <div class="product-price">
+              <span class="price-current">$129.99</span>
+            </div>
+            <button class="add-to-cart-btn">
+              <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Product 7 -->
+        <div class="product-card" data-product-id="7">
+          <div class="product-badges">
+            <span class="badge badge-hot">HOT</span>
+            <span class="badge badge-discount">-30%</span>
+          </div>
+          <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1560343090-f0409e92791a?w=400&h=400&fit=crop" alt="Product">
+            <div class="product-overlay">
+              <button class="quick-view-btn">
+                <i class="fas fa-eye"></i> Quick View
+              </button>
+            </div>
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Casual T-Shirt</h3>
+            <div class="product-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="far fa-star"></i>
+              <span class="rating-count">(4.1)</span>
+            </div>
+            <div class="product-price">
+              <span class="price-current">$20.99</span>
+              <span class="price-original">$29.99</span>
+            </div>
+            <button class="add-to-cart-btn">
+              <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Product 8 -->
+        <div class="product-card" data-product-id="8">
+          <div class="product-badges">
+            <span class="badge badge-new">NEW</span>
+          </div>
+          <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&h=400&fit=crop" alt="Product">
+            <div class="product-overlay">
+              <button class="quick-view-btn">
+                <i class="fas fa-eye"></i> Quick View
+              </button>
+            </div>
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Professional Camera</h3>
+            <div class="product-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+              <span class="rating-count">(4.6)</span>
+            </div>
+            <div class="product-price">
+              <span class="price-current">$899.99</span>
+            </div>
+            <button class="add-to-cart-btn">
+              <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="view-all-container">
+        <button class="view-all-btn">
+          View All Products
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Promotional Section -->
+  <section class="promotional-section" id="deals">
+    <div class="container">
+      <div class="promo-grid">
+        <div class="promo-card promo-large" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <div class="promo-content">
+            <span class="promo-badge">LIMITED TIME</span>
+            <h2>Flash Sale</h2>
+            <p>Up to 60% OFF on Electronics</p>
+            <div class="countdown" id="promoCountdown">
+              <div class="countdown-item">
+                <span class="countdown-value" id="hours">12</span>
+                <span class="countdown-label">Hours</span>
+              </div>
+              <div class="countdown-item">
+                <span class="countdown-value" id="minutes">34</span>
+                <span class="countdown-label">Minutes</span>
+              </div>
+              <div class="countdown-item">
+                <span class="countdown-value" id="seconds">56</span>
+                <span class="countdown-label">Seconds</span>
+              </div>
+            </div>
+            <div class="countdown-status" id="countdownStatus">
+              <span id="eventTitle">Flash Sale</span> - <span id="eventType">Limited Time Offer</span>
+            </div>
+            <button class="promo-btn">Shop Now</button>
+          </div>
+          <div class="promo-image">
+            <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=500&h=500&fit=crop" alt="Flash Sale">
+          </div>
+        </div>
+
+        <div class="promo-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+          <div class="promo-content">
+            <h3>Fashion Week</h3>
+            <p>New Arrivals</p>
+            <button class="promo-btn-small">Explore</button>
+          </div>
+        </div>
+
+        <div class="promo-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+          <div class="promo-content">
+            <h3>Home Decor</h3>
+            <p>Save up to 40%</p>
+            <button class="promo-btn-small">Shop Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recommended Section -->
+  <section class="recommended-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Recommended for You</h2>
+        <p>Based on your browsing history</p>
+      </div>
+
+      <div class="products-grid">
+        <!-- Product 1 -->
+        <div class="product-card" data-product-id="9">
+          <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400&h=400&fit=crop" alt="Product">
+            <div class="product-overlay">
+              <button class="quick-view-btn">
+                <i class="fas fa-eye"></i> Quick View
+              </button>
+            </div>
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Smart Watch Band</h3>
+            <div class="product-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="far fa-star"></i>
+              <span class="rating-count">(4.3)</span>
+            </div>
+            <div class="product-price">
+              <span class="price-current">$24.99</span>
+            </div>
+            <button class="add-to-cart-btn">
+              <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="product-card" data-product-id="10">
+          <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop" alt="Product">
+            <div class="product-overlay">
+              <button class="quick-view-btn">
+                <i class="fas fa-eye"></i> Quick View
+              </button>
+            </div>
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Fitness Tracker</h3>
+            <div class="product-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+              <span class="rating-count">(4.5)</span>
+            </div>
+            <div class="product-price">
+              <span class="price-current">$59.99</span>
+            </div>
+            <button class="add-to-cart-btn">
+              <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1572635196184-84e35138cf62?w=400&h=400&fit=crop" alt="Product">
+            <div class="product-overlay">
+              <button class="quick-view-btn">
+                <i class="fas fa-eye"></i> Quick View
+              </button>
+            </div>
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Polarized Sunglasses</h3>
+            <div class="product-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="far fa-star"></i>
+              <span class="rating-count">(4.0)</span>
+            </div>
+            <div class="product-price">
+              <span class="price-current">$39.99</span>
+            </div>
+            <button class="add-to-cart-btn">
+              <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="product-card" data-product-id="11">
+          <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=400&fit=crop" alt="Product">
+            <div class="product-overlay">
+              <button class="quick-view-btn">
+                <i class="fas fa-eye"></i> Quick View
+              </button>
+            </div>
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Laptop Sleeve</h3>
+            <div class="product-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <span class="rating-count">(4.8)</span>
+            </div>
+            <div class="product-price">
+              <span class="price-current">$34.99</span>
+            </div>
+            <button class="add-to-cart-btn">
+              <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <!-- Company Info -->
+        <div class="footer-section">
+          <h3 class="footer-logo">
+            <i class="fas fa-shopping-bag"></i>
+            OMUNJU SHOPPERS
+          </h3>
+          <p class="footer-desc">Your trusted online shopping destination for quality products at unbeatable prices.</p>
+          <div class="social-links">
+            <a href="#" class="social-link" title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="social-link" title="Instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" class="social-link" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" class="social-link" title="LinkedIn">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+            <li><a href="#">Track Order</a></li>
+            <li><a href="#">Shipping Info</a></li>
+            <li><a href="#">Returns & Refunds</a></li>
+          </ul>
+        </div>
+
+        <!-- Customer Service -->
+        <div class="footer-section">
+          <h4>Customer Service</h4>
+          <ul class="footer-links">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Terms & Conditions</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Payment Methods</a></li>
+          </ul>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="footer-section">
+          <h4>Newsletter</h4>
+          <p>Subscribe to get special offers and updates</p>
+          <form class="newsletter-form">
+            <input type="email" placeholder="Enter your email" required>
+            <button type="submit">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </form>
+          <div class="payment-methods">
+            <h5>We Accept</h5>
+            <div class="payment-icons">
+              <i class="fab fa-cc-visa"></i>
+              <i class="fab fa-cc-mastercard"></i>
+              <i class="fab fa-cc-paypal"></i>
+              <i class="fab fa-cc-amex"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 OMUNJU SHOPPERS. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Sitemap</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scroll to Top Button -->
+  <button class="scroll-to-top" id="scrollToTop">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <script>
+    let socket;
+    let currentCountdownEvent = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeSocket();
+    });
+
+    function initializeSocket() {
+      socket = io();
+
+      socket.on('connect', () => {
+        console.log('Connected to server');
+        // Request active countdowns
+        socket.emit('get_active_countdowns');
+      });
+
+      socket.on('active_countdowns', (data) => {
+        if (data.events && data.events.length > 0) {
+          // Use the first active countdown for the promo section
+          currentCountdownEvent = data.events[0];
+          startCountdown(currentCountdownEvent);
+        }
+      });
+
+      socket.on('countdown_started', (data) => {
+        console.log('Countdown started:', data);
+        // Refresh countdowns
+        socket.emit('get_active_countdowns');
+      });
+
+      socket.on('countdown_stopped', (data) => {
+        console.log('Countdown stopped:', data);
+        // Refresh countdowns
+        socket.emit('get_active_countdowns');
+      });
+
+      socket.on('countdown_updated', (data) => {
+        console.log('Countdown updated:', data);
+        // Refresh countdowns
+        socket.emit('get_active_countdowns');
+      });
+
+      socket.on('countdown_deleted', (data) => {
+        console.log('Countdown deleted:', data);
+        // Refresh countdowns
+        socket.emit('get_active_countdowns');
+      });
+
+      socket.on('error', (data) => {
+        console.error('Socket error:', data.message);
+      });
+    }
+
+    function startCountdown(event) {
+      const countdownElement = document.getElementById('promoCountdown');
+      const hoursElement = document.getElementById('hours');
+      const minutesElement = document.getElementById('minutes');
+      const secondsElement = document.getElementById('seconds');
+      const eventTitleElement = document.getElementById('eventTitle');
+      const eventTypeElement = document.getElementById('eventType');
+
+      // Update event info
+      eventTitleElement.textContent = event.title;
+      eventTypeElement.textContent = event.event_type.replace('_', ' ');
+
+      function updateCountdown() {
+        const now = new Date();
+        const endDate = new Date(event.end_date);
+        const timeLeft = endDate - now;
+
+        if (timeLeft <= 0) {
+          // Countdown ended
+          hoursElement.textContent = '00';
+          minutesElement.textContent = '00';
+          secondsElement.textContent = '00';
+          eventTypeElement.textContent = 'Ended';
+          return;
+        }
+
+        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        hoursElement.textContent = hours.toString().padStart(2, '0');
+        minutesElement.textContent = minutes.toString().padStart(2, '0');
+        secondsElement.textContent = seconds.toString().padStart(2, '0');
+      }
+
+      // Update immediately
+      updateCountdown();
+
+      // Update every second
+      setInterval(updateCountdown, 1000);
+    }
+
+    function exploreCategory(category) {
+      window.location.href = `/products?category=${encodeURIComponent(category)}`;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!-- Notification Bar -->
+<div class="notification-bar">
+  <div class="notification-content">
+    <i class="fas fa-shipping-fast"></i>
+    <span>Free shipping on orders above Tsh 50,000 | Use code: OMUNJU</span>
+  </div>
+</div>
+
+<!-- Navigation Bar -->
+<header class="navbar-header">
+  <nav class="navbar">
+    <div class="nav-container">
+      <!-- Logo -->
+      <div class="logo">
+        <a href="<%= user ? '/dashboard' : '/' %>">
+          <i class="fas fa-shopping-bag logo-icon"></i>
+          <div class="logo-text" aria-label="OMUNJUSHOPPERS">
+            <span class="logo-main">OMUNJU</span>
+            <span class="logo-sub">SHOPPERS</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-bar">
+        <select class="search-category">
+          <option value="all">All Categories</option>
+          <option value="electronics">Electronics</option>
+          <option value="fashion">Fashion</option>
+          <option value="home">Home & Garden</option>
+          <option value="sports">Sports</option>
+          <option value="beauty">Beauty</option>
+        </select>
+        <input type="text" id="globalSearch" placeholder="Search for products, brands and more..." aria-label="Search products">
+        <button type="button" id="searchBtn" aria-label="Search">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+
+      <!-- Mobile Hamburger -->
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <!-- Navigation Links -->
+      <ul class="nav-links" id="navLinks">
+        <li><a href="<%= user ? '/dashboard' : '/' %>" class="<%= typeof page !== 'undefined' && page === 'home' ? 'active' : '' %>"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="/categories" class="<%= typeof page !== 'undefined' && page === 'categories' ? 'active' : '' %>"><i class="fas fa-th-large"></i> Categories</a></li>
+        <li><a href="/deals" class="<%= typeof page !== 'undefined' && page === 'deals' ? 'active' : '' %>"><i class="fas fa-fire"></i> Deals</a></li>
+        <li><a href="/promotions" class="<%= typeof page !== 'undefined' && page === 'promotions' ? 'active' : '' %>"><i class="fas fa-tags"></i> Promotions</a></li>
+        <li><a href="/auctions" class="<%= typeof page !== 'undefined' && page === 'auctions' ? 'active' : '' %>"><i class="fas fa-gavel"></i> Auctions</a></li>
+        <li><a href="/about" class="<%= typeof page !== 'undefined' && page === 'about' ? 'active' : '' %>"><i class="fas fa-info-circle"></i> About Us</a></li>
+        <li><a href="/contact" class="<%= typeof page !== 'undefined' && page === 'contact' ? 'active' : '' %>"><i class="fas fa-envelope"></i> Contact</a></li>
+      </ul>
+
+      <!-- Right Side Icons -->
+      <div class="nav-icons">
+        <% if (user) { %>
+          <a href="/notifications" class="nav-icon-link" title="Notifications" style="position: relative;">
+            <i class="fas fa-bell"></i>
+            <span class="icon-label">Notifications</span>
+            <span class="notification-badge" id="notificationBadge" style="display: none;"></span>
+          </a>
+          <a href="/profile/view" class="nav-icon-link" title="My Account">
+            <img src="<%= user && user.profile_picture ? user.profile_picture : '/images/default-avatar.png' %>" alt="Profile" class="nav-profile-picture">
+            <span class="icon-label">Account</span>
+          </a>
+        <% } else { %>
+          <a href="/login" class="nav-icon-link" title="Login">
+            <i class="fas fa-user"></i>
+            <span class="icon-label">Login</span>
+          </a>
+        <% } %>
+        
+        <a class="nav-icon-link cart-icon" href="/cart" title="Shopping Cart">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="cart-badge">0</span>
+          <span class="icon-label">Cart</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Secondary Navigation -->
+  <div class="secondary-nav">
+    <div class="nav-container">
+      <div class="category-menu">
+        <button class="category-menu-btn">
+          <i class="fas fa-bars"></i>
+          All Categories
+        </button>
+        <div class="category-dropdown">
+          <a href="/category/electronics" class="category-dropdown-item">
+            <i class="fas fa-laptop"></i> Electronics
+          </a>
+          <a href="/category/fashion" class="category-dropdown-item">
+            <i class="fas fa-tshirt"></i> Fashion
+          </a>
+          <a href="/category/home" class="category-dropdown-item">
+            <i class="fas fa-home"></i> Home & Garden
+          </a>
+          <a href="/category/sports" class="category-dropdown-item">
+            <i class="fas fa-dumbbell"></i> Sports
+          </a>
+          <a href="/category/beauty" class="category-dropdown-item">
+            <i class="fas fa-spa"></i> Beauty
+          </a>
+          <a href="/category/baby" class="category-dropdown-item">
+            <i class="fas fa-baby"></i> Baby & Kids
+          </a>
+          <a href="/category/books" class="category-dropdown-item">
+            <i class="fas fa-book"></i> Books & Media
+          </a>
+          <a href="/category/toys" class="category-dropdown-item">
+            <i class="fas fa-gamepad"></i> Toys & Games
+          </a>
+        </div>
+      </div>
+      <div class="quick-links">
+        <a href="#deals">Today's Deals</a>
+        <a href="#new">New Arrivals</a>
+        <a href="#trending">Trending</a>
+        <a href="#bestsellers">Best Sellers</a>
+      </div>
+    </div>
+  </div>
+</header>

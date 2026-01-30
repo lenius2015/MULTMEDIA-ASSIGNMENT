@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .confirmation-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .confirmation-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .confirmation-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+
+        .confirmation-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .confirmation-title {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .confirmation-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .order-summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+        }
+
+        .order-summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .order-id {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .order-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-paid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .order-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .order-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .order-detail-item:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .order-items {
+            margin-top: 25px;
+        }
+
+        .order-items h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .item-list {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .item-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            font-weight: 600;
+            color: #333;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .item-row {
+            padding: 15px 20px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            align-items: center;
+        }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .item-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+
+        .item-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .delivery-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .delivery-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .delivery-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .delivery-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .actions-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .action-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .action-description {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .next-steps {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .next-steps h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .steps-list {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .step-text {
+            font-weight: 500;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .order-details {
+                grid-template-columns: 1fr;
+            }
+
+            .item-header, .item-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .actions-section {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-list {
+                gap: 20px;
+            }
+
+            .confirmation-title {
+                font-size: 2rem;
+            }
+
+            .delivery-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <%- include('./partials/header', { currentPage: 'orders' }) %>
+
+    <div class="confirmation-container">
+        <!-- Confirmation Header -->
+        <div class="confirmation-header">
+            <div class="confirmation-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h1 class="confirmation-title">Order Confirmed!</h1>
+            <p class="confirmation-subtitle">Thank you for your purchase. Your order has been successfully placed.</p>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary-card">
+            <div class="order-summary-header">
+                <div class="order-id">Order #<%= order.id %></div>
+                <div class="order-status status-paid"><%= order.status %></div>
+            </div>
+
+            <div class="order-details">
+                <div class="order-detail-item">
+                    <span>Order Date:</span>
+                    <span><%= new Date(order.created_at).toLocaleDateString() %></span>
+                </div>
+                <div class="order-detail-item">
+                    <span>Payment Method:</span>
+                    <span>Paid</span>
+                </div>
+                <div class="order-detail-item">
+                    <span>Items:</span>
+                    <span><%= items.length %> item(s)</span>
+                </div>
+                <div class="order-detail-item">
+                    <span>Total Amount:</span>
+                    <span>TSH <%= order.total_amount.toFixed(2) %></span>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="order-items">
+                <h4>Order Items</h4>
+                <div class="item-list">
+                    <div class="item-header">
+                        <span>Product</span>
+                        <span>Quantity</span>
+                        <span>Price</span>
+                    </div>
+                    <% items.forEach(item => { %>
+                    <div class="item-row">
+                        <div class="item-info">
+                            <% if (item.image_url) { %>
+                            <img src="<%= item.image_url %>" alt="<%= item.name %>" class="item-image">
+                            <% } %>
+                            <span class="item-name"><%= item.name %></span>
+                        </div>
+                        <span><%= item.quantity %></span>
+                        <span>TSH <%= (item.price * item.quantity).toFixed(2) %></span>
+                    </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delivery Request Section -->
+        <div class="delivery-section">
+            <div class="delivery-icon">
+                <i class="fas fa-truck"></i>
+            </div>
+            <h2 class="delivery-title">Ready for Delivery?</h2>
+            <p class="delivery-description">
+                Complete your delivery details to get your order delivered to your doorstep.
+            </p>
+            <a href="/delivery-request?orderId=<%= order.id %>" class="btn btn-primary">
+                <i class="fas fa-map-marker-alt"></i>
+                Request Delivery
+            </a>
+        </div>
+
+        <!-- Action Cards -->
+        <div class="actions-section">
+            <div class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="action-title">Track Order</div>
+                <div class="action-description">
+                    Monitor your order status and delivery progress in real-time.
+                </div>
+                <a href="/orders/<%= order.id %>" class="btn btn-primary" style="margin-top: 15px;">
+                    View Order Details
+                </a>
+            </div>
+
+            <div class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <div class="action-title">Continue Shopping</div>
+                <div class="action-description">
+                    Discover more products and add them to your cart.
+                </div>
+                <a href="/" class="btn btn-primary" style="margin-top: 15px;">
+                    Shop More
+                </a>
+            </div>
+
+            <div class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-receipt"></i>
+                </div>
+                <div class="action-title">Download Invoice</div>
+                <div class="action-description">
+                    Get your order invoice for your records.
+                </div>
+                <button class="btn btn-primary" style="margin-top: 15px;" onclick="downloadInvoice()">
+                    <i class="fas fa-download"></i>
+                    Download Invoice
+                </button>
+            </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="next-steps">
+            <h3>What happens next?</h3>
+            <div class="steps-list">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Request Delivery</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Order Processing</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Quality Check</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-text">Out for Delivery</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-text">Delivered</div>
+                </div>
+            </div>
+            <p style="color: #666; margin-top: 15px;">
+                You'll receive WhatsApp notifications for each step of your delivery process.
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <%- include('./partials/footer') %>
+
+    <script>
+        // Download invoice function
+        async function downloadInvoice() {
+            try {
+                const response = await fetch(`/api/invoices/download/<%= order.id %>`);
+                if (response.ok) {
+                    // Create download link
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `invoice-<%= order.id %>.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                } else {
+                    alert('Invoice not available yet. Please try again later.');
+                }
+            } catch (error) {
+                console.error('Error downloading invoice:', error);
+                alert('Failed to download invoice. Please try again.');
+            }
+        }
+
+        // Auto-generate invoice if not exists
+        async function generateInvoice() {
+            try {
+                const response = await fetch(`/api/invoices/generate/<%= order.id %>`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                if (result.success) {
+                    console.log('Invoice generated successfully');
+                }
+            } catch (error) {
+                console.error('Error generating invoice:', error);
+            }
+        }
+
+        // Generate invoice on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            generateInvoice();
+        });
+    </script>
+</body>
+</html>

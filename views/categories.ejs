@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <!-- Notification Bar -->
+    <div class="notification-bar">
+        <div class="notification-content">
+            <i class="fas fa-shipping-fast"></i>
+            <span>Free shipping on orders above Tsh 50,000 | Use code: OMUNJU01</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <%- include('partials/header', { page: 'categories' }) %>
+
+    <!-- Categories Section -->
+    <section class="categories-page-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>All Categories</h2>
+                <p>Browse through our wide range of product categories</p>
+            </div>
+
+            <% if (categories && categories.length > 0) { %>
+                <div class="categories-grid">
+                    <% categories.forEach(category => { %>
+                        <div class="category-card" onclick="exploreCategory('<%= category.name %>')">
+                            <div class="category-image">
+                                <% if (category.image_url) { %>
+                                    <img src="<%= category.image_url %>" alt="<%= category.name %>">
+                                <% } else { %>
+                                    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=300&fit=crop" alt="<%= category.name %>">
+                                <% } %>
+                                <div class="category-overlay">
+                                    <button class="category-btn">Explore</button>
+                                </div>
+                            </div>
+                            <div class="category-info">
+                                <h3><%= category.name %></h3>
+                                <p><%= category.product_count || 0 %> items</p>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else if (productCategories && productCategories.length > 0) { %>
+                <!-- Fallback: Show categories from products table -->
+                <div class="categories-grid">
+                    <% productCategories.forEach(category => { %>
+                        <div class="category-card" onclick="exploreCategory('<%= category.name %>')">
+                            <div class="category-image">
+                                <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=300&fit=crop" alt="<%= category.name %>">
+                                <div class="category-overlay">
+                                    <button class="category-btn">Explore</button>
+                                </div>
+                            </div>
+                            <div class="category-info">
+                                <h3><%= category.name %></h3>
+                                <p><%= category.product_count %> items</p>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <div class="no-categories">
+                    <i class="fas fa-folder-open"></i>
+                    <h3>No categories found</h3>
+                    <p>Check back later for new categories!</p>
+                </div>
+            <% } %>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <%- include('partials/footer') %>
+
+    <!-- Cart Sidebar -->
+    <%- include('cart') %>
+
+    <script src="/script.js"></script>
+    <script>
+        function exploreCategory(categoryName) {
+            const categorySlug = categoryName.toLowerCase().replace(/\s+/g, '-');
+            window.location.href = '/category/' + categorySlug;
+        }
+    </script>
+
+    <style>
+        .categories-page-section {
+            padding: 60px 0;
+            background: #f8f9fa;
+            min-height: 60vh;
+        }
+
+        .categories-page-section .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .categories-page-section .section-header h2 {
+            font-size: 2.5rem;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .categories-page-section .section-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .no-categories {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .no-categories i {
+            font-size: 4rem;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .no-categories h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .no-categories p {
+            color: #666;
+        }
+    </style>
+</body>
+</html>

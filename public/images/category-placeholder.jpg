@@ -1,0 +1,5 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="300" fill="#e9ecef"/>
+        <text x="200" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#6c757d">Category</text>
+        <text x="200" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#adb5bd">400 x 300</text>
+    </svg>

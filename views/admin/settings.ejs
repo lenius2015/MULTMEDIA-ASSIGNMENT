@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <%- include('./partials/sidebar', { currentPage: 'settings' }) %>
+
+        <div class="admin-main">
+            <%- include('./partials/header', { pageTitle: 'Settings' }) %>
+
+            <main class="admin-content">
+                <!-- General Settings -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">General Settings</h2>
+                    </div>
+                    <form id="general-settings-form">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                            <div class="form-group">
+                                <label for="site-name">Site Name</label>
+                                <input type="text" id="site-name" name="site_name" value="<%= settings.general ? settings.general.site_name : 'OMUNJU SHOPPERS' %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="site-description">Site Description</label>
+                                <input type="text" id="site-description" name="site_description" value="<%= settings.general ? settings.general.site_description : 'Your one-stop shop for fashion and lifestyle' %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-email">Contact Email</label>
+                                <input type="email" id="contact-email" name="contact_email" value="<%= settings.general ? settings.general.contact_email : 'support@omunjushoppers.com' %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-phone">Contact Phone</label>
+                                <input type="tel" id="contact-phone" name="contact_phone" value="<%= settings.general ? settings.general.contact_phone : '+255 123 456 789' %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="currency">Default Currency</label>
+                                <select id="currency" name="currency">
+                                    <option value="TZS" <%= (settings.general && settings.general.currency === 'TZS') ? 'selected' : '' %>>TZS (Tsh)</option>
+                                    <option value="USD" <%= (settings.general && settings.general.currency === 'USD') ? 'selected' : '' %>>USD ($)</option>
+                                    <option value="EUR" <%= (settings.general && settings.general.currency === 'EUR') ? 'selected' : '' %>>EUR (€)</option>
+                                    <option value="GBP" <%= (settings.general && settings.general.currency === 'GBP') ? 'selected' : '' %>>GBP (£)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="timezone">Timezone</label>
+                                <select id="timezone" name="timezone">
+                                    <option value="Africa/Dar_es_Salaam" <%= (settings.general && settings.general.timezone === 'Africa/Dar_es_Salaam') ? 'selected' : '' %>>East Africa Time (EAT)</option>
+                                    <option value="UTC" <%= (settings.general && settings.general.timezone === 'UTC') ? 'selected' : '' %>>UTC</option>
+                                    <option value="EST" <%= (settings.general && settings.general.timezone === 'EST') ? 'selected' : '' %>>Eastern Time</option>
+                                    <option value="PST" <%= (settings.general && settings.general.timezone === 'PST') ? 'selected' : '' %>>Pacific Time</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="margin-top: 24px;">
+                            <button type="submit" class="btn btn-primary">Save General Settings</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Branding & Logo -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Branding & Logo</h2>
+                    </div>
+                    <form id="branding-form">
+                        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px;">
+                            <div>
+                                <div class="form-group">
+                                    <label for="logo-upload">Site Logo</label>
+                                    <input type="file" id="logo-upload" name="logo" accept="image/*">
+                                    <small>Recommended: 200x60px, PNG or SVG</small>
+                                </div>
+                                <div style="margin-top: 16px;">
+                                    <img src="/images/logo.png" alt="Current Logo" style="max-width: 200px; border: 1px solid #e2e8f0; padding: 8px;">
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    <label for="favicon-upload">Favicon</label>
+                                    <input type="file" id="favicon-upload" name="favicon" accept="image/*">
+                                    <small>Recommended: 32x32px, ICO or PNG</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="primary-color">Primary Color</label>
+                                    <input type="color" id="primary-color" name="primary_color" value="<%= settings.branding ? settings.branding.primary_color : '#ff6b35' %>">
+                                </div>
+                                <div class="form-group">
+                                    <label for="secondary-color">Secondary Color</label>
+                                    <input type="color" id="secondary-color" name="secondary_color" value="<%= settings.branding ? settings.branding.secondary_color : '#004e89' %>">
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 24px;">
+                            <button type="submit" class="btn btn-primary">Save Branding Settings</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Payment Settings -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Payment Settings</h2>
+                    </div>
+                    <form id="payment-settings-form">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                            <div class="form-group">
+                                <label for="stripe-key">Stripe Publishable Key</label>
+                                <input type="password" id="stripe-key" name="stripe_key" placeholder="pk_live_..." value="<%= settings.payment ? settings.payment.stripe_publishable_key : '' %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="stripe-secret">Stripe Secret Key</label>
+                                <input type="password" id="stripe-secret" name="stripe_secret" placeholder="sk_live_..." value="<%= settings.payment ? settings.payment.stripe_secret_key : '' %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="paypal-client">PayPal Client ID</label>
+                                <input type="text" id="paypal-client" name="paypal_client" placeholder="Your PayPal Client ID" value="<%= settings.payment ? settings.payment.paypal_client_id : '' %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="paypal-secret">PayPal Secret</label>
+                                <input type="password" id="paypal-secret" name="paypal_secret" placeholder="Your PayPal Secret" value="<%= settings.payment ? settings.payment.paypal_secret : '' %>">
+                            </div>
+                        </div>
+                        <div style="margin-top: 16px;">
+                            <label>
+                                <input type="checkbox" name="payment_test_mode" <%= (settings.payment && settings.payment.payment_test_mode) ? 'checked' : '' %>> Enable Test Mode
+                            </label>
+                        </div>
+                        <div style="margin-top: 24px;">
+                            <button type="submit" class="btn btn-primary">Save Payment Settings</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Shipping Settings -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Shipping Settings</h2>
+                    </div>
+                    <form id="shipping-settings-form">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                            <div class="form-group">
+                                <label for="free-shipping-threshold">Free Shipping Threshold</label>
+                                <input type="number" id="free-shipping-threshold" name="free_shipping_threshold" value="<%= settings.shipping ? settings.shipping.free_shipping_threshold : 125000 %>" step="0.01">
+                                <small>Minimum order amount for free shipping (Tsh)</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="standard-shipping">Standard Shipping Rate</label>
+                                <input type="number" id="standard-shipping" name="standard_shipping" value="<%= settings.shipping ? settings.shipping.standard_shipping_rate : 25000 %>" step="0.01">
+                                <small>Flat rate for standard shipping (Tsh)</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="express-shipping">Express Shipping Rate</label>
+                                <input type="number" id="express-shipping" name="express_shipping" value="<%= settings.shipping ? settings.shipping.express_shipping_rate : 62500 %>" step="0.01">
+                                <small>Flat rate for express shipping (Tsh)</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="processing-time">Processing Time</label>
+                                <select id="processing-time" name="processing_time">
+                                    <option value="1-2" <%= (settings.shipping && settings.shipping.processing_time === '1-2') ? 'selected' : '' %>>1-2 business days</option>
+                                    <option value="2-3" <%= (settings.shipping && settings.shipping.processing_time === '2-3') ? 'selected' : '' %>>2-3 business days</option>
+                                    <option value="3-5" <%= (settings.shipping && settings.shipping.processing_time === '3-5') ? 'selected' : '' %>>3-5 business days</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="margin-top: 24px;">
+                            <button type="submit" class="btn btn-primary">Save Shipping Settings</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Notification Settings -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Notification Settings</h2>
+                    </div>
+                    <form id="notification-settings-form">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                            <div>
+                                <h4 style="margin-bottom: 16px;">Email Notifications</h4>
+                                <label style="display: block; margin-bottom: 8px;">
+                                    <input type="checkbox" name="email_order_confirmation" <%= (settings.notifications && settings.notifications.email_order_confirmation) ? 'checked' : '' %>> Order Confirmations
+                                </label>
+                                <label style="display: block; margin-bottom: 8px;">
+                                    <input type="checkbox" name="email_order_status" <%= (settings.notifications && settings.notifications.email_order_status) ? 'checked' : '' %>> Order Status Updates
+                                </label>
+                                <label style="display: block; margin-bottom: 8px;">
+                                    <input type="checkbox" name="email_new_user" <%= (settings.notifications && settings.notifications.email_new_user) ? 'checked' : '' %>> New User Registrations
+                                </label>
+                                <label style="display: block; margin-bottom: 8px;">
+                                    <input type="checkbox" name="email_low_stock" <%= (settings.notifications && settings.notifications.email_low_stock) ? 'checked' : '' %>> Low Stock Alerts
+                                </label>
+                            </div>
+                            <div>
+                                <h4 style="margin-bottom: 16px;">SMS Notifications</h4>
+                                <label style="display: block; margin-bottom: 8px;">
+                                    <input type="checkbox" name="sms_order_confirmation" <%= (settings.notifications && settings.notifications.sms_order_confirmation) ? 'checked' : '' %>> Order Confirmations
+                                </label>
+                                <label style="display: block; margin-bottom: 8px;">
+                                    <input type="checkbox" name="sms_order_shipped" <%= (settings.notifications && settings.notifications.sms_order_shipped) ? 'checked' : '' %>> Order Shipped
+                                </label>
+                                <label style="display: block; margin-bottom: 8px;">
+                                    <input type="checkbox" name="sms_delivery" <%= (settings.notifications && settings.notifications.sms_delivery) ? 'checked' : '' %>> Delivery Notifications
+                                </label>
+                            </div>
+                            <div>
+                                <h4 style="margin-bottom: 16px;">Admin Alerts</h4>
+                                <label style="display: block; margin-bottom: 8px;">
+                                    <input type="checkbox" name="admin_new_order" <%= (settings.notifications && settings.notifications.admin_new_order) ? 'checked' : '' %>> New Orders
+                                </label>
+                                <label style="display: block; margin-bottom: 8px;">
+                                    <input type="checkbox" name="admin_payment_failed" <%= (settings.notifications && settings.notifications.admin_payment_failed) ? 'checked' : '' %>> Payment Failures
+                                </label>
+                                <label style="display: block; margin-bottom: 8px;">
+                                    <input type="checkbox" name="admin_system_error" <%= (settings.notifications && settings.notifications.admin_system_error) ? 'checked' : '' %>> System Errors
+                                </label>
+                            </div>
+                        </div>
+                        <div style="margin-top: 24px;">
+                            <button type="submit" class="btn btn-primary">Save Notification Settings</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- System Settings -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">System Settings</h2>
+                    </div>
+                    <form id="system-settings-form">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                            <div class="form-group">
+                                <label for="maintenance-mode">Maintenance Mode</label>
+                                <select id="maintenance-mode" name="maintenance_mode">
+                                    <option value="false" <%= (settings.system && settings.system.maintenance_mode === 'false') ? 'selected' : '' %>>Disabled</option>
+                                    <option value="true" <%= (settings.system && settings.system.maintenance_mode === 'true') ? 'selected' : '' %>>Enabled</option>
+                                </select>
+                                <small>When enabled, only admins can access the site</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="cache-duration">Cache Duration</label>
+                                <select id="cache-duration" name="cache_duration">
+                                    <option value="3600" <%= (settings.system && settings.system.cache_duration == '3600') ? 'selected' : '' %>>1 hour</option>
+                                    <option value="7200" <%= (settings.system && settings.system.cache_duration == '7200') ? 'selected' : '' %>>2 hours</option>
+                                    <option value="14400" <%= (settings.system && settings.system.cache_duration == '14400') ? 'selected' : '' %>>4 hours</option>
+                                    <option value="86400" <%= (settings.system && settings.system.cache_duration == '86400') ? 'selected' : '' %>>24 hours</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="backup-frequency">Backup Frequency</label>
+                                <select id="backup-frequency" name="backup_frequency">
+                                    <option value="daily" <%= (settings.system && settings.system.backup_frequency === 'daily') ? 'selected' : '' %>>Daily</option>
+                                    <option value="weekly" <%= (settings.system && settings.system.backup_frequency === 'weekly') ? 'selected' : '' %>>Weekly</option>
+                                    <option value="monthly" <%= (settings.system && settings.system.backup_frequency === 'monthly') ? 'selected' : '' %>>Monthly</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="margin-top: 24px;">
+                            <button type="submit" class="btn btn-primary">Save System Settings</button>
+                            <button type="button" class="btn btn-danger" style="margin-left: 12px;" onclick="clearCache()">
+                                Clear Cache
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="/admin.js"></script>
+    <script>
+        // Form submission handlers
+        async function submitSettings(formId, formData) {
+            try {
+                const response = await fetch('/admin/api/settings', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('Settings saved successfully!', 'success');
+                } else {
+                    showToast(result.message || 'Failed to save settings', 'error');
+                }
+            } catch (error) {
+                console.error('Settings save error:', error);
+                showToast('Failed to save settings. Please try again.', 'error');
+            }
+        }
+
+        document.getElementById('general-settings-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            submitSettings('general-settings-form', data);
+        });
+
+        document.getElementById('branding-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            submitSettings('branding-form', data);
+        });
+
+        document.getElementById('payment-settings-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            submitSettings('payment-settings-form', data);
+        });
+
+        document.getElementById('shipping-settings-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            submitSettings('shipping-settings-form', data);
+        });
+
+        document.getElementById('notification-settings-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            submitSettings('notification-settings-form', data);
+        });
+
+        document.getElementById('system-settings-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            submitSettings('system-settings-form', data);
+        });
+
+        function clearCache() {
+            showConfirm('Are you sure you want to clear the cache? This may temporarily slow down the site.', function() {
+                showToast('Cache cleared successfully!', 'success');
+            });
+        }
+    </script>
+</body>
+</html>

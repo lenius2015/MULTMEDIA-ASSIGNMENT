@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <%- include('./partials/sidebar', { currentPage: 'dashboard' }) %>
+
+        <div class="admin-main">
+            <%- include('./partials/header', { pageTitle: 'Dashboard' }) %>
+
+            <main class="admin-content">
+                <!-- KPI Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon sales">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <h3><%= stats.totalOrders %></h3>
+                            <p>Total Orders</p>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-icon orders">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <h3><%= stats.totalUsers %></h3>
+                            <p>Total Users</p>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Registered</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-icon products">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <h3><%= stats.totalProducts %></h3>
+                            <p>Total Products</p>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Available</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-icon customers">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <h3><%= stats.totalMessages %></h3>
+                            <p>Contact Messages</p>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Inquiries</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-icon auctions">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <h3><%= stats.activeAuctions || 0 %></h3>
+                            <p>Active Auctions</p>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Live</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-icon countdowns">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <h3><%= stats.activeCountdowns || 0 %></h3>
+                            <p>Active Events</p>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Running</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div class="chart-container">
+                    <div class="card-header">
+                        <h2 class="card-title">Sales Analytics</h2>
+                        <div>
+                            <button class="btn btn-secondary">Daily</button>
+                            <button class="btn btn-secondary">Weekly</button>
+                            <button class="btn btn-primary">Monthly</button>
+                        </div>
+                    </div>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Sales Chart (Ready for Chart.js integration)</span>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="card-header">
+                        <h2 class="card-title">Order Status Distribution</h2>
+                    </div>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Orders Status Chart (Ready for Chart.js integration)</span>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Orders</h2>
+                        <a href="/admin/orders" class="btn btn-secondary">View All</a>
+                    </div>
+                    <div class="admin-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% recentOrders.forEach(order => { %>
+                                <tr>
+                                    <td><strong>#<%= order.id %></strong></td>
+                                    <td>
+                                        <div>
+                                            <div><%= order.customer_name || 'Guest' %></div>
+                                            <div style="font-size: 0.75rem; color: #64748b;"><%= order.customer_email %></div>
+                                        </div>
+                                    </td>
+                                    <td><%= new Date(order.created_at).toLocaleDateString() %></td>
+                                    <td>$<%= order.total_amount %></td>
+                                    <td><span class="status <%= order.status === 'delivered' ? 'delivered' : order.status === 'pending' ? 'pending' : 'warning' %>"><%= order.status %></span></td>
+                                </tr>
+                                <% }); %>
+                                <% if (recentOrders.length === 0) { %>
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: #64748b;">No orders yet</td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recent Messages -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Messages</h2>
+                        <a href="/admin/messages" class="btn btn-secondary">View All</a>
+                    </div>
+                    <div class="admin-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Subject</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% recentMessages.forEach(message => { %>
+                                <tr>
+                                    <td><%= message.name %></td>
+                                    <td><%= message.email %></td>
+                                    <td><%= message.subject %></td>
+                                    <td><%= new Date(message.created_at).toLocaleDateString() %></td>
+                                </tr>
+                                <% }); %>
+                                <% if (recentMessages.length === 0) { %>
+                                <tr>
+                                    <td colspan="4" style="text-align: center; color: #64748b;">No messages yet</td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Top Products -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Top Products</h2>
+                        <a href="/admin/products" class="btn btn-secondary">View All</a>
+                    </div>
+                    <div class="admin-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Sales</th>
+                                    <th>Revenue</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% topProducts.forEach(product => { %>
+                                <tr>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <img src="<%= product.image_url || '/images/product-placeholder.jpg' %>" alt="Product" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">
+                                            <span><%= product.name %></span>
+                                        </div>
+                                    </td>
+                                    <td><%= product.sales_count || 0 %></td>
+                                    <td>$<%= product.total_revenue || 0 %></td>
+                                    <td>$<%= product.price %></td>
+                                </tr>
+                                <% }); %>
+                                <% if (topProducts.length === 0) { %>
+                                <tr>
+                                    <td colspan="4" style="text-align: center; color: #64748b;">No sales data yet</td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="/admin.js"></script>
+    <script src="/admin-buttons.js"></script>
+</body>
+</html>

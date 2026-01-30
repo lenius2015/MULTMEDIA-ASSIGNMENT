@@ -1,0 +1,111 @@
+<aside id="admin-sidebar" class="admin-sidebar">
+    <div class="sidebar-header">
+        <div class="logo">
+            <i class="fas fa-store"></i>
+            <span>Admin Panel</span>
+        </div>
+        <button class="sidebar-toggle" id="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+    <nav class="sidebar-nav">
+        <ul>
+            <li class="nav-item <%= currentPage === 'dashboard' ? 'active' : '' %>">
+                <a href="/admin/dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item <%= currentPage === 'products' ? 'active' : '' %>">
+                <a href="/admin/products">
+                    <i class="fas fa-box"></i>
+                    <span>Products</span>
+                </a>
+            </li>
+            <li class="nav-item <%= currentPage === 'categories' ? 'active' : '' %>">
+                <a href="/admin/categories">
+                    <i class="fas fa-tags"></i>
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li class="nav-item <%= currentPage === 'orders' ? 'active' : '' %>">
+                <a href="/admin/orders">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="nav-item <%= currentPage === 'customers' ? 'active' : '' %>">
+                <a href="/admin/customers">
+                    <i class="fas fa-users"></i>
+                    <span>Customers</span>
+                </a>
+            </li>
+            <li class="nav-item <%= currentPage === 'auctions' ? 'active' : '' %>">
+                <a href="/admin/auctions">
+                    <i class="fas fa-gavel"></i>
+                    <span>Auction Management</span>
+                </a>
+            </li>
+            <li class="nav-item <%= currentPage === 'countdowns' ? 'active' : '' %>">
+                <a href="/admin/countdowns">
+                    <i class="fas fa-clock"></i>
+                    <span>Countdown Events</span>
+                </a>
+            </li>
+            <li class="nav-item <%= currentPage === 'promotions' ? 'active' : '' %>">
+                <a href="/admin/promotions">
+                    <i class="fas fa-percent"></i>
+                    <span>Promotions & Deals</span>
+                </a>
+            </li>
+            <li class="nav-item <%= currentPage === 'analytics' ? 'active' : '' %>">
+                <a href="/admin/analytics">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics & Reports</span>
+                </a>
+            </li>
+            <li class="nav-item <%= currentPage === 'notifications' ? 'active' : '' %>">
+                <a href="/admin/notifications">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+            </li>
+            <li class="nav-item <%= currentPage === 'logs' ? 'active' : '' %>">
+                <a href="/admin/logs">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Logs & Security</span>
+                </a>
+            </li>
+            <li class="nav-item <%= currentPage === 'messages' ? 'active' : '' %>">
+                <a href="/admin/messages">
+                    <i class="fas fa-comments"></i>
+                    <span>Messages / Chat</span>
+                </a>
+            </li>
+            <li class="nav-item <%= currentPage === 'admins' ? 'active' : '' %>">
+                <a href="/admin/management/admins">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Admin Management</span>
+                </a>
+            </li>
+            <li class="nav-item <%= currentPage === 'roles' ? 'active' : '' %>">
+                <a href="/admin/management/roles">
+                    <i class="fas fa-key"></i>
+                    <span>Roles & Permissions</span>
+                </a>
+            </li>
+            <li class="nav-item <%= currentPage === 'security' ? 'active' : '' %>">
+                <a href="/admin/management/security-settings">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Security Settings</span>
+                </a>
+            </li>
+            <li class="nav-item <%= currentPage === 'settings' ? 'active' : '' %>">
+                <a href="/admin/settings">
+                    <i class="fas fa-cog"></i>
+                    <span>General Settings</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</aside>

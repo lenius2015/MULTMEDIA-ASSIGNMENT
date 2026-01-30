@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= typeof title !== 'undefined' ? title : 'Admin Error - OMUNJU SHOPPERS' %></title>
+  <link rel="stylesheet" href="/admin.css" />
+</head>
+<body class="admin">
+  <% include ./partials/header %>
+  <div class="admin-container">
+    <% include ./partials/sidebar %>
+
+    <main class="admin-content">
+      <section class="card" style="max-width:1000px; margin: 20px auto;">
+        <div class="card-header">
+          <h2>Something went wrong</h2>
+        </div>
+        <div class="card-body">
+          <p><%= (typeof message !== 'undefined' && message) ? message : 'An unexpected error occurred.' %></p>
+
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="error-details" style="margin-top: 10px; color: #c62828;">
+              <% if (error.status) { %>
+                <p>Status: <%= error.status %></p>
+              <% } %>
+              <% if (error.message) { %>
+                <p>Details: <%= error.message %></p>
+              <% } %>
+            </div>
+          <% } %>
+
+          <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <a class="btn" href="/admin/dashboard">Back to Dashboard</a>
+            <a class="btn btn-secondary" href="javascript:history.back()">Go Back</a>
+            <a class="btn btn-outline" href="/">Go to Site</a>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/admin.js"></script>
+</body>
+</html>

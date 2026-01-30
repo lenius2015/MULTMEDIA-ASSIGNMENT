@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Management - OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin.css">
+    <style>
+        .admin-management {
+            padding: 20px;
+        }
+
+        .management-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .management-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .management-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filters-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .admins-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            overflow: hidden;
+        }
+
+        .admin-row {
+            display: grid;
+            grid-template-columns: 60px 2fr 2fr 1fr 1fr 120px;
+            gap: 15px;
+            padding: 15px 20px;
+            border-bottom: 1px solid #f8f9fa;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .admin-row:hover {
+            background: #f8f9fa;
+        }
+
+        .admin-row:last-child {
+            border-bottom: none;
+        }
+
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .admin-info h4 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .admin-email {
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+
+        .admin-role {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .role-super-admin {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .role-admin {
+            background: #3498db;
+            color: white;
+        }
+
+        .role-moderator {
+            background: #f39c12;
+            color: white;
+        }
+
+        .role-support {
+            background: #27ae60;
+            color: white;
+        }
+
+        .admin-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-disabled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn {
+            padding: 6px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: opacity 0.2s;
+        }
+
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+
+        .btn-view {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-edit {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-block {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-unblock {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #2c3e50;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover,
+        .pagination-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #ecf0f1;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .management-header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+
+            .management-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-row {
+                grid-template-columns: 50px 1fr;
+                gap: 10px;
+            }
+
+            .admin-info {
+                grid-column: span 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('./partials/sidebar', { currentPage: 'admins' }) %>
+
+    <div class="admin-main">
+        <%- include('./partials/header', { pageTitle: 'Admin Management' }) %>
+
+        <main class="admin-content">
+            <div class="admin-management">
+                <!-- Header -->
+                <div class="management-header">
+                    <h1 class="management-title">Admin Management</h1>
+                    <div class="management-actions">
+                        <% if (adminPermissions && adminPermissions.includes('admins.create')) { %>
+                        <button class="btn btn-primary" onclick="showCreateAdminModal()">
+                            <i class="fas fa-plus"></i>
+                            Add Admin
+                        </button>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-section">
+                    <form id="filtersForm" class="filters-grid">
+                        <div class="filter-group">
+                            <label class="filter-label">Search</label>
+                            <input type="text" name="search" class="filter-input" placeholder="Name or email" value="<%= filters.search || '' %>">
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Status</label>
+                            <select name="status" class="filter-input">
+                                <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>All Status</option>
+                                <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>Active</option>
+                                <option value="disabled" <%= filters.status === 'disabled' ? 'selected' : '' %>>Disabled</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Role</label>
+                            <select name="role" class="filter-input">
+                                <option value="all" <%= filters.role === 'all' ? 'selected' : '' %>>All Roles</option>
+                                <option value="super_admin" <%= filters.role === 'super_admin' ? 'selected' : '' %>>Super Admin</option>
+                                <option value="admin" <%= filters.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                                <option value="moderator" <%= filters.role === 'moderator' ? 'selected' : '' %>>Moderator</option>
+                                <option value="support" <%= filters.role === 'support' ? 'selected' : '' %>>Support</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="/admin/management/admins" class="btn btn-secondary">Clear</a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Admins Table -->
+                <div class="admins-table">
+                    <div class="admin-row" style="background: #f8f9fa; font-weight: 600; border-bottom: 2px solid #e2e8f0;">
+                        <div></div>
+                        <div>Name & Email</div>
+                        <div>Role</div>
+                        <div>Status</div>
+                        <div>Created</div>
+                        <div>Actions</div>
+                    </div>
+
+                    <% admins.forEach(admin => { %>
+                    <div class="admin-row">
+                        <div class="admin-avatar">
+                            <% if (admin.profile_picture) { %>
+                                <img src="<%= admin.profile_picture %>" alt="<%= admin.name %>" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                            <% } else { %>
+                                <%= admin.name.charAt(0).toUpperCase() %>
+                            <% } %>
+                        </div>
+                        <div class="admin-info">
+                            <h4><%= admin.name %></h4>
+                            <div class="admin-email"><%= admin.email %></div>
+                        </div>
+                        <div>
+                            <span class="admin-role role-<%= admin.role_name || 'admin' %>">
+                                <%= admin.role_display_name || 'Administrator' %>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="admin-status status-<%= admin.status %>">
+                                <%= admin.status %>
+                            </span>
+                        </div>
+                        <div style="font-size: 12px; color: #7f8c8d;">
+                            <%= new Date(admin.created_at).toLocaleDateString() %>
+                        </div>
+                        <div class="admin-actions">
+                            <% if (adminPermissions && adminPermissions.includes('admins.view')) { %>
+                            <button class="action-btn btn-view" data-admin-id="<%= admin.id %>" data-action="view">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <% } %>
+                            <% if (adminPermissions && adminPermissions.includes('admins.edit')) { %>
+                            <button class="action-btn btn-edit" data-admin-id="<%= admin.id %>" data-action="edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <% } %>
+                            <% if (adminPermissions && adminPermissions.includes('admins.block')) { %>
+                            <button class="action-btn <%= admin.status === 'active' ? 'btn-block' : 'btn-unblock' %>"
+                                    data-admin-id="<%= admin.id %>"
+                                    data-action="<%= admin.status === 'active' ? 'block' : 'unblock' %>">
+                                <i class="fas fa-<%= admin.status === 'active' ? 'ban' : 'check' %>"></i>
+                            </button>
+                            <% } %>
+                            <% if (adminPermissions && adminPermissions.includes('admins.delete') && !admin.is_super_admin) { %>
+                            <button class="action-btn btn-delete" data-admin-id="<%= admin.id %>" data-action="delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <% } %>
+                        </div>
+                    </div>
+                    <% }); %>
+
+                    <% if (admins.length === 0) { %>
+                    <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+                        <i class="fas fa-users" style="font-size: 3rem; margin-bottom: 15px; display: block;"></i>
+                        <p>No admins found</p>
+                    </div>
+                    <% } %>
+                </div>
+
+                <!-- Pagination -->
+                <% if (pagination.totalPages > 1) { %>
+                <div class="pagination">
+                    <% if (pagination.hasPrev) { %>
+                        <a href="?page=<%= pagination.page - 1 %>&search=<%= filters.search %>&status=<%= filters.status %>&role=<%= filters.role %>"
+                           class="pagination-btn">Previous</a>
+                    <% } %>
+
+                    <% for (let i = Math.max(1, pagination.page - 2); i <= Math.min(pagination.totalPages, pagination.page + 2); i++) { %>
+                        <a href="?page=<%= i %>&search=<%= filters.search %>&status=<%= filters.status %>&role=<%= filters.role %>"
+                           class="pagination-btn <%= i === pagination.page ? 'active' : '' %>"><%= i %></a>
+                    <% } %>
+
+                    <% if (pagination.hasNext) { %>
+                        <a href="?page=<%= pagination.page + 1 %>&search=<%= filters.search %>&status=<%= filters.status %>&role=<%= filters.role %>"
+                           class="pagination-btn">Next</a>
+                    <% } %>
+                </div>
+                <% } %>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Admin Modal -->
+    <div id="createAdminModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Admin</h3>
+                <button class="modal-close" onclick="hideModal('createAdminModal')">&times;</button>
+            </div>
+            <form id="createAdminForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Name *</label>
+                        <input type="text" name="name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" name="email" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" name="phone" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password *</label>
+                        <input type="password" name="password" class="form-input" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Role *</label>
+                        <select name="role_id" class="form-input" required>
+                            <option value="">Select Role</option>
+                            <!-- Roles will be loaded dynamically -->
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="hideModal('createAdminModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Admin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Load roles for the create admin form
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRoles();
+
+            // Event delegation for admin actions
+            document.addEventListener('click', function(e) {
+                const button = e.target.closest('.action-btn');
+                if (!button) return;
+
+                const adminId = button.getAttribute('data-admin-id');
+                const action = button.getAttribute('data-action');
+
+                if (action === 'view') {
+                    viewAdmin(adminId);
+                } else if (action === 'edit') {
+                    editAdmin(adminId);
+                } else if (action === 'block') {
+                    blockAdmin(adminId);
+                } else if (action === 'unblock') {
+                    unblockAdmin(adminId);
+                } else if (action === 'delete') {
+                    deleteAdmin(adminId);
+                }
+            });
+        });
+
+        function loadRoles() {
+            fetch('/admin/management/permissions')
+                .then(response => response.json())
+                .then(data => {
+                    // This is just to ensure the endpoint works
+                    console.log('Permissions loaded');
+                })
+                .catch(error => console.error('Error loading permissions:', error));
+        }
+
+        function showCreateAdminModal() {
+            // Load roles
+            fetch('/admin/management/roles')
+                .then(response => response.text())
+                .then(html => {
+                    // Extract roles from the HTML response (this is a simple approach)
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const roles = Array.from(doc.querySelectorAll('tr')).map(row => {
+                        const cells = row.querySelectorAll('td');
+                        if (cells.length > 0) {
+                            return {
+                                id: row.dataset.roleId,
+                                name: cells[0].textContent.trim(),
+                                displayName: cells[1].textContent.trim()
+                            };
+                        }
+                        return null;
+                    }).filter(role => role);
+
+                    const roleSelect = document.querySelector('#createAdminForm select[name="role_id"]');
+                    roleSelect.innerHTML = '<option value="">Select Role</option>';
+                    roles.forEach(role => {
+                        roleSelect.innerHTML += `<option value="${role.id}">${role.displayName}</option>`;
+                    });
+
+                    showModal('createAdminModal');
+                })
+                .catch(error => {
+                    console.error('Error loading roles:', error);
+                    showModal('createAdminModal');
+                });
+        }
+
+        function viewAdmin(adminId) {
+            window.location.href = `/admin/management/admins/${adminId}`;
+        }
+
+        function editAdmin(adminId) {
+            // For now, redirect to view page - can be enhanced later
+            window.location.href = `/admin/management/admins/${adminId}`;
+        }
+
+        function blockAdmin(adminId) {
+            if (confirm('Are you sure you want to block this admin?')) {
+                updateAdminStatus(adminId, 'disabled');
+            }
+        }
+
+        function unblockAdmin(adminId) {
+            if (confirm('Are you sure you want to unblock this admin?')) {
+                updateAdminStatus(adminId, 'active');
+            }
+        }
+
+        function updateAdminStatus(adminId, status) {
+            fetch(`/admin/management/admins/${adminId}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast(data.message || 'Failed to update admin status', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating admin status:', error);
+                showToast('Failed to update admin status', 'error');
+            });
+        }
+
+        function deleteAdmin(adminId) {
+            if (confirm('Are you sure you want to delete this admin? This action cannot be undone.')) {
+                fetch(`/admin/management/admins/${adminId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast(data.message, 'success');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showToast(data.message || 'Failed to delete admin', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting admin:', error);
+                    showToast('Failed to delete admin', 'error');
+                });
+            }
+        }
+
+        // Form submissions
+        document.getElementById('createAdminForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+
+            fetch('/admin/management/admins', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    hideModal('createAdminModal');
+                    this.reset();
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast(data.message || 'Failed to create admin', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error creating admin:', error);
+                showToast('Failed to create admin', 'error');
+            });
+        });
+
+        // Utility functions
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function showToast(message, type = 'info') {
+            // Simple toast implementation
+            alert(message);
+        }
+    </script>
+</body>
+</html>

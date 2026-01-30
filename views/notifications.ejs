@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Notifications - OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .notifications-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .notifications-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .notifications-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .notifications-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #ecf0f1;
+            background: white;
+            color: #2c3e50;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .notifications-list {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            overflow: hidden;
+        }
+
+        .notification-item {
+            padding: 20px;
+            border-bottom: 1px solid #f8f9fa;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .notification-item:hover {
+            background: #f8f9fa;
+        }
+
+        .notification-item.unread {
+            background: #e8f4fd;
+            border-left: 4px solid #3498db;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.order { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .notification-icon.auction { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .notification-icon.account { background: linear-gradient(135deg, #27ae60, #229954); }
+        .notification-icon.system { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
+        .notification-icon.promotion { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .notification-icon.payment { background: linear-gradient(135deg, #f1c40f, #f39c12); }
+        .notification-icon.shipping { background: linear-gradient(135deg, #3498db, #2980b9); }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .notification-time {
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            margin-left: 15px;
+        }
+
+        .notification-message {
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-mark-read { background: #3498db; color: white; }
+        .btn-mark-read:hover { background: #2980b9; }
+
+        .btn-view { background: #27ae60; color: white; }
+        .btn-view:hover { background: #229954; }
+
+        .btn-delete { background: #e74c3c; color: white; }
+        .btn-delete:hover { background: #c0392b; }
+
+        .unread-badge {
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 8px;
+            height: 8px;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #2c3e50;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-btn:hover,
+        .pagination-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .no-notifications {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        }
+
+        .no-notifications-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            margin: 0 auto 25px;
+        }
+
+        .no-notifications-title {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .no-notifications-text {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .btn-shop {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn-shop:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .notifications-header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+
+            .notifications-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+            }
+
+            .notification-header {
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start;
+            }
+
+            .notification-actions {
+                margin-top: 10px;
+            }
+
+            .notification-item {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('./partials/header', { page: 'notifications', user: user }) %>
+
+    <main style="background: #f8f9fa; min-height: calc(100vh - 200px); padding: 40px 0;">
+        <div class="container">
+            <div class="notifications-container">
+                <!-- Header -->
+                <div class="notifications-header">
+                    <h1 class="notifications-title">My Notifications</h1>
+                    <div class="notifications-controls">
+                        <button class="filter-btn <%= typeof filter !== 'undefined' && filter === 'all' ? 'active' : '' %>"
+                                onclick="filterNotifications('all')">All</button>
+                        <button class="filter-btn <%= typeof filter !== 'undefined' && filter === 'unread' ? 'active' : '' %>"
+                                onclick="filterNotifications('unread')">Unread</button>
+                        <button class="filter-btn" onclick="markAllAsRead()">Mark All Read</button>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-number"><%= counts.total %></div>
+                        <div class="stat-label">Total Notifications</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number"><%= counts.unread %></div>
+                        <div class="stat-label">Unread</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number"><%= counts.total - counts.unread %></div>
+                        <div class="stat-label">Read</div>
+                    </div>
+                </div>
+
+                <!-- Notifications List -->
+                <% if (notifications && notifications.length > 0) { %>
+                    <div class="notifications-list">
+                        <% notifications.forEach(notification => { %>
+                            <div class="notification-item <%= notification.is_read ? '' : 'unread' %>">
+                                <div class="notification-icon <%= notification.type %>">
+                                    <i class="fas fa-<%=
+                                        notification.type === 'order' ? 'shopping-cart' :
+                                        notification.type === 'auction' ? 'gavel' :
+                                        notification.type === 'account' ? 'user' :
+                                        notification.type === 'system' ? 'cog' :
+                                        notification.type === 'promotion' ? 'gift' :
+                                        notification.type === 'payment' ? 'credit-card' :
+                                        notification.type === 'shipping' ? 'truck' :
+                                        'bell'
+                                    %>"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <div class="notification-header">
+                                        <h3 class="notification-title">
+                                            <%= notification.title %>
+                                            <%= notification.is_read ? '' : '<span class="unread-badge"></span>' %>
+                                        </h3>
+                                        <div class="notification-time">
+                                            <%= new Date(notification.created_at).toLocaleString() %>
+                                        </div>
+                                    </div>
+                                    <div class="notification-message">
+                                        <%= notification.message %>
+                                    </div>
+                                    <div class="notification-actions">
+                                        <% if (!notification.is_read) { %>
+                                            <button class="btn-action btn-mark-read" data-action="mark-read" data-id="<%= notification.id %>">
+                                                <i class="fas fa-check"></i>
+                                                Mark Read
+                                            </button>
+                                        <% } %>
+                                        <% if (notification.action_url) { %>
+                                            <a href="<%= notification.action_url %>" class="btn-action btn-view">
+                                                <i class="fas fa-external-link-alt"></i>
+                                                View
+                                            </a>
+                                        <% } %>
+                                        <button class="btn-action btn-delete" data-action="delete" data-id="<%= notification.id %>" data-title="<%= notification.title.replace(/'/g, '"') %>">
+                                            <i class="fas fa-trash"></i>
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+
+                    <!-- Pagination -->
+                    <% if (hasNextPage || currentPage > 1) { %>
+                        <div class="pagination">
+                            <% if (currentPage > 1) { %>
+                                <a href="?page=<%= currentPage - 1 %><%= typeof filter !== 'undefined' && filter ? '&filter=' + filter : '' %>" class="pagination-btn">Previous</a>
+                            <% } %>
+
+                            <% for (let i = Math.max(1, currentPage - 2); i <= Math.min(currentPage + 2, Math.ceil(counts.total / 20)); i++) { %>
+                                <a href="?page=<%= i %><%= typeof filter !== 'undefined' && filter ? '&filter=' + filter : '' %>" class="pagination-btn <%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+                            <% } %>
+
+                            <% if (hasNextPage) { %>
+                                <a href="?page=<%= currentPage + 1 %><%= typeof filter !== 'undefined' && filter ? '&filter=' + filter : '' %>" class="pagination-btn">Next</a>
+                            <% } %>
+                        </div>
+                    <% } %>
+                <% } else { %>
+                    <div class="no-notifications">
+                        <div class="no-notifications-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <h2 class="no-notifications-title">
+                            <%= typeof filter !== 'undefined' && filter === 'unread' ? 'No unread notifications' : 'No notifications yet' %>
+                        </h2>
+                        <p class="no-notifications-text">
+                            <%= typeof filter !== 'undefined' && filter === 'unread' ?
+                                'You\'ve read all your notifications! Check back later for updates.' :
+                                'When you receive notifications about your orders, auctions, and account activity, they will appear here.' %>
+                        </p>
+                        <a href="/" class="btn-shop">
+                            <i class="fas fa-shopping-bag"></i>
+                            Start Shopping
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <%- include('./partials/footer') %>
+
+    <script>
+        // Event delegation for notification actions
+        document.addEventListener('click', function(e) {
+            const button = e.target.closest('.btn-action');
+            if (!button) return;
+
+            const action = button.dataset.action;
+            const id = button.dataset.id;
+            const title = button.dataset.title;
+
+            switch(action) {
+                case 'mark-read':
+                    markAsRead(id);
+                    break;
+                case 'delete':
+                    deleteNotification(id, title);
+                    break;
+            }
+        });
+
+        function filterNotifications(filter) {
+            const url = new URL(window.location);
+            if (filter === 'all') {
+                url.searchParams.delete('filter');
+            } else {
+                url.searchParams.set('filter', filter);
+            }
+            url.searchParams.delete('page'); // Reset to first page
+            window.location.href = url.toString();
+        }
+
+        async function markAsRead(notificationId) {
+            try {
+                const response = await fetch(`/api/notifications/${notificationId}/read`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    location.reload(); // Refresh to update the UI
+                } else {
+                    alert('Failed to mark notification as read');
+                }
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+                alert('Error marking notification as read');
+            }
+        }
+
+        async function markAllAsRead() {
+            if (!confirm('Mark all notifications as read?')) return;
+
+            try {
+                const response = await fetch('/api/notifications/read-all', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    location.reload(); // Refresh to update the UI
+                } else {
+                    alert('Failed to mark all notifications as read');
+                }
+            } catch (error) {
+                console.error('Error marking all notifications as read:', error);
+                alert('Error marking all notifications as read');
+            }
+        }
+
+        async function deleteNotification(notificationId, title) {
+            if (!confirm(`Delete notification "${title}"?`)) return;
+
+            try {
+                const response = await fetch(`/api/notifications/${notificationId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    location.reload(); // Refresh to update the UI
+                } else {
+                    alert('Failed to delete notification');
+                }
+            } catch (error) {
+                console.error('Error deleting notification:', error);
+                alert('Error deleting notification');
+            }
+        }
+
+        // Auto-refresh unread count every 30 seconds
+        setInterval(async () => {
+            try {
+                const response = await fetch('/api/notifications');
+                const data = await response.json();
+                if (data.success) {
+                    // Update stats if needed
+                    const totalElement = document.querySelector('.stat-number');
+                    if (totalElement && data.counts) {
+                        // Update counts dynamically if needed
+                    }
+                }
+            } catch (error) {
+                console.error('Error refreshing notification counts:', error);
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

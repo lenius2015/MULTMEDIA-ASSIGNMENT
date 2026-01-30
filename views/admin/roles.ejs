@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roles & Permissions - OMUNJU SHOPPERS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <%- include('./partials/sidebar', { currentPage: 'roles' }) %>
+
+    <div class="admin-main">
+      <%- include('./partials/header', { pageTitle: 'Roles & Permissions' }) %>
+
+      <main class="admin-content">
+        <div class="admin-card">
+          <div class="card-header">
+            <h2 class="card-title">Admin Roles</h2>
+            <p class="card-subtitle">Manage admin roles and their permissions</p>
+          </div>
+
+          <div class="admin-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Display Name</th>
+                  <th>Admins</th>
+                  <th>Super Admin</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (roles && roles.length > 0) { %>
+                  <% roles.forEach(role => { %>
+                    <tr data-role-id="<%= role.id %>">
+                      <td><%= role.name %></td>
+                      <td><%= role.display_name || role.name %></td>
+                      <td><%= role.admin_count || 0 %></td>
+                      <td>
+                        <% if (role.is_super_admin) { %>
+                          <span class="status delivered">Yes</span>
+                        <% } else { %>
+                          <span class="status cancelled">No</span>
+                        <% } %>
+                      </td>
+                    </tr>
+                  <% }) %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="4" style="text-align:center; color:#64748b;">No roles found</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="card-header">
+            <h2 class="card-title">Available Permissions</h2>
+            <p class="card-subtitle">System permissions available for assignment</p>
+          </div>
+
+          <div class="admin-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Module</th>
+                  <th>Permission</th>
+                  <th>Key</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (permissions && permissions.length > 0) { %>
+                  <% permissions.forEach(p => { %>
+                    <tr>
+                      <td><%= p.module %></td>
+                      <td><%= p.display_name || p.name %></td>
+                      <td><code><%= p.name %></code></td>
+                    </tr>
+                  <% }) %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="3" style="text-align:center; color:#64748b;">No permissions found</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/admin.js"></script>
+</body>
+</html>

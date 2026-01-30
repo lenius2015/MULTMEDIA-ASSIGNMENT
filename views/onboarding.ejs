@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="/onboarding.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="onboarding-container" data-user-name="<%= user.name %>">
+        <!-- Language Switcher -->
+        <div class="language-switcher">
+            <button class="lang-btn active" data-lang="en">English</button>
+            <button class="lang-btn" data-lang="sw">Kiswahili</button>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-steps">
+                <span class="step active" data-step="1">1</span>
+                <span class="step" data-step="2">2</span>
+                <span class="step" data-step="3">3</span>
+                <span class="step" data-step="4">4</span>
+                <span class="step" data-step="5">5</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="onboarding-content">
+            <!-- Profile Completion Section -->
+            <section class="profile-section active" data-section="profile">
+                <div class="profile-content">
+                    <div class="profile-header">
+                        <div class="profile-avatar-upload">
+                            <div class="avatar-container">
+                                <img id="profileAvatar" src="<%= user.profile_picture || '/default-avatar.png' %>" alt="Profile Picture" class="profile-avatar">
+                                <div class="avatar-overlay">
+                                    <i class="fas fa-camera"></i>
+                                    <span>Change Photo</span>
+                                </div>
+                                <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                            </div>
+                        </div>
+                        <div class="profile-welcome-text">
+                            <h1>
+                                <span data-en="Welcome, <%= user.name %> 👋">Welcome, <%= user.name %> 👋</span>
+                                <span data-sw="Karibu, <%= user.name %> 👋" style="display: none;">Karibu, <%= user.name %> 👋</span>
+                            </h1>
+                            <p>
+                                <span data-en="Complete your profile and choose what you love">Complete your profile and choose what you love</span>
+                                <span data-sw="Kamilisha wasifu wako na chagua unachopenda" style="display: none;">Kamilisha wasifu wako na chagua unachopenda</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="profile-form-container">
+                        <form id="profileForm" class="profile-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="fullName">
+                                        <span data-en="Full Name">Full Name</span>
+                                        <span data-sw="Jina Kamili" style="display: none;">Jina Kamili</span>
+                                    </label>
+                                    <input type="text" id="fullName" name="name" value="<%= user.name %>" required>
+                                    <div class="field-error" id="nameError"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="email">
+                                        <span data-en="Email Address">Email Address</span>
+                                        <span data-sw="Anwani ya Barua Pepe" style="display: none;">Anwani ya Barua Pepe</span>
+                                    </label>
+                                    <input type="email" id="email" name="email" value="<%= user.email %>" readonly>
+                                    <small>
+                                        <span data-en="Email cannot be changed">Email cannot be changed</span>
+                                        <span data-sw="Barua pepe haiwezi kubadilishwa" style="display: none;">Barua pepe haiwezi kubadilishwa</span>
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="phone">
+                                        <span data-en="Phone Number">Phone Number</span>
+                                        <span data-sw="Nambari ya Simu" style="display: none;">Nambari ya Simu</span>
+                                    </label>
+                                    <input type="tel" id="phone" name="phone" value="<%= user.phone || '' %>" placeholder="+254 XXX XXX XXX">
+                                    <div class="field-error" id="phoneError"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="address">
+                                        <span data-en="Delivery Address">Delivery Address</span>
+                                        <span data-sw="Anwani ya Utoaji" style="display: none;">Anwani ya Utoaji</span>
+                                    </label>
+                                    <textarea id="address" name="address" rows="3" placeholder="Enter your delivery address"><%= user.address || '' %></textarea>
+                                    <div class="field-error" id="addressError"></div>
+                                </div>
+                            </div>
+
+                            <div class="password-section">
+                                <h3>
+                                    <span data-en="Change Password (Optional)">Change Password (Optional)</span>
+                                    <span data-sw="Badilisha Nenosiri (Si Lazima)" style="display: none;">Badilisha Nenosiri (Si Lazima)</span>
+                                </h3>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="currentPassword">
+                                            <span data-en="Current Password">Current Password</span>
+                                            <span data-sw="Nenosiri ya Sasa" style="display: none;">Nenosiri ya Sasa</span>
+                                        </label>
+                                        <input type="password" id="currentPassword" name="currentPassword">
+                                        <div class="field-error" id="currentPasswordError"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="newPassword">
+                                            <span data-en="New Password">New Password</span>
+                                            <span data-sw="Nenosiri Mpya" style="display: none;">Nenosiri Mpya</span>
+                                        </label>
+                                        <input type="password" id="newPassword" name="newPassword" minlength="6">
+                                        <div class="field-error" id="newPasswordError"></div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="confirmPassword">
+                                        <span data-en="Confirm New Password">Confirm New Password</span>
+                                        <span data-sw="Thibitisha Nenosiri Mpya" style="display: none;">Thibitisha Nenosiri Mpya</span>
+                                    </label>
+                                    <input type="password" id="confirmPassword" name="confirmPassword">
+                                    <div class="field-error" id="confirmPasswordError"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <div id="profileMessage" class="message"></div>
+                                <button type="submit" class="btn-primary" id="saveProfileBtn">
+                                    <span data-en="Save Profile">Save Profile</span>
+                                    <span data-sw="Hifadhi Wasifu" style="display: none;">Hifadhi Wasifu</span>
+                                    <i class="fas fa-save"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="section-navigation">
+                    <button class="nav-btn skip-btn">
+                        <span data-en="Skip for Now">Skip for Now</span>
+                        <span data-sw="Ruka Kwa Sasa" style="display: none;">Ruka Kwa Sasa</span>
+                    </button>
+                    <button class="nav-btn next-btn" data-next="welcome">
+                        <span data-en="Continue">Continue</span>
+                        <span data-sw="Endelea" style="display: none;">Endelea</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Welcome Section -->
+            <section class="welcome-section" data-section="welcome">
+                <div class="welcome-content">
+                    <div class="welcome-text">
+                        <h1 class="welcome-title">
+                            <span data-en="Welcome, <%= user.name %> 👋">Welcome, <%= user.name %> 👋</span>
+                            <span data-sw="Karibu, <%= user.name %> 👋" style="display: none;">Karibu, <%= user.name %> 👋</span>
+                        </h1>
+                        <p class="welcome-subtitle">
+                            <span data-en="Let's show you how to shop and receive your products easily">Let's show you how to shop and receive your products easily</span>
+                            <span data-sw="Hebu tukuonyeshe jinsi ya kununua na kupokea bidhaa zako kwa urahisi" style="display: none;">Hebu tukuonyeshe jinsi ya kununua na kupokea bidhaa zako kwa urahisi</span>
+                        </p>
+                    </div>
+                    <div class="welcome-animation">
+                        <div class="shopping-scene">
+                            <div class="floating-elements">
+                                <i class="fas fa-shopping-cart cart-icon"></i>
+                                <i class="fas fa-truck delivery-icon"></i>
+                                <i class="fas fa-credit-card payment-icon"></i>
+                                <i class="fas fa-box package-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-navigation">
+                    <button class="nav-btn skip-btn">
+                        <span data-en="Skip Introduction">Skip Introduction</span>
+                        <span data-sw="Ruka Utangulizi" style="display: none;">Ruka Utangulizi</span>
+                    </button>
+                    <button class="nav-btn next-btn" data-next="how-it-works">
+                        <span data-en="Get Started">Get Started</span>
+                        <span data-sw="Anza Hapa" style="display: none;">Anza Hapa</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- How It Works Section -->
+            <section class="how-it-works-section" data-section="how-it-works">
+                <div class="section-header">
+                    <h2>
+                        <span data-en="How It Works">How It Works</span>
+                        <span data-sw="Inafanyaje Kazi" style="display: none;">Inafanyaje Kazi</span>
+                    </h2>
+                    <p>
+                        <span data-en="Follow these simple steps to start shopping">Follow these simple steps to start shopping</span>
+                        <span data-sw="Fuata hatua hizi rahisi kuanza kununua" style="display: none;">Fuata hatua hizi rahisi kuanza kununua</span>
+                    </p>
+                </div>
+
+                <div class="steps-container">
+                    <div class="step-item" data-step="1">
+                        <div class="step-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="step-content">
+                            <h3>
+                                <span data-en="Register / Login">Register / Login</span>
+                                <span data-sw="Jisajili / Ingia" style="display: none;">Jisajili / Ingia</span>
+                            </h3>
+                            <p>
+                                <span data-en="Create your account or sign in to access all features">Create your account or sign in to access all features</span>
+                                <span data-sw="Tengeneza akaunti yako au ingia kupata huduma zote" style="display: none;">Tengeneza akaunti yako au ingia kupata huduma zote</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step-item" data-step="2">
+                        <div class="step-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="step-content">
+                            <h3>
+                                <span data-en="Browse & Search">Browse & Search</span>
+                                <span data-sw="Vinjari & Tafuta" style="display: none;">Vinjari & Tafuta</span>
+                            </h3>
+                            <p>
+                                <span data-en="Explore categories or search for your favorite products">Explore categories or search for your favorite products</span>
+                                <span data-sw="Chunguza kategoria au tafuta bidhaa unazopenda" style="display: none;">Chunguza kategoria au tafuta bidhaa unazopenda</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step-item" data-step="3">
+                        <div class="step-icon">
+                            <i class="fas fa-cart-plus"></i>
+                        </div>
+                        <div class="step-content">
+                            <h3>
+                                <span data-en="Add to Cart">Add to Cart</span>
+                                <span data-sw="Ongeza kwenye Kapu" style="display: none;">Ongeza kwenye Kapu</span>
+                            </h3>
+                            <p>
+                                <span data-en="Select products and add them to your shopping cart">Select products and add them to your shopping cart</span>
+                                <span data-sw="Chagua bidhaa na ziongeze kwenye kapu ya ununuzi" style="display: none;">Chagua bidhaa na ziongeze kwenye kapu ya ununuzi</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step-item" data-step="4">
+                        <div class="step-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="step-content">
+                            <h3>
+                                <span data-en="Checkout & Pay">Checkout & Pay</span>
+                                <span data-sw="Lipa & Maliza" style="display: none;">Lipa & Maliza</span>
+                            </h3>
+                            <p>
+                                <span data-en="Choose payment method and complete your purchase">Choose payment method and complete your purchase</span>
+                                <span data-sw="Chagua njia ya kulipa na kamilisha ununuzi wako" style="display: none;">Chagua njia ya kulipa na kamilisha ununuzi wako</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step-item" data-step="5">
+                        <div class="step-icon">
+                            <i class="fas fa-box-open"></i>
+                        </div>
+                        <div class="step-content">
+                            <h3>
+                                <span data-en="Receive Product">Receive Product</span>
+                                <span data-sw="Pokea Bidhaa" style="display: none;">Pokea Bidhaa</span>
+                            </h3>
+                            <p>
+                                <span data-en="Track your order and receive your products at your doorstep">Track your order and receive your products at your doorstep</span>
+                                <span data-sw="Fuatilia oda yako na pokea bidhaa zako mlangoni mwako" style="display: none;">Fuatilia oda yako na pokea bidhaa zako mlangoni mwako</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-navigation">
+                    <button class="nav-btn back-btn" data-prev="welcome">
+                        <i class="fas fa-arrow-left"></i>
+                        <span data-en="Back">Back</span>
+                        <span data-sw="Nyuma" style="display: none;">Nyuma</span>
+                    </button>
+                    <button class="nav-btn next-btn" data-next="payment-methods">
+                        <span data-en="Next">Next</span>
+                        <span data-sw="Endelea" style="display: none;">Endelea</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Payment Methods Section -->
+            <section class="payment-methods-section" data-section="payment-methods">
+                <div class="section-header">
+                    <h2>
+                        <span data-en="Payment Methods">Payment Methods</span>
+                        <span data-sw="Njia za Kulipa" style="display: none;">Njia za Kulipa</span>
+                    </h2>
+                    <p>
+                        <span data-en="We accept various secure payment methods">We accept various secure payment methods</span>
+                        <span data-sw="Tunakubali njia mbalimbali salama za kulipa" style="display: none;">Tunakubali njia mbalimbali salama za kulipa</span>
+                    </p>
+                </div>
+
+                <div class="payment-grid">
+                    <div class="payment-item">
+                        <div class="payment-icon">
+                            <i class="fab fa-cc-visa"></i>
+                        </div>
+                        <div class="payment-content">
+                            <h3>
+                                <span data-en="Credit/Debit Cards">Credit/Debit Cards</span>
+                                <span data-sw="Kadi za Mkopo/Kununua" style="display: none;">Kadi za Mkopo/Kununua</span>
+                            </h3>
+                            <p>
+                                <span data-en="Visa, Mastercard, and more">Visa, Mastercard, and more</span>
+                                <span data-sw="Visa, Mastercard, na zaidi" style="display: none;">Visa, Mastercard, na zaidi</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="payment-item">
+                        <div class="payment-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="payment-content">
+                            <h3>
+                                <span data-en="Mobile Money">Mobile Money</span>
+                                <span data-sw="Mobile Money" style="display: none;">Mobile Money</span>
+                            </h3>
+                            <p>
+                                <span data-en="M-Pesa, Airtel Money, and more">M-Pesa, Airtel Money, and more</span>
+                                <span data-sw="M-Pesa, Airtel Money, na zaidi" style="display: none;">M-Pesa, Airtel Money, na zaidi</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="payment-item">
+                        <div class="payment-icon">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+                        <div class="payment-content">
+                            <h3>
+                                <span data-en="Cash on Delivery">Cash on Delivery</span>
+                                <span data-sw="Malipo ya Fedha Mwanzoni" style="display: none;">Malipo ya Fedha Mwanzoni</span>
+                            </h3>
+                            <p>
+                                <span data-en="Pay when you receive your order">Pay when you receive your order</span>
+                                <span data-sw="Lipa unapopokea oda yako" style="display: none;">Lipa unapopokea oda yako</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="payment-item">
+                        <div class="payment-icon">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <div class="payment-content">
+                            <h3>
+                                <span data-en="Bank Transfer">Bank Transfer</span>
+                                <span data-sw="Uhamisho wa Benki" style="display: none;">Uhamisho wa Benki</span>
+                            </h3>
+                            <p>
+                                <span data-en="Direct bank transfer options">Direct bank transfer options</span>
+                                <span data-sw="Chaguzi za uhamisho wa moja kwa moja" style="display: none;">Chaguzi za uhamisho wa moja kwa moja</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chatbot Tips Section - Removed -->
+
+                <div class="section-navigation">
+                    <button class="nav-btn back-btn" data-prev="how-it-works">
+                        <i class="fas fa-arrow-left"></i>
+                        <span data-en="Back">Back</span>
+                        <span data-sw="Nyuma" style="display: none;">Nyuma</span>
+                    </button>
+                    <button class="nav-btn next-btn" data-next="video-tutorial">
+                        <span data-en="Next">Next</span>
+                        <span data-sw="Endelea" style="display: none;">Endelea</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Video Tutorial Section -->
+            <section class="video-tutorial-section" data-section="video-tutorial">
+                <div class="section-header">
+                    <h2>
+                        <span data-en="Quick Video Guide">Quick Video Guide</span>
+                        <span data-sw="Mwongozo wa Video wa Haraka" style="display: none;">Mwongozo wa Video wa Haraka</span>
+                    </h2>
+                    <p>
+                        <span data-en="Watch this 30-second video to see how easy shopping with us is">Watch this 30-second video to see how easy shopping with us is</span>
+                        <span data-sw="Tazama video hii ya sekunde 30 kuona jinsi ununuzi na sisi ni rahisi" style="display: none;">Tazama video hii ya sekunde 30 kuona jinsi ununuzi na sisi ni rahisi</span>
+                    </p>
+                </div>
+
+                <div class="video-container">
+                    <div class="video-placeholder">
+                        <div class="video-thumbnail">
+                            <i class="fas fa-play-circle play-icon"></i>
+                            <div class="video-duration">0:30</div>
+                        </div>
+                        <div class="video-info">
+                            <h3>
+                                <span data-en="How to Shop at OMUNJU SHOPPERS">How to Shop at OMUNJU SHOPPERS</span>
+                                <span data-sw="Jinsi ya Kununua katika OMUNJU SHOPPERS" style="display: none;">Jinsi ya Kununua katika OMUNJU SHOPPERS</span>
+                            </h3>
+                            <p>
+                                <span data-en="Complete shopping guide from registration to delivery">Complete shopping guide from registration to delivery</span>
+                                <span data-sw="Mwongozo kamili wa ununuzi kutoka usajili hadi utoaji" style="display: none;">Mwongozo kamili wa ununuzi kutoka usajili hadi utoaji</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-navigation">
+                    <button class="nav-btn back-btn" data-prev="payment-methods">
+                        <i class="fas fa-arrow-left"></i>
+                        <span data-en="Back">Back</span>
+                        <span data-sw="Nyuma" style="display: none;">Nyuma</span>
+                    </button>
+                    <button class="nav-btn skip-btn" id="skipOnboardingBtn">
+                        <span data-en="Skip Now">Skip Now</span>
+                        <span data-sw="Ruka Sasa" style="display: none;">Ruka Sasa</span>
+                    </button>
+                    <button class="nav-btn primary-btn" id="enterMarketBtn">
+                        <span data-en="Start Shopping Now">Start Shopping Now</span>
+                        <span data-sw="Anza Kununua Sasa" style="display: none;">Anza Kununua Sasa</span>
+                        <i class="fas fa-shopping-bag"></i>
+                    </button>
+                </div>
+
+                <!-- Auto Redirect Countdown -->
+                <div class="auto-redirect-notice">
+                    <div class="redirect-content">
+                        <div class="redirect-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="redirect-text">
+                            <p>
+                                <span data-en="You will be automatically redirected to the home page in">You will be automatically redirected to the home page in</span>
+                                <span data-sw="Utaelekezwa kiotomatiki kwenye ukurasa wa nyumbani baada ya" style="display: none;">Utaelekezwa kiotomatiki kwenye ukurasa wa nyumbani baada ya</span>
+                                <span class="countdown-timer" id="countdownTimer">15</span>
+                                <span data-en="seconds">seconds</span>
+                                <span data-sw="sekunde" style="display: none;">sekunde</span>
+                            </p>
+                        </div>
+                        <div class="loading-bar">
+                            <div class="loading-progress" id="loadingProgress"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Skip Link -->
+        <div class="skip-link">
+            <a href="/dashboard" class="skip-text">
+                <span data-en="Skip introduction and go to dashboard">Skip introduction and go to dashboard</span>
+                <span data-sw="Ruka utangulizi na nenda kwenye dashibodi" style="display: none;">Ruka utangulizi na nenda kwenye dashibodi</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <script src="/onboarding.js"></script>
+</body>
+</html>
