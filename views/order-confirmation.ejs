@@ -7,496 +7,333 @@
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
     <style>
+        :root {
+            --primary-orange: #ff6b35;
+            --primary-blue: #004e89;
+            --accent-amber: #f77f00;
+            --soft-orange: #ff8a65;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #666;
+            --darker-gray: #1a1a1a;
+            --success-green: #28a745;
+            --shadow: 0 2px 4px rgba(0,0,0,0.08);
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-gray);
+            color: var(--darker-gray);
+            line-height: 1.6;
+        }
+
         .confirmation-container {
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 0 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .confirmation-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
         }
 
         .confirmation-header {
+            background: linear-gradient(135deg, var(--success-green), #20c997);
+            color: var(--white);
+            padding: 40px;
             text-align: center;
-            margin-bottom: 40px;
         }
 
-        .confirmation-icon {
+        .success-icon {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #28a745, #20c997);
+            background: var(--white);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
         }
 
-        .confirmation-icon i {
-            font-size: 2.5rem;
-            color: white;
+        .success-icon i {
+            font-size: 40px;
+            color: var(--success-green);
         }
 
         .confirmation-title {
-            font-size: 2.5rem;
-            color: #333;
+            font-size: 2rem;
             margin-bottom: 10px;
         }
 
         .confirmation-subtitle {
-            color: #666;
-            font-size: 1.1rem;
-        }
-
-        .order-summary-card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e0e0e0;
-        }
-
-        .order-summary-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .order-id {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .order-status {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .status-paid {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .order-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .order-detail-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .order-detail-item:last-child {
-            border-bottom: none;
-            font-weight: 600;
-            color: #333;
-            font-size: 1.1rem;
-        }
-
-        .order-items {
-            margin-top: 25px;
-        }
-
-        .order-items h4 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-
-        .item-list {
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .item-header {
-            background: #f8f9fa;
-            padding: 15px 20px;
-            font-weight: 600;
-            color: #333;
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 20px;
-        }
-
-        .item-row {
-            padding: 15px 20px;
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 20px;
-            border-bottom: 1px solid #f0f0f0;
-            align-items: center;
-        }
-
-        .item-row:last-child {
-            border-bottom: none;
-        }
-
-        .item-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .item-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 6px;
-            object-fit: cover;
-        }
-
-        .item-name {
-            font-weight: 500;
-            color: #333;
-        }
-
-        .delivery-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 12px;
-            padding: 30px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .delivery-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            opacity: 0.9;
-        }
-
-        .delivery-title {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .delivery-description {
             font-size: 1.1rem;
             opacity: 0.9;
-            margin-bottom: 25px;
         }
 
-        .btn {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-secondary:hover {
+        .order-number {
             background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 20px;
+            font-weight: 600;
         }
 
-        .actions-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+        .confirmation-body {
+            padding: 40px;
+        }
+
+        .info-section {
             margin-bottom: 30px;
         }
 
-        .action-card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e0e0e0;
-            transition: all 0.3s ease;
-        }
-
-        .action-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-        }
-
-        .action-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px;
-            color: white;
-            font-size: 1.5rem;
-        }
-
-        .action-title {
+        .info-title {
             font-size: 1.2rem;
-            font-weight: 600;
-            color: #333;
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--soft-orange);
+        }
+
+        .info-row {
+            display: flex;
             margin-bottom: 10px;
         }
 
-        .action-description {
-            color: #666;
-            line-height: 1.5;
+        .info-label {
+            font-weight: 500;
+            width: 150px;
+            color: var(--dark-gray);
+        }
+
+        .info-value {
+            flex: 1;
+        }
+
+        .order-summary {
+            background: var(--light-gray);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .total-row {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-orange);
+            border-top: 2px solid var(--medium-gray);
+            padding-top: 15px;
+            margin-top: 10px;
+        }
+
+        .confirmation-footer {
+            padding: 30px 40px;
+            background: var(--light-gray);
+            text-align: center;
         }
 
         .next-steps {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-        }
-
-        .next-steps h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-        }
-
-        .steps-list {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
             margin-bottom: 20px;
-            flex-wrap: wrap;
+        }
+
+        .next-steps h4 {
+            color: var(--dark-gray);
+            margin-bottom: 15px;
         }
 
         .step {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .step-number {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 50%;
-            display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: var(--dark-gray);
         }
 
-        .step-text {
+        .step i {
+            color: var(--success-green);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            text-decoration: none;
             font-weight: 500;
-            color: #333;
-            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            margin: 5px;
         }
 
-        @media (max-width: 768px) {
-            .order-details {
-                grid-template-columns: 1fr;
-            }
+        .btn-primary {
+            background: var(--primary-orange);
+            color: var(--white);
+        }
 
-            .item-header, .item-row {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
+        .btn-primary:hover {
+            background: var(--accent-amber);
+        }
 
-            .actions-section {
-                grid-template-columns: 1fr;
-            }
+        .btn-secondary {
+            background: var(--white);
+            color: var(--primary-orange);
+            border: 1px solid var(--primary-orange);
+        }
 
-            .steps-list {
-                gap: 20px;
-            }
+        .btn-secondary:hover {
+            background: var(--soft-orange);
+        }
 
-            .confirmation-title {
-                font-size: 2rem;
+        @media (max-width: 600px) {
+            .info-row {
+                flex-direction: column;
             }
-
-            .delivery-title {
-                font-size: 1.5rem;
+            
+            .info-label {
+                width: auto;
+                margin-bottom: 5px;
             }
         }
     </style>
 </head>
 <body>
     <!-- Navigation Bar -->
-    <%- include('./partials/header', { currentPage: 'orders' }) %>
+    <%- include('./partials/header', { page: 'confirmation', user: user }) %>
 
     <div class="confirmation-container">
-        <!-- Confirmation Header -->
-        <div class="confirmation-header">
-            <div class="confirmation-icon">
-                <i class="fas fa-check"></i>
-            </div>
-            <h1 class="confirmation-title">Order Confirmed!</h1>
-            <p class="confirmation-subtitle">Thank you for your purchase. Your order has been successfully placed.</p>
-        </div>
-
-        <!-- Order Summary -->
-        <div class="order-summary-card">
-            <div class="order-summary-header">
-                <div class="order-id">Order #<%= order.id %></div>
-                <div class="order-status status-paid"><%= order.status %></div>
-            </div>
-
-            <div class="order-details">
-                <div class="order-detail-item">
-                    <span>Order Date:</span>
-                    <span><%= new Date(order.created_at).toLocaleDateString() %></span>
+        <div class="confirmation-card">
+            <!-- Success Header -->
+            <div class="confirmation-header">
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
                 </div>
-                <div class="order-detail-item">
-                    <span>Payment Method:</span>
-                    <span>Paid</span>
-                </div>
-                <div class="order-detail-item">
-                    <span>Items:</span>
-                    <span><%= items.length %> item(s)</span>
-                </div>
-                <div class="order-detail-item">
-                    <span>Total Amount:</span>
-                    <span>TSH <%= order.total_amount.toFixed(2) %></span>
+                <h1 class="confirmation-title">Thank You for Your Order!</h1>
+                <p class="confirmation-subtitle">Your order has been placed successfully</p>
+                <div class="order-number">
+                    Order #<span id="orderId">---</span>
                 </div>
             </div>
 
-            <!-- Order Items -->
-            <div class="order-items">
-                <h4>Order Items</h4>
-                <div class="item-list">
-                    <div class="item-header">
-                        <span>Product</span>
-                        <span>Quantity</span>
-                        <span>Price</span>
+            <!-- Confirmation Body -->
+            <div class="confirmation-body">
+                <!-- Shipping Info -->
+                <div class="info-section">
+                    <h3 class="info-title">
+                        <i class="fas fa-shipping-fast"></i> Shipping Information
+                    </h3>
+                    <div class="info-row">
+                        <span class="info-label">Name:</span>
+                        <span class="info-value" id="shippingName">---</span>
                     </div>
-                    <% items.forEach(item => { %>
-                    <div class="item-row">
-                        <div class="item-info">
-                            <% if (item.image_url) { %>
-                            <img src="<%= item.image_url %>" alt="<%= item.name %>" class="item-image">
-                            <% } %>
-                            <span class="item-name"><%= item.name %></span>
+                    <div class="info-row">
+                        <span class="info-label">Address:</span>
+                        <span class="info-value" id="shippingAddress">---</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">City/Region:</span>
+                        <span class="info-value" id="shippingCity">---</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Phone:</span>
+                        <span class="info-value" id="shippingPhone">---</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Email:</span>
+                        <span class="info-value" id="shippingEmail">---</span>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="info-section">
+                    <h3 class="info-title">
+                        <i class="fas fa-box"></i> Order Summary
+                    </h3>
+                    <div class="order-summary" id="orderSummary">
+                        <div class="summary-item">
+                            <span>Subtotal</span>
+                            <span id="subtotal">---</span>
                         </div>
-                        <span><%= item.quantity %></span>
-                        <span>TSH <%= (item.price * item.quantity).toFixed(2) %></span>
+                        <div class="summary-item">
+                            <span>Shipping</span>
+                            <span id="shipping">---</span>
+                        </div>
+                        <div class="summary-item total-row">
+                            <span>Total</span>
+                            <span id="total">---</span>
+                        </div>
                     </div>
-                    <% }); %>
+                </div>
+
+                <!-- Payment Info -->
+                <div class="info-section">
+                    <h3 class="info-title">
+                        <i class="fas fa-credit-card"></i> Payment Method
+                    </h3>
+                    <div class="info-row">
+                        <span class="info-label">Method:</span>
+                        <span class="info-value" id="paymentMethod">---</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Status:</span>
+                        <span class="info-value">
+                            <span style="color: var(--success-green); font-weight: 600;">
+                                <i class="fas fa-clock"></i> Pending
+                            </span>
+                        </span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Delivery Request Section -->
-        <div class="delivery-section">
-            <div class="delivery-icon">
-                <i class="fas fa-truck"></i>
-            </div>
-            <h2 class="delivery-title">Ready for Delivery?</h2>
-            <p class="delivery-description">
-                Complete your delivery details to get your order delivered to your doorstep.
-            </p>
-            <a href="/delivery-request?orderId=<%= order.id %>" class="btn btn-primary">
-                <i class="fas fa-map-marker-alt"></i>
-                Request Delivery
-            </a>
-        </div>
-
-        <!-- Action Cards -->
-        <div class="actions-section">
-            <div class="action-card">
-                <div class="action-icon">
-                    <i class="fas fa-eye"></i>
+            <!-- Footer -->
+            <div class="confirmation-footer">
+                <div class="next-steps">
+                    <h4>What happens next?</h4>
+                    <div class="step">
+                        <i class="fas fa-check-circle"></i>
+                        <span>You'll receive an email confirmation shortly</span>
+                    </div>
+                    <div class="step">
+                        <i class="fas fa-box-packing"></i>
+                        <span>We'll start preparing your order</span>
+                    </div>
+                    <div class="step">
+                        <i class="fas fa-truck"></i>
+                        <span>You'll be notified when it ships</span>
+                    </div>
                 </div>
-                <div class="action-title">Track Order</div>
-                <div class="action-description">
-                    Monitor your order status and delivery progress in real-time.
-                </div>
-                <a href="/orders/<%= order.id %>" class="btn btn-primary" style="margin-top: 15px;">
-                    View Order Details
+                <a href="/dashboard" class="btn btn-primary">
+                    <i class="fas fa-shopping-bag"></i> Continue Shopping
+                </a>
+                <a href="/orders" class="btn btn-secondary">
+                    <i class="fas fa-list"></i> View Orders
                 </a>
             </div>
-
-            <div class="action-card">
-                <div class="action-icon">
-                    <i class="fas fa-shopping-bag"></i>
-                </div>
-                <div class="action-title">Continue Shopping</div>
-                <div class="action-description">
-                    Discover more products and add them to your cart.
-                </div>
-                <a href="/" class="btn btn-primary" style="margin-top: 15px;">
-                    Shop More
-                </a>
-            </div>
-
-            <div class="action-card">
-                <div class="action-icon">
-                    <i class="fas fa-receipt"></i>
-                </div>
-                <div class="action-title">Download Invoice</div>
-                <div class="action-description">
-                    Get your order invoice for your records.
-                </div>
-                <button class="btn btn-primary" style="margin-top: 15px;" onclick="downloadInvoice()">
-                    <i class="fas fa-download"></i>
-                    Download Invoice
-                </button>
-            </div>
-        </div>
-
-        <!-- Next Steps -->
-        <div class="next-steps">
-            <h3>What happens next?</h3>
-            <div class="steps-list">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div class="step-text">Request Delivery</div>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div class="step-text">Order Processing</div>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <div class="step-text">Quality Check</div>
-                </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <div class="step-text">Out for Delivery</div>
-                </div>
-                <div class="step">
-                    <div class="step-number">5</div>
-                    <div class="step-text">Delivered</div>
-                </div>
-            </div>
-            <p style="color: #666; margin-top: 15px;">
-                You'll receive WhatsApp notifications for each step of your delivery process.
-            </p>
         </div>
     </div>
 
@@ -504,50 +341,69 @@
     <%- include('./partials/footer') %>
 
     <script>
-        // Download invoice function
-        async function downloadInvoice() {
-            try {
-                const response = await fetch(`/api/invoices/download/<%= order.id %>`);
-                if (response.ok) {
-                    // Create download link
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = `invoice-<%= order.id %>.pdf`;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                } else {
-                    alert('Invoice not available yet. Please try again later.');
-                }
-            } catch (error) {
-                console.error('Error downloading invoice:', error);
-                alert('Failed to download invoice. Please try again.');
-            }
-        }
-
-        // Auto-generate invoice if not exists
-        async function generateInvoice() {
-            try {
-                const response = await fetch(`/api/invoices/generate/<%= order.id %>`, {
-                    method: 'POST'
-                });
-                const result = await response.json();
-                if (result.success) {
-                    console.log('Invoice generated successfully');
-                }
-            } catch (error) {
-                console.error('Error generating invoice:', error);
-            }
-        }
-
-        // Generate invoice on page load
+        // Load order details
         document.addEventListener('DOMContentLoaded', function() {
-            generateInvoice();
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('orderId');
+
+            if (orderId) {
+                loadOrderDetails(orderId);
+            } else {
+                document.querySelector('.confirmation-card').innerHTML = `
+                    <div class="confirmation-header" style="background: linear-gradient(135deg, #dc3545, #c82333);">
+                        <div class="success-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h1 class="confirmation-title">Order Not Found</h1>
+                        <p class="confirmation-subtitle">We couldn't find your order details</p>
+                    </div>
+                    <div class="confirmation-body" style="text-align: center; padding: 40px;">
+                        <a href="/dashboard" class="btn btn-primary">
+                            <i class="fas fa-home"></i> Go Home
+                        </a>
+                    </div>
+                `;
+            }
         });
+
+        async function loadOrderDetails(orderId) {
+            try {
+                const response = await fetch(`/api/orders/${orderId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const order = result.order;
+                    
+                    document.getElementById('orderId').textContent = orderId;
+                    document.getElementById('shippingName').textContent = order.shipping_name || '---';
+                    document.getElementById('shippingAddress').textContent = order.shipping_address || '---';
+                    document.getElementById('shippingCity').textContent = `${order.shipping_city || ''} ${order.shipping_region ? ', ' + order.shipping_region : ''}`;
+                    document.getElementById('shippingPhone').textContent = order.shipping_phone || '---';
+                    document.getElementById('shippingEmail').textContent = order.shipping_email || '---';
+                    
+                    // Format payment method
+                    const paymentMethodNames = {
+                        'cash_on_delivery': 'Cash on Delivery',
+                        'mobile_money': 'Mobile Money (M-Pesa)',
+                        'bank_transfer': 'Bank Transfer'
+                    };
+                    document.getElementById('paymentMethod').textContent = paymentMethodNames[order.payment_method] || order.payment_method;
+
+                    // Calculate totals
+                    const total = parseFloat(order.total_amount) || 0;
+                    const shipping = 5000; // Fixed shipping cost
+                    const subtotal = total - shipping;
+
+                    document.getElementById('subtotal').textContent = `TSH ${subtotal.toLocaleString()}`;
+                    document.getElementById('shipping').textContent = `TSH ${shipping.toLocaleString()}`;
+                    document.getElementById('total').textContent = `TSH ${total.toLocaleString()}`;
+                } else {
+                    console.error('Failed to load order:', result.message);
+                }
+            } catch (error) {
+                console.error('Error loading order:', error);
+            }
+        }
     </script>
 </body>
 </html>

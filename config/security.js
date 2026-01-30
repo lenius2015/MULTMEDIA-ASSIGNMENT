@@ -15,7 +15,7 @@ const securityConfig = {
     // Rate limiting settings
     rateLimit: {
         windowMs: 15 * 60 * 1000, // 15 minutes
-        max: process.env.NODE_ENV === 'production' ? 100 : 1000, // More lenient in development
+        max: process.env.NODE_ENV === 'production' ? 100 : 5000, // Much more lenient in development
         message: {
             success: false,
             message: 'Too many requests from this IP, please try again later.'
@@ -34,7 +34,7 @@ const securityConfig = {
     // Strict rate limiting for auth endpoints
     authRateLimit: {
         windowMs: 15 * 60 * 1000, // 15 minutes
-        max: process.env.NODE_ENV === 'production' ? 5 : 20, // More lenient in development
+        max: process.env.NODE_ENV === 'production' ? 5 : 50, // More lenient in development
         message: {
             success: false,
             message: 'Too many authentication attempts, please try again later.'

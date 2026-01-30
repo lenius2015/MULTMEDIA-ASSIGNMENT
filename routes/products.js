@@ -237,10 +237,46 @@ router.get('/filter/discounted', async (req, res) => {
 // Get product categories with counts
 router.get('/categories/list', async (req, res) => {
   try {
-    const [categories] = await pool.query(
-      'SELECT category, COUNT(*) as count FROM products GROUP BY category'
+    // Get categories from categories table
+    const [dbCategories] = await pool.query(
+      'SELECT c.*, COUNT(p.id) as product_count FROM categories c LEFT JOIN products p ON c.name = p.category GROUP BY c.id ORDER BY c.name'
     );
-
+    
+    // Also get category counts from products table
+    const [productCategories] = await pool.query(
+      'SELECT category as name, COUNT(*) as product_count FROM products WHERE category IS NOT NULL AND category != "" GROUP BY category'
+    );
+    
+    // Merge categories - use categories table first, then add any from products
+    const allCategories = [];
+    const categoryMap = new Map();
+    
+    // Add categories from categories table
+    dbCategories.forEach(cat => {
+      categoryMap.set(cat.name.toLowerCase(), {
+        name: cat.name,
+        product_count: cat.product_count || 0,
+        description: cat.description,
+        image_url: cat.image_url
+      });
+    });
+    
+    // Add categories from products table that aren't in categories table
+    productCategories.forEach(cat => {
+      const key = cat.name.toLowerCase();
+      if (!categoryMap.has(key)) {
+        categoryMap.set(key, {
+          name: cat.name,
+          product_count: cat.product_count,
+          description: null,
+          image_url: null
+        });
+      }
+    });
+    
+    // Convert map to array
+    const categories = Array.from(categoryMap.values());
+    
     res.json({
       success: true,
       categories
@@ -439,7 +475,7 @@ router.get('/promotions', async (req, res) => {
         }
 
         // Get discounted products
-        const [products] = await db.query(`
+        const [products] = await pool.query(`
             SELECT
                 p.*,
                 ROUND(p.price * (1 - p.discount/100), 2) as discounted_price,
@@ -451,7 +487,7 @@ router.get('/promotions', async (req, res) => {
         `, [limit, offset]);
 
         // Get total count
-        const [countResult] = await db.query(`
+        const [countResult] = await pool.query(`
             SELECT COUNT(*) as total FROM products WHERE discount > 0 AND stock > 0
         `);
 

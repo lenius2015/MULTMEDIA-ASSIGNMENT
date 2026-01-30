@@ -182,7 +182,7 @@ class AdminMessages {
                 ...(search && { search })
             });
 
-            const response = await fetch(`/admin/conversations?${params}`);
+            const response = await fetch(`/admin/api/messages/conversations?${params}`);
             const data = await response.json();
 
             if (data.success) {
@@ -194,14 +194,28 @@ class AdminMessages {
             }
         } catch (error) {
             console.error('Load conversations error:', error);
-            listEl.innerHTML = `
-                <div class="error-state">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h3>Failed to load conversations</h3>
-                    <p>${error.message}</p>
-                    <button class="retry-btn" onclick="adminMessages.loadConversations()">Retry</button>
-                </div>
-            `;
+            // Check if database is not initialized
+            if (error.message.includes('Database not initialized') || error.message.includes('connect') || error.message.includes('ECONNREFUSED')) {
+                listEl.innerHTML = `
+                    <div class="empty-state" style="padding: 40px; text-align: center; color: #888;">
+                        <i class="fas fa-database" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;"></i>
+                        <h3>Database Not Connected</h3>
+                        <p>The database is not initialized yet. Please run the database migration first.</p>
+                        <p style="font-size: 0.85rem; margin-top: 10px; color: #666;">
+                            Run: <code style="background: #f0f0f0; padding: 2px 6px; border-radius: 4px;">node db.js</code>
+                        </p>
+                    </div>
+                `;
+            } else {
+                listEl.innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Failed to load conversations</h3>
+                        <p>${error.message}</p>
+                        <button class="retry-btn" onclick="adminMessages.loadConversations()">Retry</button>
+                    </div>
+                `;
+            }
         }
     }
 

@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        :root {
+            --primary-orange: #ff6b35;
+            --primary-blue: #004e89;
+            --accent-amber: #f77f00;
+            --soft-orange: #ff8a65;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #666;
+            --darker-gray: #1a1a1a;
+            --success-green: #28a745;
+            --error-red: #dc3545;
+            --shadow: 0 2px 4px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-gray);
+            color: var(--darker-gray);
+            line-height: 1.6;
+        }
+
+        .checkout-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .checkout-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .checkout-title {
+            font-size: 2.5rem;
+            color: var(--primary-orange);
+            margin-bottom: 10px;
+        }
+
+        .checkout-subtitle {
+            color: var(--dark-gray);
+            font-size: 1.1rem;
+        }
+
+        .checkout-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 40px;
+        }
+
+        .checkout-form {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section-title {
+            font-size: 1.3rem;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--soft-orange);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--darker-gray);
+        }
+
+        .form-label .required {
+            color: var(--error-red);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-orange);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-family: inherit;
+            background: var(--white);
+            cursor: pointer;
+        }
+
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .payment-method:hover {
+            border-color: var(--soft-orange);
+        }
+
+        .payment-method.selected {
+            border-color: var(--primary-orange);
+            background-color: var(--very-light-orange);
+        }
+
+        .payment-method input {
+            margin-right: 15px;
+        }
+
+        .payment-method-label {
+            font-weight: 500;
+        }
+
+        .payment-method-description {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            margin-left: auto;
+        }
+
+        .order-summary {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .summary-title {
+            font-size: 1.3rem;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--soft-orange);
+        }
+
+        .summary-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-item-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        .summary-item-details {
+            flex: 1;
+        }
+
+        .summary-item-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .summary-item-qty {
+            font-size: 0.85rem;
+            color: var(--dark-gray);
+        }
+
+        .summary-item-price {
+            font-weight: 600;
+            color: var(--primary-orange);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .summary-total {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-orange);
+            border-top: 2px solid var(--medium-gray);
+            padding-top: 15px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        .place-order-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-orange), var(--accent-amber));
+            color: var(--white);
+            border: none;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .place-order-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .place-order-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .secure-checkout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--success-green);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-overlay.hidden {
+            display: none;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--medium-gray);
+            border-top-color: var(--primary-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            color: var(--dark-gray);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 900px) {
+            .checkout-content {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .order-summary {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body data-user='<%- JSON.stringify(typeof user !== "undefined" ? user : null) %>'>
+    <!-- Navigation Bar -->
+    <%- include('./partials/header', { page: 'checkout', user: user }) %>
+
+    <div class="checkout-container">
+        <!-- Checkout Header -->
+        <div class="checkout-header">
+            <h1 class="checkout-title">Checkout</h1>
+            <p class="checkout-subtitle">Complete your order securely</p>
+        </div>
+
+        <!-- Checkout Content -->
+        <div class="checkout-content">
+            <!-- Checkout Form -->
+            <form class="checkout-form" id="checkoutForm">
+                <!-- Shipping Information -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="fas fa-shipping-fast"></i> Shipping Information
+                    </h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">First Name <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="firstName" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Last Name <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="lastName" name="lastName" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address <span class="required">*</span></label>
+                        <input type="email" class="form-input" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number <span class="required">*</span></label>
+                        <input type="tel" class="form-input" id="phone" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Street Address <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="address" name="address" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">City <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="city" name="city" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Region <span class="required">*</span></label>
+                            <select class="form-select" id="region" name="region" required>
+                                <option value="">Select Region</option>
+                                <option value="dar-es-salaam">Dar es Salaam</option>
+                                <option value="arusha">Arusha</option>
+                                <option value="mwanza">Mwanza</option>
+                                <option value="dodoma">Dodoma</option>
+                                <option value="tanga">Tanga</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Delivery Notes (Optional)</label>
+                        <textarea class="form-input" id="notes" name="notes" rows="3" 
+                                  placeholder="Any special delivery instructions..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="fas fa-credit-card"></i> Payment Method
+                    </h3>
+                    <div class="payment-methods">
+                        <label class="payment-method selected">
+                            <input type="radio" name="paymentMethod" value="cash_on_delivery" checked>
+                            <span class="payment-method-label">
+                                <i class="fas fa-money-bill-wave"></i> Cash on Delivery
+                            </span>
+                            <span class="payment-method-description">Pay when you receive</span>
+                        </label>
+                        <label class="payment-method">
+                            <input type="radio" name="paymentMethod" value="mobile_money">
+                            <span class="payment-method-label">
+                                <i class="fas fa-mobile-alt"></i> Mobile Money (M-Pesa)
+                            </span>
+                            <span class="payment-method-description">Instant transfer</span>
+                        </label>
+                        <label class="payment-method">
+                            <input type="radio" name="paymentMethod" value="bank_transfer">
+                            <span class="payment-method-label">
+                                <i class="fas fa-university"></i> Bank Transfer
+                            </span>
+                            <span class="payment-method-description">Direct bank payment</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Order Button -->
+                <button type="submit" class="place-order-btn" id="placeOrderBtn">
+                    <i class="fas fa-lock"></i> Place Order
+                </button>
+
+                <div class="secure-checkout">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Secure Checkout - Your information is encrypted</span>
+                </div>
+            </form>
+
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <h3 class="summary-title">Order Summary</h3>
+                <div class="summary-items" id="summaryItems">
+                    <div class="loading">
+                        <i class="fas fa-spinner"></i>
+                        <p>Loading order details...</p>
+                    </div>
+                </div>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">TSH 0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span id="shipping">TSH 0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tax (0%)</span>
+                    <span id="tax">TSH 0</span>
+                </div>
+                <div class="summary-row summary-total">
+                    <span>Total</span>
+                    <span id="total">TSH 0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Processing your order...</p>
+    </div>
+
+    <!-- Footer -->
+    <%- include('./partials/footer') %>
+
+    <script>
+        let cartData = [];
+        let shippingCost = 5000; // Default shipping cost in TSH
+
+        // Load cart on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCart();
+            prefillUserData();
+        });
+
+        // Payment method selection
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function() {
+                document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+                this.classList.add('selected');
+                this.querySelector('input').checked = true;
+            });
+        });
+
+        async function loadCart() {
+            try {
+                const response = await fetch('/api/cart');
+                const result = await response.json();
+
+                if (result.success) {
+                    cartData = result.cart || [];
+                    renderOrderSummary(result.total);
+                } else {
+                    showNotification(result.message || 'Failed to load cart', 'error');
+                }
+            } catch (error) {
+                console.error('Load cart error:', error);
+                showNotification('Failed to load cart', 'error');
+            }
+        }
+
+        function prefillUserData() {
+            // Try to get user data from the page
+            const userData = document.body.getAttribute('data-user');
+            if (userData && userData !== 'null' && userData !== '{"id":null}') {
+                try {
+                    const user = JSON.parse(userData);
+                    if (user.name) {
+                        const nameParts = user.name.split(' ');
+                        document.getElementById('firstName').value = nameParts[0] || '';
+                        document.getElementById('lastName').value = nameParts.slice(1).join(' ') || '';
+                    }
+                    if (user.email) {
+                        document.getElementById('email').value = user.email;
+                    }
+                    if (user.phone) {
+                        document.getElementById('phone').value = user.phone;
+                    }
+                    if (user.address) {
+                        document.getElementById('address').value = user.address;
+                    }
+                    if (user.city) {
+                        document.getElementById('city').value = user.city;
+                    }
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                }
+            }
+        }
+
+        function renderOrderSummary(total) {
+            const itemsEl = document.getElementById('summaryItems');
+
+            if (cartData.length === 0) {
+                window.location.href = '/cart';
+                return;
+            }
+
+            const itemsHtml = cartData.map(item => {
+                const price = item.discounted_price || item.price;
+                return `
+                    <div class="summary-item">
+                        <img src="${item.image_url || '/images/category-placeholder.jpg'}" 
+                             alt="${item.name}" class="summary-item-image"
+                             onerror="this.src='/images/category-placeholder.jpg'">
+                        <div class="summary-item-details">
+                            <div class="summary-item-name">${item.name}</div>
+                            <div class="summary-item-qty">Qty: ${item.quantity}</div>
+                        </div>
+                        <div class="summary-item-price">TSH ${(price * item.quantity).toLocaleString()}</div>
+                    </div>
+                `;
+            }).join('');
+
+            itemsEl.innerHTML = itemsHtml;
+
+            // Calculate totals
+            const subtotal = parseFloat(total) || 0;
+            const tax = 0; // No tax for now
+            const totalAmount = subtotal + shippingCost + tax;
+
+            document.getElementById('subtotal').textContent = `TSH ${subtotal.toLocaleString()}`;
+            document.getElementById('shipping').textContent = `TSH ${shippingCost.toLocaleString()}`;
+            document.getElementById('tax').textContent = `TSH ${tax.toLocaleString()}`;
+            document.getElementById('total').textContent = `TSH ${totalAmount.toLocaleString()}`;
+        }
+
+        // Form submission
+        document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (cartData.length === 0) {
+                showNotification('Your cart is empty', 'warning');
+                return;
+            }
+
+            const formData = new FormData(this);
+            const orderData = {
+                shipping: {
+                    firstName: formData.get('firstName'),
+                    lastName: formData.get('lastName'),
+                    email: formData.get('email'),
+                    phone: formData.get('phone'),
+                    address: formData.get('address'),
+                    city: formData.get('city'),
+                    region: formData.get('region'),
+                    notes: formData.get('notes')
+                },
+                paymentMethod: formData.get('paymentMethod')
+            };
+
+            // Validate required fields
+            if (!orderData.shipping.firstName || !orderData.shipping.lastName || 
+                !orderData.shipping.email || !orderData.shipping.phone || 
+                !orderData.shipping.address || !orderData.shipping.city || 
+                !orderData.shipping.region) {
+                showNotification('Please fill in all required fields', 'warning');
+                return;
+            }
+
+            // Show loading overlay
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            document.getElementById('placeOrderBtn').disabled = true;
+
+            try {
+                const response = await fetch('/api/orders/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification('Order placed successfully!', 'success');
+                    // Redirect to order confirmation page
+                    setTimeout(() => {
+                        window.location.href = `/order-confirmation?orderId=${result.orderId}`;
+                    }, 1500);
+                } else {
+                    document.getElementById('loadingOverlay').classList.add('hidden');
+                    document.getElementById('placeOrderBtn').disabled = false;
+                    showNotification(result.message || 'Failed to place order', 'error');
+                }
+            } catch (error) {
+                console.error('Place order error:', error);
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                document.getElementById('placeOrderBtn').disabled = false;
+                showNotification('Failed to place order. Please try again.', 'error');
+            }
+        });
+
+        function showNotification(message, type = 'info') {
+            const existingNotification = document.querySelector('.custom-notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            const notification = document.createElement('div');
+            notification.className = `custom-notification ${type}`;
+            notification.innerHTML = `<i class="fas fa-info-circle"></i><span>${message}</span>`;
+            document.body.appendChild(notification);
+
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

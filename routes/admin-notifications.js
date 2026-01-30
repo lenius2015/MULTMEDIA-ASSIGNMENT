@@ -9,6 +9,7 @@ router.get('/recent', requireAdminAuth, async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 10;
 
+        // Get notifications for this admin, broadcasts, or NULL admin_id (unassigned)
         const [notifications] = await db.query(`
             SELECT an.*,
                    u.name as related_user_name,
@@ -19,16 +20,16 @@ router.get('/recent', requireAdminAuth, async (req, res) => {
             LEFT JOIN users u ON an.related_user_id = u.id
             LEFT JOIN orders o ON an.related_order_id = o.id
             LEFT JOIN auctions a ON an.related_auction_id = a.id
-            WHERE (an.admin_id = ? OR an.is_broadcast = 1)
+            WHERE (an.admin_id = ? OR an.admin_id IS NULL OR an.is_broadcast = 1)
             ORDER BY an.created_at DESC
             LIMIT ?
-        `, [req.session.adminId, limit]);
+        `, [req.session.adminId || 0, limit]);
 
         // Get unread count
         const [unreadResult] = await db.query(`
             SELECT COUNT(*) as count FROM admin_notifications
-            WHERE (admin_id = ? OR is_broadcast = 1) AND is_read = 0
-        `, [req.session.adminId]);
+            WHERE (admin_id = ? OR admin_id IS NULL OR is_broadcast = 1) AND is_read = 0
+        `, [req.session.adminId || 0]);
 
         res.json({
             success: true,
@@ -37,7 +38,7 @@ router.get('/recent', requireAdminAuth, async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching recent notifications:', error);
-        res.status(500).json({ success: false, message: 'Database error' });
+        res.status(500).json({ success: false, message: 'Database error', notifications: [], unreadCount: 0 });
     }
 });
 
@@ -47,7 +48,7 @@ router.put('/:id/read', requireAdminAuth, async (req, res) => {
         const { id } = req.params;
 
         await db.query(
-            'UPDATE admin_notifications SET is_read = 1 WHERE id = ? AND (admin_id = ? OR is_broadcast = 1)',
+            'UPDATE admin_notifications SET is_read = 1 WHERE id = ? AND (admin_id = ? OR is_broadcast = 1 OR admin_id IS NULL)',
             [id, req.session.adminId]
         );
 
@@ -62,7 +63,7 @@ router.put('/:id/read', requireAdminAuth, async (req, res) => {
 router.put('/mark-all-read', requireAdminAuth, async (req, res) => {
     try {
         await db.query(
-            'UPDATE admin_notifications SET is_read = 1 WHERE (admin_id = ? OR is_broadcast = 1) AND is_read = 0',
+            'UPDATE admin_notifications SET is_read = 1 WHERE (admin_id = ? OR is_broadcast = 1 OR admin_id IS NULL) AND is_read = 0',
             [req.session.adminId]
         );
 
@@ -173,6 +174,10 @@ router.post('/send', requireAdminAuth, async (req, res) => {
             recipients = users.map(u => u.id);
         } else if (recipient_type === 'specific_users' && user_ids) {
             recipients = user_ids.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+        } else {
+            // If no recipient type or users selected, notify all users
+            const [users] = await db.query('SELECT id FROM users WHERE status = "active"');
+            recipients = users.map(u => u.id);
         }
 
         // Send notifications to each recipient

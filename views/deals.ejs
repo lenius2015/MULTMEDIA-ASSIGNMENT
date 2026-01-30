@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
     <style>
         /* Deals Page Specific Styles */
         :root {
@@ -552,34 +553,9 @@
         }
     </style>
 </head>
-<body>
-    <!-- Navigation Bar -->
-    <nav class="navbar" id="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <span class="logo-sixteen">OMUNJU</span>
-                <span class="logo-clothing">SHOPPERS</span>
-            </div>
-
-            <div class="nav-menu">
-                <a href="/" class="nav-link">Home</a>
-                <a href="/categories" class="nav-link">Categories</a>
-                <a href="/deals" class="nav-link active">Deals</a>
-                <a href="/about" class="nav-link">About Us</a>
-                <a href="/contact" class="nav-link">Contact</a>
-            </div>
-
-            <div class="nav-actions">
-                <% if (!user) { %>
-                    <a href="/login" class="btn-login">Login</a>
-                    <a href="/signup" class="btn-signup">Sign Up</a>
-                <% } %>
-                <div class="cart-icon">
-                    <i class="fas fa-shopping-cart"></i>
-                </div>
-            </div>
-        </div>
-    </nav>
+<body data-user='<%- JSON.stringify(typeof user !== 'undefined' ? user : null) %>'>
+    <!-- Use Shared Header Partial -->
+    <%- include('partials/header', { page: 'deals', user: user }); %>
 
     <!-- Hero Section -->
     <section class="hero-section">
@@ -593,25 +569,25 @@
     </section>
 
     <!-- Countdown Timer Section -->
-    <section class="countdown-section">
+    <section class="countdown-section" data-end-date="<%= activePromotion && activePromotion.end_date ? activePromotion.end_date : '' %>">
         <div class="countdown-container">
-            <h2 class="countdown-title">Flash Sale Ends In</h2>
+            <h2 class="countdown-title"><%= activePromotion && activePromotion.title ? activePromotion.title : 'Flash Sale Ends In' %></h2>
             <p class="countdown-subtitle">Hurry up! These deals won't last long</p>
             <div class="countdown-timer" id="countdown">
                 <div class="time-block">
-                    <span class="time-value" id="days">02</span>
+                    <span class="time-value" id="days">00</span>
                     <span class="time-label">Days</span>
                 </div>
                 <div class="time-block">
-                    <span class="time-value" id="hours">14</span>
+                    <span class="time-value" id="hours">00</span>
                     <span class="time-label">Hours</span>
                 </div>
                 <div class="time-block">
-                    <span class="time-value" id="minutes">35</span>
+                    <span class="time-value" id="minutes">00</span>
                     <span class="time-label">Minutes</span>
                 </div>
                 <div class="time-block">
-                    <span class="time-value" id="seconds">42</span>
+                    <span class="time-value" id="seconds">00</span>
                     <span class="time-label">Seconds</span>
                 </div>
             </div>
@@ -623,7 +599,7 @@
         <div class="deals-container">
             <div class="deals-grid">
                 <!-- Deal 1 -->
-                <div class="deal-card">
+                <div class="deal-card" data-product-id="1">
                     <div class="deal-badge">70% OFF</div>
                     <div class="deal-image">
                         <i class="fas fa-mobile-alt deal-placeholder"></i>
@@ -653,7 +629,7 @@
                 </div>
 
                 <!-- Deal 2 -->
-                <div class="deal-card">
+                <div class="deal-card" data-product-id="2">
                     <div class="deal-badge">50% OFF</div>
                     <div class="deal-image">
                         <i class="fas fa-laptop deal-placeholder"></i>
@@ -683,7 +659,7 @@
                 </div>
 
                 <!-- Deal 3 -->
-                <div class="deal-card">
+                <div class="deal-card" data-product-id="3">
                     <div class="deal-badge">40% OFF</div>
                     <div class="deal-image">
                         <i class="fas fa-headphones deal-placeholder"></i>
@@ -713,7 +689,7 @@
                 </div>
 
                 <!-- Deal 4 -->
-                <div class="deal-card">
+                <div class="deal-card" data-product-id="4">
                     <div class="deal-badge">60% OFF</div>
                     <div class="deal-image">
                         <i class="fas fa-tshirt deal-placeholder"></i>
@@ -743,7 +719,7 @@
                 </div>
 
                 <!-- Deal 5 -->
-                <div class="deal-card">
+                <div class="deal-card" data-product-id="5">
                     <div class="deal-badge">35% OFF</div>
                     <div class="deal-image">
                         <i class="fas fa-couch deal-placeholder"></i>
@@ -773,7 +749,7 @@
                 </div>
 
                 <!-- Deal 6 -->
-                <div class="deal-card">
+                <div class="deal-card" data-product-id="6">
                     <div class="deal-badge">55% OFF</div>
                     <div class="deal-image">
                         <i class="fas fa-gamepad deal-placeholder"></i>
@@ -855,6 +831,7 @@
     </footer>
 
     <!-- Shared Chatbot Widget -->
+    <script src="/socket.io/socket.io.js"></script>
     <script src="/chatbot.js"></script>
     <script>
         // Initialize the shared chatbot
@@ -875,11 +852,29 @@
             }
         });
 
-        // Countdown timer functionality
+        // Countdown timer functionality - synced with backend time via data attribute
+        const countdownSection = document.querySelector('.countdown-section');
+        let countdownEndDate = countdownSection ? countdownSection.dataset.endDate : null;
+        
+        // If no backend date, default to 7 days from now
+        if (!countdownEndDate || countdownEndDate === 'null' || countdownEndDate === '') {
+            countdownEndDate = new Date().getTime() + (7 * 24 * 60 * 60 * 1000);
+        } else {
+            countdownEndDate = new Date(countdownEndDate).getTime();
+        }
+        
+        // Get server time for synchronization
+        let serverTimeOffset = 0;
+        fetch('/api/time')
+            .then(r => r.json())
+            .then(data => {
+                serverTimeOffset = new Date().getTime() - data.serverTime;
+            })
+            .catch(() => {});
+        
         function updateCountdown() {
-            const now = new Date().getTime();
-            const endDate = new Date('2024-12-31T23:59:59').getTime(); // Set your end date here
-            const timeLeft = endDate - now;
+            const now = new Date().getTime() - serverTimeOffset;
+            const timeLeft = countdownEndDate - now;
 
             if (timeLeft > 0) {
                 const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
@@ -892,8 +887,13 @@
                 document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
                 document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
             } else {
-                // Countdown finished
-                document.getElementById('countdown').innerHTML = '<div class="time-block"><span class="time-value">EXPIRED</span></div>';
+                // Countdown finished - show expired
+                const countdownEl = document.getElementById('countdown');
+                if (countdownEl) {
+                    countdownEl.innerHTML = '<div class="time-block"><span class="time-value">EXPIRED</span></div>';
+                }
+                // Refresh page to update deals
+                setTimeout(() => window.location.reload(), 5000);
             }
         }
 
@@ -914,6 +914,87 @@
                 }
             });
         });
+
+        // Add to Cart functionality
+        document.querySelectorAll('.btn-deal.btn-primary').forEach(button => {
+            button.addEventListener('click', async function() {
+                const dealCard = this.closest('.deal-card');
+                const dealTitle = dealCard.querySelector('h3').textContent;
+                
+                // Check if user is logged in
+                const userData = document.body.getAttribute('data-user');
+                if (!userData || userData === 'null' || userData === '{"id":null}') {
+                    alert('Please login to add items to cart');
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                // Show loading state
+                this.textContent = 'Adding...';
+                this.disabled = true;
+                
+                try {
+                    const response = await fetch('/api/cart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            productId: dealCard.dataset.productId || 1,
+                            quantity: 1
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert('✓ Added to cart: ' + dealTitle);
+                        updateCartBadge();
+                    } else {
+                        alert('Failed to add: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error adding to cart');
+                }
+                
+                // Reset button
+                this.textContent = 'Add to Cart';
+                this.disabled = false;
+            });
+        });
+
+        // View Details functionality
+        document.querySelectorAll('.btn-deal.btn-secondary').forEach(button => {
+            button.addEventListener('click', function() {
+                const dealCard = this.closest('.deal-card');
+                const dealTitle = dealCard.querySelector('h3').textContent;
+                const productId = dealCard.dataset.productId;
+                
+                if (productId) {
+                    window.location.href = '/product/' + productId;
+                } else {
+                    alert('View details for: ' + dealTitle);
+                }
+            });
+        });
+
+        // Update cart badge
+        async function updateCartBadge() {
+            try {
+                const response = await fetch('/api/profile/cart');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const cartBadge = document.querySelector('.cart-badge');
+                    if (cartBadge) {
+                        cartBadge.textContent = result.itemCount || 0;
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating cart badge:', error);
+            }
+        }
     </script>
 </body>
 </html>

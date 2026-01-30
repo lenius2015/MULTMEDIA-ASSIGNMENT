@@ -10,16 +10,8 @@
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-    <!-- Notification Bar -->
-    <div class="notification-bar">
-        <div class="notification-content">
-            <i class="fas fa-shipping-fast"></i>
-            <span>Free shipping on orders above Tsh 50,000 | Use code: OMUNJU01</span>
-        </div>
-    </div>
-
-    <!-- Header -->
-    <%- include('partials/header', { page: 'categories' }) %>
+    <!-- Use Shared Header Partial -->
+    <%- include('partials/header', { page: 'categories', user: user }) %>
 
     <!-- Categories Section -->
     <section class="categories-page-section">
@@ -80,9 +72,6 @@
 
     <!-- Footer -->
     <%- include('partials/footer') %>
-
-    <!-- Cart Sidebar -->
-    <%- include('cart') %>
 
     <script src="/script.js"></script>
     <script>

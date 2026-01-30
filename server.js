@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
+const multer = require('multer');
 const path = require('path');
 const passport = require('passport');
 const http = require('http');
@@ -9,6 +10,7 @@ const socketIo = require('socket.io');
 const pool = require('./db');
 const Logger = require('./utils/logger');
 const { securityConfig, securityMiddleware } = require('./config/security');
+const { isAuthenticated } = require('./middleware/auth');
 
 const app = express();
 const server = http.createServer(app);
@@ -57,6 +59,7 @@ app.use(passport.session());
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
+const wishlistRoutes = require('./routes/wishlist');
 const orderRoutes = require('./routes/orders');
 const notificationRoutes = require('./routes/notifications');
 const contactRoutes = require('./routes/contact');
@@ -76,13 +79,25 @@ const invoiceRoutes = require('./routes/invoices');
 const onboardingRoutes = require('./routes/onboarding');
 const deliveryRoutes = require('./routes/delivery');
 const conversationsRoutes = require('./routes/conversations');
+const newsletterRoutes = require('./routes/newsletter');
+const reviewsRoutes = require('./routes/reviews');
 const { addAdminData } = require('./middleware/adminAuth');
 
 // API Routes
+// API endpoint for server time (for countdown synchronization)
+app.get('/api/time', (req, res) => {
+    res.json({
+        success: true,
+        serverTime: Date.now(),
+        timezone: 'Africa/Nairobi'
+    });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/products', productRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/notifications', notificationRoutes);
@@ -93,6 +108,8 @@ app.use('/api/invoices', invoiceRoutes);
 app.use('/api/onboarding', onboardingRoutes);
 app.use('/api/delivery', deliveryRoutes);
 app.use('/api/conversations', conversationsRoutes);
+app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/reviews', reviewsRoutes);
 
 // Admin routes - Order matters: more specific routes first
 app.use('/admin', addAdminData); // Add admin data to all admin routes
@@ -467,6 +484,41 @@ app.get('/signup', (req, res) => {
   });
 });
 
+app.get('/order-confirmation', (req, res) => {
+  res.render('order-confirmation', {
+    user: req.session.userId ? {
+      id: req.session.userId,
+      name: req.session.userName,
+      email: req.session.userEmail,
+      profile_picture: req.session.userProfilePicture
+    } : null
+  });
+});
+
+// Promotions page
+app.get('/promotions', (req, res) => {
+  res.render('promotions', {
+    title: 'Promotions & Deals - OMUNJU SHOPPERS',
+    page: 'promotions',
+    user: req.session.userId ? {
+      id: req.session.userId,
+      name: req.session.userName,
+      email: req.session.userEmail
+    } : null
+  });
+});
+
+app.get('/orders', isAuthenticated, async (req, res) => {
+  res.render('orders', {
+    user: {
+      id: req.session.userId,
+      name: req.session.userName,
+      email: req.session.userEmail,
+      profile_picture: req.session.userProfilePicture
+    }
+  });
+});
+
 app.get('/admin-login', (req, res) => {
   // If already logged in as admin, redirect to dashboard
   if (req.session.userId && req.session.role === 'admin') {
@@ -656,15 +708,130 @@ app.get('/categories', async (req, res) => {
   }
 });
 
-app.get('/deals', (req, res) => {
-  res.render('deals', {
-    user: req.session.userId ? {
-      id: req.session.userId,
-      name: req.session.userName,
-      email: req.session.userEmail,
-      profile_picture: req.session.userProfilePicture
-    } : null
-  });
+app.get('/deals', async (req, res) => {
+  try {
+    // Fetch active promotions from database
+    let promotions = [];
+    let promoProducts = [];
+    let activePromotion = null;
+    
+    try {
+      const [promotionsResult] = await pool.query(`
+        SELECT * FROM promotions 
+        WHERE is_active = 1 
+        AND start_date <= NOW() 
+        AND end_date >= NOW()
+        ORDER BY start_date DESC
+      `);
+      promotions = promotionsResult;
+      
+      // Set active promotion for countdown (first active one)
+      if (promotions.length > 0) {
+        activePromotion = promotions[0];
+      }
+      
+      // Fetch promotional products
+      const [promoProductsResult] = await pool.query(`
+        SELECT p.*, pr.discount_percentage, pr.title as promo_title, pr.end_date as promo_end
+        FROM products p
+        LEFT JOIN promotion_products pp ON p.id = pp.product_id
+        LEFT JOIN promotions pr ON pp.promotion_id = pr.id AND pr.is_active = 1
+        WHERE (p.discount > 0 OR pr.id IS NOT NULL)
+        AND p.stock > 0
+        ORDER BY p.created_at DESC
+        LIMIT 12
+      `);
+      promoProducts = promoProductsResult;
+    } catch (dbError) {
+      console.log('Database not available, using static data');
+    }
+    
+    res.render('deals', {
+      user: req.session.userId ? {
+        id: req.session.userId,
+        name: req.session.userName,
+        email: req.session.userEmail,
+        profile_picture: req.session.userProfilePicture
+      } : null,
+      promotions: promotions,
+      promoProducts: promoProducts,
+      activePromotion: activePromotion
+    });
+  } catch (error) {
+    console.error('Deals page error:', error);
+    res.render('deals', {
+      user: req.session.userId ? {
+        id: req.session.userId,
+        name: req.session.userName,
+        email: req.session.userEmail,
+        profile_picture: req.session.userProfilePicture
+      } : null,
+      promotions: [],
+      promoProducts: [],
+      activePromotion: null
+    });
+  }
+});
+
+app.get('/promotions', async (req, res) => {
+  try {
+    // Try to fetch promotions from database
+    let promotions = [];
+    let promoProducts = [];
+    
+    try {
+      // Fetch active promotions from database
+      const [promotionsResult] = await pool.query(`
+        SELECT * FROM promotions 
+        WHERE is_active = 1 
+        AND start_date <= NOW() 
+        AND end_date >= NOW()
+        ORDER BY start_date DESC
+      `);
+      promotions = promotionsResult;
+      
+      // Fetch promotional products (products with discounts)
+      const [promoProductsResult] = await pool.query(`
+        SELECT p.*, pr.discount_percentage, pr.title as promo_title, pr.end_date as promo_end
+        FROM products p
+        LEFT JOIN promotions pr ON p.id = pr.product_id AND pr.is_active = 1 AND pr.end_date >= NOW()
+        WHERE p.discount > 0 OR p.id IN (SELECT product_id FROM promotions WHERE is_active = 1 AND end_date >= NOW())
+        ORDER BY p.discount DESC
+        LIMIT 20
+      `);
+      promoProducts = promoProductsResult;
+    } catch (dbError) {
+      console.log('Database query failed, using empty data:', dbError.message);
+      // Table might not exist, use empty arrays
+    }
+    
+    res.render('promotions', {
+      title: 'Promotions & Deals - OMUNJU SHOPPERS',
+      page: 'promotions',
+      user: req.session.userId ? {
+        id: req.session.userId,
+        name: req.session.userName,
+        email: req.session.userEmail,
+        profile_picture: req.session.userProfilePicture
+      } : null,
+      promotions: promotions,
+      promoProducts: promoProducts
+    });
+  } catch (error) {
+    console.error('Promotions page error:', error);
+    res.render('promotions', {
+      title: 'Promotions & Deals - OMUNJU SHOPPERS',
+      page: 'promotions',
+      user: req.session.userId ? {
+        id: req.session.userId,
+        name: req.session.userName,
+        email: req.session.userEmail,
+        profile_picture: req.session.userProfilePicture
+      } : null,
+      promotions: [],
+      promoProducts: []
+    });
+  }
 });
 
 app.get('/cart', (req, res) => {
@@ -676,6 +843,37 @@ app.get('/cart', (req, res) => {
       id: req.session.userId,
       name: req.session.userName,
       email: req.session.userEmail,
+      profile_picture: req.session.userProfilePicture
+    }
+  });
+});
+
+app.get('/wishlist', (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect('/login');
+  }
+  res.render('wishlist', {
+    user: {
+      id: req.session.userId,
+      name: req.session.userName,
+      email: req.session.userEmail,
+      profile_picture: req.session.userProfilePicture
+    }
+  });
+});
+
+app.get('/checkout', (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect('/login?redirect=/checkout');
+  }
+  res.render('checkout', {
+    user: {
+      id: req.session.userId,
+      name: req.session.userName,
+      email: req.session.userEmail,
+      phone: req.session.userPhone,
+      address: req.session.userAddress,
+      city: req.session.userCity,
       profile_picture: req.session.userProfilePicture
     }
   });

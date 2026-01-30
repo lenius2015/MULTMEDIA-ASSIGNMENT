@@ -9,127 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="/socket.io/socket.io.js"></script>
 </head>
-<body>
-  <!-- Notification Bar -->
-  <div class="notification-bar">
-    <div class="notification-content">
-      <i class="fas fa-shipping-fast"></i>
-      <span>Free shipping on orders above Tsh 50,000 | Use code: OMUNJU01</span>
-    </div>
-  </div>
-
-  <!-- Navigation Bar -->
-  <header class="navbar-header">
-    <nav class="navbar">
-      <div class="nav-container">
-        <!-- Logo -->
-        <div class="logo">
-          <i class="fas fa-shopping-bag logo-icon"></i>
-          <div class="logo-text">
-            <span class="logo-main">OMUNJU</span>
-            <span class="logo-sub">SHOPPERS</span>
-          </div>
-        </div>
-
-        <!-- Search Bar -->
-        <div class="search-bar">
-          <select class="search-category">
-            <option value="all">All Categories</option>
-            <option value="electronics">Electronics</option>
-            <option value="fashion">Fashion</option>
-            <option value="home">Home & Garden</option>
-            <option value="sports">Sports</option>
-            <option value="beauty">Beauty</option>
-          </select>
-          <input type="text" id="globalSearch" placeholder="Search for products, brands and more..." aria-label="Search products">
-          <button type="button" id="searchBtn" aria-label="Search">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-
-        <!-- Mobile Hamburger -->
-        <div class="hamburger" id="hamburger">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-
-        <!-- Navigation Links -->
-        <ul class="nav-links" id="navLinks">
-          <li><a href="/" class="active"><i class="fas fa-home"></i> Home</a></li>
-          <li><a href="#categories"><i class="fas fa-th-large"></i> Categories</a></li>
-          <li><a href="#deals"><i class="fas fa-tags"></i> Deals</a></li>
-          <li><a href="/about"><i class="fas fa-info-circle"></i> About Us</a></li>
-          <li><a href="/contact"><i class="fas fa-envelope"></i> Contact</a></li>
-        </ul>
-
-        <!-- Right Side Icons -->
-        <div class="nav-icons">
-          <% if (user) { %>
-            <a href="/profile" class="nav-icon-link" title="My Account">
-              <i class="fas fa-user-circle"></i>
-              <span class="icon-label">Account</span>
-            </a>
-          <% } else { %>
-            <a href="/login" class="nav-icon-link" title="Login">
-              <i class="fas fa-user"></i>
-              <span class="icon-label">Login</span>
-            </a>
-          <% } %>
-          
-          <button class="nav-icon-link cart-icon" id="cartBtn" title="Shopping Cart">
-            <i class="fas fa-shopping-cart"></i>
-            <span class="cart-badge">0</span>
-            <span class="icon-label">Cart</span>
-          </button>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Secondary Navigation -->
-    <div class="secondary-nav">
-      <div class="nav-container">
-        <div class="category-menu">
-          <button class="category-menu-btn">
-            <i class="fas fa-bars"></i>
-            All Categories
-          </button>
-          <div class="category-dropdown">
-            <a href="#" class="category-dropdown-item">
-              <i class="fas fa-laptop"></i> Electronics
-            </a>
-            <a href="#" class="category-dropdown-item">
-              <i class="fas fa-tshirt"></i> Fashion & Apparel
-            </a>
-            <a href="#" class="category-dropdown-item">
-              <i class="fas fa-home"></i> Home & Garden
-            </a>
-            <a href="#" class="category-dropdown-item">
-              <i class="fas fa-dumbbell"></i> Sports & Outdoors
-            </a>
-            <a href="#" class="category-dropdown-item">
-              <i class="fas fa-spa"></i> Beauty & Health
-            </a>
-            <a href="#" class="category-dropdown-item">
-              <i class="fas fa-baby"></i> Baby & Kids
-            </a>
-            <a href="#" class="category-dropdown-item">
-              <i class="fas fa-book"></i> Books & Media
-            </a>
-            <a href="#" class="category-dropdown-item">
-              <i class="fas fa-gamepad"></i> Toys & Games
-            </a>
-          </div>
-        </div>
-        <div class="quick-links">
-          <a href="#deals">Today's Deals</a>
-          <a href="#new">New Arrivals</a>
-          <a href="#trending">Trending</a>
-          <a href="#bestsellers">Best Sellers</a>
-        </div>
-      </div>
-    </div>
-  </header>
+<body data-user='<%- JSON.stringify(typeof user !== 'undefined' ? user : null) %>'>
+  <!-- Use Shared Header Partial -->
+  <%- include('partials/header', { page: 'home', user: user }); %>
 
   <!-- Hero Section with Slider -->
   <section class="hero-slider" id="home">
@@ -1019,7 +901,85 @@
     }
 
     function exploreCategory(category) {
-      window.location.href = `/products?category=${encodeURIComponent(category)}`;
+      window.location.href = `/category/${encodeURIComponent(category)}`;
+    }
+
+    // Add to Cart functionality
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+      button.addEventListener('click', async function() {
+        const productCard = this.closest('.product-card');
+        const productId = productCard.dataset.productId;
+        
+        // Check if user is logged in
+        const userData = document.body.getAttribute('data-user');
+        if (!userData || userData === 'null') {
+          alert('Please login to add items to cart');
+          window.location.href = '/login';
+          return;
+        }
+        
+        // Show loading state
+        this.textContent = 'Adding...';
+        this.disabled = true;
+        
+        try {
+          const response = await fetch('/api/cart', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              productId: productId,
+              quantity: 1
+            })
+          });
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            alert('✓ Added to cart!');
+            updateCartBadge();
+          } else {
+            alert('Failed to add: ' + result.message);
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error adding to cart');
+        }
+        
+        // Reset button
+        this.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to Cart';
+        this.disabled = false;
+      });
+    });
+
+    // Quick View functionality
+    document.querySelectorAll('.quick-view-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const productCard = this.closest('.product-card');
+        const productId = productCard.dataset.productId;
+        
+        if (productId) {
+          window.location.href = '/product/' + productId;
+        }
+      });
+    });
+
+    // Update cart badge
+    async function updateCartBadge() {
+      try {
+        const response = await fetch('/api/profile/cart');
+        const result = await response.json();
+        
+        if (result.success) {
+          const cartBadge = document.querySelector('.cart-badge');
+          if (cartBadge) {
+            cartBadge.textContent = result.itemCount || 0;
+          }
+        }
+      } catch (error) {
+        console.error('Error updating cart badge:', error);
+      }
     }
   </script>
 </body>

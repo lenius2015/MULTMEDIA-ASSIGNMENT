@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
     <style>
         /* Contact Page Specific Styles */
         :root {
@@ -649,34 +650,9 @@
         }
     </style>
 </head>
-<body>
-    <!-- Navigation Bar -->
-    <nav class="navbar" id="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <span class="logo-sixteen">OMUNJU</span>
-                <span class="logo-clothing">SHOPPERS</span>
-            </div>
-
-            <div class="nav-menu">
-                <a href="/" class="nav-link">Home</a>
-                <a href="/categories" class="nav-link">Categories</a>
-                <a href="/deals" class="nav-link">Deals</a>
-                <a href="/about" class="nav-link">About Us</a>
-                <a href="/contact" class="nav-link active">Contact</a>
-            </div>
-
-            <div class="nav-actions">
-                <% if (!user) { %>
-                    <a href="/login" class="btn-login">Login</a>
-                    <a href="/signup" class="btn-signup">Sign Up</a>
-                <% } %>
-                <div class="cart-icon">
-                    <i class="fas fa-shopping-cart"></i>
-                </div>
-            </div>
-        </div>
-    </nav>
+<body data-user='<%- JSON.stringify(typeof user !== 'undefined' ? user : null) %>'>
+    <!-- Use Shared Header Partial -->
+    <%- include('partials/header', { page: 'contact', user: user }); %>
 
     <!-- Hero Section -->
     <section class="hero-section">
@@ -958,6 +934,7 @@
     </footer>
 
     <!-- Shared Chatbot Widget -->
+    <script src="/socket.io/socket.io.js"></script>
     <script src="/chatbot.js"></script>
     <script>
         // Initialize the shared chatbot

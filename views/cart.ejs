@@ -305,13 +305,117 @@
                 margin-top: 10px;
             }
         }
+
+        /* Free Shipping Progress Bar */
+        .free-shipping-progress {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .free-shipping-title {
+            font-size: 1.1rem;
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .free-shipping-title i {
+            color: var(--success-green);
+        }
+
+        .progress-bar-container {
+            background: var(--medium-gray);
+            border-radius: 50px;
+            height: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-green), #34ce57);
+            border-radius: 50px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-text {
+            margin-top: 12px;
+            font-size: 0.95rem;
+            color: var(--dark-gray);
+            text-align: center;
+        }
+
+        .progress-text span {
+            font-weight: 600;
+            color: var(--primary-orange);
+        }
+
+        .free-shipping-achieved {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 2px solid var(--success-green);
+        }
+
+        .free-shipping-achieved .free-shipping-title i {
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .shipping-truck {
+            display: inline-block;
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body>
     <!-- Navigation Bar -->
-    <%- include('./partials/header', { currentPage: 'cart' }) %>
+    <%- include('./partials/header', { page: 'cart', user: user }) %>
 
     <div class="cart-container">
+        <!-- Free Shipping Progress Bar -->
+        <div class="free-shipping-progress" id="freeShippingProgress">
+            <h3 class="free-shipping-title">
+                <i class="fas fa-shipping-fast"></i>
+                <span id="shippingProgressTitle">Unlock Free Shipping!</span>
+            </h3>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progressBarFill" style="width: 0%"></div>
+            </div>
+            <p class="progress-text" id="progressText">
+                Add <span id="amountNeeded">Tsh 50,000</span> more for free shipping!
+            </p>
+        </div>
+
         <!-- Cart Header -->
         <div class="cart-header">
             <h1 class="cart-title">Shopping Cart</h1>
@@ -360,28 +464,215 @@
 
     <script>
         let cartData = [];
+        const isLoggedIn = <%= user ? 'true' : 'false' %>;
+        const FREE_SHIPPING_THRESHOLD = 50000;
 
-        // Load cart on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadCart();
+            initializeFreeShippingProgress();
         });
+
+        function initializeFreeShippingProgress() {
+            window.addEventListener('cartUpdated', updateFreeShippingProgress);
+        }
+
+        function updateFreeShippingProgress() {
+            const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace(/,/g, '')) || 0;
+            const progressBar = document.getElementById('progressBarFill');
+            const progressTitle = document.getElementById('shippingProgressTitle');
+            const progressText = document.getElementById('progressText');
+            const amountNeeded = document.getElementById('amountNeeded');
+            const progressContainer = document.getElementById('freeShippingProgress');
+
+            if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+                progressBar.style.width = '100%';
+                progressTitle.innerHTML = '<i class="fas fa-check-circle"></i> You unlocked Free Shipping!';
+                progressText.innerHTML = '<span style="color: var(--success-green);"><i class="fas fa-truck"></i> Your order ships FREE!</span>';
+                progressContainer.classList.add('free-shipping-achieved');
+            } else {
+                const percentage = Math.min((subtotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
+                const remaining = FREE_SHIPPING_THRESHOLD - subtotal;
+                progressBar.style.width = percentage + '%';
+                progressTitle.innerHTML = '<i class="fas fa-shipping-fast"></i> Unlock Free Shipping!';
+                amountNeeded.textContent = 'Tsh ' + remaining.toLocaleString();
+                progressContainer.classList.remove('free-shipping-achieved');
+            }
+        }
 
         async function loadCart() {
             try {
-                const response = await fetch('/api/cart');
-                const result = await response.json();
+                if (isLoggedIn) {
+                    // Logged in user - fetch from server
+                    const response = await fetch('/api/cart');
+                    const result = await response.json();
 
-                if (result.success) {
-                    cartData = result.cart;
-                    renderCart();
-                    updateSummary(result.total, result.itemCount);
+                    if (result.success) {
+                        cartData = result.cart;
+                        renderCart();
+                        updateSummary(result.total, result.itemCount);
+                    } else {
+                        showError('Failed to load cart');
+                    }
                 } else {
-                    showError('Failed to load cart');
+                    // Guest user - load from localStorage
+                    const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+                    if (guestCart.length === 0) {
+                        renderEmptyCart();
+                        updateSummary('0.00', 0);
+                        return;
+                    }
+                    
+                    // Fetch product details for guest cart items
+                    const productIds = guestCart.map(item => item.productId).join(',');
+                    const response = await fetch(`/products?ids=${productIds}`);
+                    const result = await response.json();
+                    
+                    if (result.success && result.products) {
+                        // Map guest cart items to product details
+                        cartData = guestCart.map(cartItem => {
+                            const product = result.products.find(p => p.id === parseInt(cartItem.productId));
+                            if (product) {
+                                return {
+                                    product_id: product.id,
+                                    name: product.name,
+                                    price: product.price,
+                                    discount: product.discount || 0,
+                                    image_url: product.image_url,
+                                    stock: product.stock,
+                                    quantity: cartItem.quantity,
+                                    discounted_price: product.price - (product.price * (product.discount || 0) / 100)
+                                };
+                            }
+                            return null;
+                        }).filter(item => item !== null);
+                        
+                        renderCart();
+                        calculateGuestTotal();
+                    } else {
+                        showError('Failed to load cart items');
+                    }
                 }
             } catch (error) {
                 console.error('Load cart error:', error);
                 showError('Failed to load cart');
             }
+        }
+
+        function calculateGuestTotal() {
+            const total = cartData.reduce((sum, item) => {
+                const price = item.discounted_price || item.price;
+                return sum + (price * item.quantity);
+            }, 0);
+            const itemCount = cartData.reduce((sum, item) => sum + item.quantity, 0);
+            updateSummary(total.toFixed(2), itemCount);
+            updateFreeShippingProgress();
+        }
+
+        function renderEmptyCart() {
+            const cartItemsEl = document.getElementById('cartItems');
+            cartItemsEl.innerHTML = `
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <h3>Your cart is empty</h3>
+                    <p>Add some products to get started!</p>
+                    <button class="shop-btn" onclick="window.location.href='/'">
+                        <i class="fas fa-shopping-bag"></i>
+                        Start Shopping
+                    </button>
+                </div>
+            `;
+        }
+
+        async function updateQuantity(productId, newQuantity) {
+            if (newQuantity < 1) return;
+
+            if (isLoggedIn) {
+                // Logged in user - update via API
+                try {
+                    const response = await fetch(`/api/cart/${productId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ quantity: parseInt(newQuantity) })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        await loadCart();
+                        showNotification('Quantity updated', 'success');
+                    } else {
+                        showNotification(result.message || 'Failed to update quantity', 'error');
+                    }
+                } catch (error) {
+                    console.error('Update quantity error:', error);
+                    showNotification('Failed to update quantity', 'error');
+                }
+            } else {
+                // Guest user - update localStorage
+                let guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+                const item = guestCart.find(item => item.productId === productId);
+                if (item) {
+                    item.quantity = parseInt(newQuantity);
+                    localStorage.setItem('guestCart', JSON.stringify(guestCart));
+                    await loadCart();
+                    showNotification('Quantity updated', 'success');
+                }
+            }
+        }
+
+        async function removeItem(productId) {
+            if (!confirm('Are you sure you want to remove this item from your cart?')) {
+                return;
+            }
+
+            if (isLoggedIn) {
+                // Logged in user - remove via API
+                try {
+                    const response = await fetch(`/api/cart/${productId}`, {
+                        method: 'DELETE'
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        await loadCart();
+                        showNotification('Item removed from cart', 'success');
+                    } else {
+                        showNotification(result.message || 'Failed to remove item', 'error');
+                    }
+                } catch (error) {
+                    console.error('Remove item error:', error);
+                    showNotification('Failed to remove item', 'error');
+                }
+            } else {
+                // Guest user - remove from localStorage
+                let guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+                guestCart = guestCart.filter(item => item.productId !== productId);
+                localStorage.setItem('guestCart', JSON.stringify(guestCart));
+                await loadCart();
+                showNotification('Item removed from cart', 'success');
+            }
+        }
+
+        function proceedToCheckout() {
+            if (cartData.length === 0) {
+                showNotification('Your cart is empty', 'warning');
+                return;
+            }
+            
+            if (!isLoggedIn) {
+                // Redirect guest to login
+                showNotification('Please login to proceed to checkout', 'warning');
+                setTimeout(() => {
+                    window.location.href = '/login?redirect=/checkout';
+                }, 1500);
+                return;
+            }
+            
+            // Redirect to checkout page
+            window.location.href = '/checkout';
         }
 
         function renderCart() {
@@ -495,10 +786,9 @@
                 showNotification('Your cart is empty', 'warning');
                 return;
             }
-
-            // For now, just show a placeholder message
-            showNotification('Checkout functionality will be implemented next', 'info');
-            // TODO: Implement checkout/payment functionality
+            
+            // Redirect to checkout page
+            window.location.href = '/checkout';
         }
 
         function showError(message) {

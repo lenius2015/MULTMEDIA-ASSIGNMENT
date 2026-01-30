@@ -460,7 +460,7 @@
     </style>
 </head>
 <body data-user='<%- JSON.stringify(user || null) %>'>
-    <% include partials/header %>
+    <%- include('partials/header', { page: 'categories', user: user }); %>
 
     <!-- Category Header -->
     <section class="category-header">
@@ -504,6 +504,28 @@
         </div>
     </section>
 
+    <!-- Recently Viewed Section -->
+    <section class="recently-viewed-section" id="recentlyViewedSection" style="display: none;">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-clock"></i> Recently Viewed</h2>
+            <div class="recently-viewed-grid" id="recentlyViewedGrid">
+                <!-- Recently viewed products will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Within Category -->
+    <section class="search-section">
+        <div class="container">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="categorySearchInput" placeholder="Search in this category..." class="search-input">
+                <button class="search-btn" id="categorySearchBtn">Search</button>
+            </div>
+            <div class="search-results-info" id="searchResultsInfo" style="display: none;"></div>
+        </div>
+    </section>
+
     <!-- Products Section -->
     <section class="products-section">
         <div class="container">
@@ -511,6 +533,12 @@
                 <div>
                     <h2 class="products-title" id="productsTitle">Products</h2>
                     <p class="products-count" id="productsCount">Loading products...</p>
+                </div>
+                <div class="products-actions">
+                    <button class="compare-toggle-btn" id="compareToggleBtn" title="Compare Products">
+                        <i class="fas fa-balance-scale"></i>
+                        <span class="compare-count" id="compareCount">0</span>
+                    </button>
                 </div>
             </div>
 
@@ -526,7 +554,34 @@
         </div>
     </section>
 
-    <% include partials/footer %>
+    <!-- Compare Modal -->
+    <div class="compare-modal" id="compareModal">
+        <div class="compare-modal-content">
+            <div class="compare-modal-header">
+                <h3><i class="fas fa-balance-scale"></i> Compare Products</h3>
+                <button class="compare-modal-close" id="compareModalClose">&times;</button>
+            </div>
+            <div class="compare-modal-body" id="compareModalBody">
+                <!-- Compare content will be loaded dynamically -->
+            </div>
+            <div class="compare-modal-footer">
+                <button class="btn-clear-compare" id="clearCompareBtn">Clear All</button>
+                <button class="btn-close-compare" id="closeCompareBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick View Modal -->
+    <div class="quick-view-modal" id="quickViewModal">
+        <div class="quick-view-modal-content">
+            <button class="quick-view-modal-close" id="quickViewModalClose">&times;</button>
+            <div class="quick-view-body" id="quickViewBody">
+                <!-- Quick view content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
 
     <script>
         // Initialize the shared chatbot if available and not already initialized

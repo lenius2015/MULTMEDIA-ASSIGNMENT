@@ -733,6 +733,64 @@
     color: var(--admin-text-light);
 }
 
+/* Chart Container */
+.chart-container {
+    background-color: var(--admin-white);
+    border-radius: 8px;
+    box-shadow: var(--admin-shadow);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 350px;
+    width: 100%;
+}
+
+.chart-wrapper-small {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+.chart-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: var(--admin-text-light);
+    text-align: center;
+}
+
+.chart-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    color: var(--admin-border);
+}
+
+/* Action Buttons */
+.btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    color: var(--admin-text-light);
+    transition: all 0.2s;
+}
+
+.btn-icon:hover {
+    background-color: var(--admin-light);
+    color: var(--admin-primary);
+}
+
+.btn-icon.delete:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: var(--admin-danger);
+}
+
 /* Toast Notifications */
 .toast-container {
     position: fixed;

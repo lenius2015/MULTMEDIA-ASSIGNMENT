@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeSearch();
   initializeGlobalSearch();
   syncCartCount();
+  syncWishlistCount();
 
   // Hide logged-in account promo blocks on public pages
   try {
@@ -238,6 +239,16 @@ async function initializeCart() {
 }
 
 async function addToCart(productId, quantity = 1, button = null) {
+  // Check if user is logged in
+  const userData = document.body.getAttribute('data-user');
+  const isLoggedIn = userData && userData !== 'null' && userData !== '{"id":null}';
+  
+  if (!isLoggedIn) {
+    // Guest user - use localStorage
+    addToCartGuest(productId, quantity, button);
+    return;
+  }
+  
   try {
     const response = await fetch('/api/cart', {
       method: 'POST',
@@ -272,6 +283,31 @@ async function addToCart(productId, quantity = 1, button = null) {
   } catch (error) {
     console.error('Add to cart error:', error);
     showNotification('Failed to add to cart. Please try again.', 'error');
+  }
+}
+
+function addToCartGuest(productId, quantity = 1, button = null) {
+  // Get existing guest cart from localStorage
+  let guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+  
+  // Check if product already in cart
+  const existingItem = guestCart.find(item => item.productId === productId);
+  if (existingItem) {
+    existingItem.quantity += quantity;
+  } else {
+    guestCart.push({ productId, quantity });
+  }
+  
+  // Save to localStorage
+  localStorage.setItem('guestCart', JSON.stringify(guestCart));
+  
+  // Update cart count
+  cartCount = guestCart.reduce((sum, item) => sum + item.quantity, 0);
+  updateCartBadge();
+  
+  showNotification('Item added to cart!', 'success');
+  if (button) {
+    animateAddToCart(button);
   }
 }
 
@@ -354,6 +390,18 @@ function updateCartBadge() {
 }
 
 async function syncCartCount() {
+  // Check if user is logged in
+  const userData = document.body.getAttribute('data-user');
+  const isLoggedIn = userData && userData !== 'null' && userData !== '{"id":null}';
+  
+  if (!isLoggedIn) {
+    // Guest user - load from localStorage
+    const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+    cartCount = guestCart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    updateCartBadge();
+    return;
+  }
+  
   try {
     const response = await fetch('/api/cart');
     const result = await response.json();
@@ -363,6 +411,71 @@ async function syncCartCount() {
     }
   } catch (error) {
     console.error('Failed to sync cart count:', error);
+  }
+}
+
+async function syncWishlistCount() {
+  const wishlistBadge = document.querySelector('.wishlist-badge');
+  if (!wishlistBadge) return;
+  
+  try {
+    const response = await fetch('/api/wishlist/count');
+    const result = await response.json();
+    if (result.success && result.count > 0) {
+      wishlistBadge.textContent = result.count;
+      wishlistBadge.style.display = 'inline-block';
+    } else {
+      wishlistBadge.style.display = 'none';
+    }
+  } catch (error) {
+    console.error('Failed to sync wishlist count:', error);
+  }
+}
+
+async function toggleWishlist(productId, button) {
+  // Check if user is logged in
+  const userData = document.body.getAttribute('data-user');
+  if (!userData || userData === 'null' || userData === '{"id":null}') {
+    showNotification('Please login to save items to your wishlist', 'warning');
+    setTimeout(() => {
+      window.location.href = '/login';
+    }, 1500);
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/wishlist', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ productId })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      // Toggle heart icon
+      const icon = button.querySelector('i');
+      if (icon.classList.contains('far')) {
+        icon.classList.remove('far');
+        icon.classList.add('fas');
+        icon.style.color = '#ff6b35';
+        showNotification('Added to wishlist!', 'success');
+      } else {
+        icon.classList.remove('fas');
+        icon.classList.add('far');
+        icon.style.color = '';
+        showNotification('Removed from wishlist', 'info');
+      }
+      // Update wishlist count
+      syncWishlistCount();
+    } else {
+      showNotification(result.message || 'Failed to update wishlist', 'error');
+    }
+  } catch (error) {
+    console.error('Error updating wishlist:', error);
+    showNotification('Error updating wishlist', 'error');
   }
 }
 
@@ -988,6 +1101,279 @@ function showQuickViewModal(title, price, image) {
   // Show modal
   modal.classList.add('show');
 }
+
+// ========== EXIT-INTENT POPUP ==========
+let exitIntentShown = false;
+let exitIntentSubscribed = false;
+
+function initializeExitIntent() {
+  // Don't show on cart, checkout, login, signup pages
+  const path = window.location.pathname;
+  if (path.includes('/cart') || path.includes('/checkout') || path.includes('/login') || path.includes('/signup')) {
+    return;
+  }
+
+  // Check if already subscribed
+  const email = localStorage.getItem('exitPopupSubscribed');
+  if (email === 'true') {
+    exitIntentSubscribed = true;
+    return;
+  }
+
+  // Exit intent detection
+  document.addEventListener('mouseout', function(e) {
+    if (!e.toElement && !e.relatedTarget && !exitIntentShown && !exitIntentSubscribed) {
+      // Mouse left the viewport
+      exitIntentShown = true;
+      setTimeout(showExitIntentPopup, 100);
+    }
+  });
+
+  // Also detect when user is about to close tab (key combination)
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'F4' || (e.ctrlKey && e.key === 'w') || (e.metaKey && e.key === 'w')) {
+      if (!exitIntentShown && !exitIntentSubscribed) {
+        exitIntentShown = true;
+        showExitIntentPopup();
+      }
+    }
+  });
+}
+
+function showExitIntentPopup() {
+  if (exitIntentSubscribed) return;
+
+  const popup = document.createElement('div');
+  popup.className = 'exit-intent-popup';
+  popup.id = 'exitIntentPopup';
+  popup.innerHTML = `
+    <div class="exit-popup-overlay" onclick="closeExitIntentPopup()"></div>
+    <div class="exit-popup-content">
+      <button class="exit-popup-close" onclick="closeExitIntentPopup()">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="exit-popup-header">
+        <i class="fas fa-gift"></i>
+      </div>
+      <h2>Wait! Don't Leave Yet!</h2>
+      <p>Get <strong>10% OFF</strong> your first order when you subscribe to our newsletter.</p>
+      <p class="exit-popup-subtitle">Plus, get free shipping on your first purchase!</p>
+      <form class="exit-popup-form" onsubmit="submitExitIntentEmail(event)">
+        <input type="email" id="exitPopupEmail" placeholder="Enter your email address" required>
+        <button type="submit">
+          <i class="fas fa-envelope"></i> Get My 10% OFF
+        </button>
+      </form>
+      <p class="exit-popup-note">We respect your privacy. Unsubscribe anytime.</p>
+      <button class="exit-popup-skip" onclick="closeExitIntentPopup()">
+        No thanks, I'd rather pay full price
+      </button>
+    </div>
+  `;
+
+  // Add styles
+  const styles = document.createElement('style');
+  styles.textContent = `
+    .exit-intent-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    .exit-intent-popup.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    .exit-popup-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+    }
+    .exit-popup-content {
+      position: relative;
+      background: white;
+      padding: 50px 40px;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 450px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+    }
+    .exit-intent-popup.show .exit-popup-content {
+      transform: scale(1);
+    }
+    .exit-popup-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #999;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    .exit-popup-close:hover {
+      color: #ff6b35;
+    }
+    .exit-popup-header {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #ff6b35, #f77f00);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .exit-popup-header i {
+      font-size: 36px;
+      color: white;
+    }
+    .exit-popup-content h2 {
+      color: #004e89;
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+    }
+    .exit-popup-content p {
+      color: #666;
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+    .exit-popup-subtitle {
+      color: #28a745 !important;
+      font-weight: 500;
+    }
+    .exit-popup-form {
+      display: flex;
+      gap: 10px;
+      margin: 25px 0;
+    }
+    .exit-popup-form input {
+      flex: 1;
+      padding: 15px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+    .exit-popup-form input:focus {
+      outline: none;
+      border-color: #ff6b35;
+    }
+    .exit-popup-form button {
+      padding: 15px 25px;
+      background: linear-gradient(135deg, #ff6b35, #f77f00);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      white-space: nowrap;
+    }
+    .exit-popup-form button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(255, 107, 53, 0.4);
+    }
+    .exit-popup-note {
+      font-size: 0.85rem !important;
+      color: #999 !important;
+      margin-bottom: 20px !important;
+    }
+    .exit-popup-skip {
+      background: none;
+      border: none;
+      color: #999;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-decoration: underline;
+      transition: color 0.3s ease;
+    }
+    .exit-popup-skip:hover {
+      color: #ff6b35;
+    }
+    @media (max-width: 480px) {
+      .exit-popup-form {
+        flex-direction: column;
+      }
+      .exit-popup-content {
+        padding: 40px 25px;
+      }
+    }
+  `;
+  document.head.appendChild(styles);
+  document.body.appendChild(popup);
+
+  // Show popup with animation
+  setTimeout(() => {
+    popup.classList.add('show');
+  }, 100);
+}
+
+function closeExitIntentPopup() {
+  const popup = document.getElementById('exitIntentPopup');
+  if (popup) {
+    popup.classList.remove('show');
+    setTimeout(() => {
+      popup.remove();
+    }, 300);
+  }
+}
+
+async function submitExitIntentEmail(event) {
+  event.preventDefault();
+
+  const email = document.getElementById('exitPopupEmail').value;
+
+  try {
+    const response = await fetch('/api/newsletter/subscribe', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, coupon: 'WELCOME10' })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      // Store subscription status
+      localStorage.setItem('exitPopupSubscribed', 'true');
+      exitIntentSubscribed = true;
+
+      // Show success
+      showNotification('🎉 10% discount code: ' + result.couponCode, 'success');
+
+      // Close popup
+      closeExitIntentPopup();
+    } else {
+      showNotification(result.message || 'Failed to subscribe', 'error');
+    }
+  } catch (error) {
+    console.error('Subscribe error:', error);
+    showNotification('Error subscribing. Please try again.', 'error');
+  }
+}
+
+// Initialize exit intent on page load
+document.addEventListener('DOMContentLoaded', initializeExitIntent);
 
 // ========== CONSOLE WELCOME MESSAGE ==========
 console.log('%c🛍️ Welcome to OMUNJU SHOPPERS! ', 'background: #ff6b35; color: white; font-size: 20px; padding: 10px; border-radius: 5px;');

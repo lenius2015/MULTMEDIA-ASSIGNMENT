@@ -482,6 +482,52 @@ class NotificationService {
             console.error('Error cleaning up old notifications:', error);
         }
     }
+
+    /**
+     * Send notification to all active users
+     * @param {string} title - Notification title
+     * @param {string} message - Notification message
+     * @param {Object} options - Additional options
+     */
+    static async sendToAllUsers(title, message, options = {}) {
+        try {
+            const {
+                type = 'system',
+                priority = 'medium'
+            } = options;
+
+            // Get all active users
+            const [users] = await db.query('SELECT id FROM users WHERE status = "active"');
+
+            // Send notification to each user
+            for (const user of users) {
+                await this.sendToUser(user.id, title, message, {
+                    type,
+                    priority,
+                    sendEmail: false
+                });
+            }
+
+            return users.length;
+        } catch (error) {
+            console.error('Error sending notification to all users:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Notify admin about new order
+     */
+    static async notifyNewOrder(orderId, orderTotal, userId) {
+        await this.sendToAdmin(null, 'New Order Received',
+            `New order #${orderId} received. Total: TSH ${orderTotal.toLocaleString()}`, {
+            type: 'order',
+            priority: 'high',
+            relatedOrderId: orderId,
+            isBroadcast: true,
+            actionUrl: '/admin/orders'
+        });
+    }
 }
 
 module.exports = NotificationService;

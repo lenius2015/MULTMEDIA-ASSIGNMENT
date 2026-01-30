@@ -572,55 +572,76 @@
         // Form submissions
         document.getElementById('product-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            if (validateForm(this)) {
-                const formData = new FormData(this);
-                const productData = {
-                    name: formData.get('name'),
-                    sku: formData.get('sku'),
-                    description: formData.get('description'),
-                    cost_price: parseFloat(formData.get('cost_price')) || 0,
-                    price: parseFloat(formData.get('price')),
-                    discount: parseFloat(formData.get('discount')) || 0,
-                    stock: parseInt(formData.get('stock')),
-                    low_stock_threshold: parseInt(formData.get('low_stock_threshold')) || 5,
-                    category_id: parseInt(formData.get('category_id')),
-                    weight: parseFloat(formData.get('weight')) || 0,
-                    dimensions: formData.get('dimensions'),
-                    tags: formData.get('tags'),
-                    is_active: formData.has('is_active'),
-                    is_featured: formData.has('is_featured'),
-                    is_new: formData.has('is_new')
-                };
-
-                const productId = this.getAttribute('data-product-id');
-                const method = productId ? 'PUT' : 'POST';
-                const url = productId ? `/admin/products/${productId}` : '/admin/products';
-
-                fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(productData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showToast(`Product ${productId ? 'updated' : 'added'} successfully!`, 'success');
-                        hideModal('add-product-modal');
-                        this.reset();
-                        this.removeAttribute('data-product-id');
-                        document.getElementById('product-modal-title').textContent = 'Add New Product';
-                        setTimeout(() => location.reload(), 1000);
-                    } else {
-                        showToast(data.message || `Failed to ${productId ? 'update' : 'add'} product`, 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast(`Failed to ${productId ? 'update' : 'add'} product`, 'error');
-                });
+            
+            // Simple validation
+            const formData = new FormData(this);
+            const name = formData.get('name');
+            const sku = formData.get('sku');
+            const price = formData.get('price');
+            const stock = formData.get('stock');
+            const category_id = formData.get('category_id');
+            
+            if (!name || !sku || !price || !stock || !category_id) {
+                showToast('Please fill in all required fields (Name, SKU, Price, Stock, Category)', 'error');
+                return;
             }
+            
+            if (parseFloat(price) <= 0) {
+                showToast('Price must be greater than 0', 'error');
+                return;
+            }
+            
+            if (parseInt(stock) < 0) {
+                showToast('Stock cannot be negative', 'error');
+                return;
+            }
+            
+            const productData = {
+                name: name,
+                sku: sku,
+                description: formData.get('description'),
+                cost_price: parseFloat(formData.get('cost_price')) || 0,
+                price: parseFloat(price),
+                discount: parseFloat(formData.get('discount')) || 0,
+                stock: parseInt(stock),
+                low_stock_threshold: parseInt(formData.get('low_stock_threshold')) || 5,
+                category_id: parseInt(category_id),
+                weight: parseFloat(formData.get('weight')) || 0,
+                dimensions: formData.get('dimensions'),
+                tags: formData.get('tags'),
+                is_active: formData.has('is_active'),
+                is_featured: formData.has('is_featured'),
+                is_new: formData.has('is_new')
+            };
+
+            const productId = this.getAttribute('data-product-id');
+            const method = productId ? 'PUT' : 'POST';
+            const url = productId ? `/admin/products/${productId}` : '/admin/products';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(productData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(`Product ${productId ? 'updated' : 'added'} successfully!`, 'success');
+                    hideModal('add-product-modal');
+                    this.reset();
+                    this.removeAttribute('data-product-id');
+                    document.getElementById('product-modal-title').textContent = 'Add New Product';
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast(data.message || `Failed to ${productId ? 'update' : 'add'} product`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast(`Failed to ${productId ? 'update' : 'add'} product`, 'error');
+            });
         });
 
         document.getElementById('filter-form').addEventListener('submit', function(e) {

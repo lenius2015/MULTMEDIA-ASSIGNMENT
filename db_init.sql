@@ -244,3 +244,26 @@ INSERT INTO notifications (user_id, title, message, type, is_read) VALUES
 (NULL, 'Special Discount', 'Get up to 35% off on selected items this week', 'discount', FALSE),
 (NULL, 'Flash Sale', 'Limited time offer on leather jackets - 30% off!', 'discount', FALSE)
 ON DUPLICATE KEY UPDATE title=title;
+
+-- Categories table
+CREATE TABLE IF NOT EXISTS categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT,
+    image_url VARCHAR(500),
+    parent_id INT DEFAULT NULL,
+    sort_order INT DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL
+);
+
+-- Insert sample categories
+INSERT INTO categories (name, description, image_url, sort_order) VALUES
+('T-Shirts', 'Classic and graphic t-shirts for everyday wear', 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400', 1),
+('Jackets', 'Premium jackets for all seasons', 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400', 2),
+('Jeans', 'Slim fit and vintage jeans', 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400', 3),
+('Dresses', 'Elegant dresses for special occasions', 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400', 4),
+('Sweaters', 'Cozy wool and cashmere sweaters', 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400', 5)
+ON DUPLICATE KEY UPDATE name=name;

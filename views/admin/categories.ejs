@@ -103,5 +103,162 @@
     <!-- Toast Container -->
     <div class="toast-container" id="toast-container"></div>
 
-    </body>
+    <script src="/admin-buttons.js"></script>
+    <script>
+        // Category Management JavaScript
+        let currentCategoryId = null;
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // Modal functions
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            resetCategoryForm();
+        }
+
+        // Reset form
+        function resetCategoryForm() {
+            document.getElementById('category-form').reset();
+            document.getElementById('category-modal-title').textContent = 'Add New Category';
+            document.getElementById('category-status').checked = true;
+            currentCategoryId = null;
+        }
+
+        // Edit category
+        document.querySelectorAll('.edit-category-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const card = btn.closest('.category-card');
+                const categoryId = card.dataset.categoryId;
+                
+                try {
+                    const response = await fetch(`/admin/categories/${categoryId}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        const category = data.category;
+                        document.getElementById('category-name').value = category.name || '';
+                        document.getElementById('category-description').value = category.description || '';
+                        document.getElementById('category-status').checked = category.is_active;
+                        currentCategoryId = category.id;
+                        document.getElementById('category-modal-title').textContent = 'Edit Category';
+                        showModal('add-category-modal');
+                    }
+                } catch (error) {
+                    showToast('Failed to load category details', 'error');
+                }
+            });
+        });
+
+        // Delete category
+        document.querySelectorAll('.delete-category-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const card = btn.closest('.category-card');
+                const categoryId = card.dataset.categoryId;
+                const categoryName = card.querySelector('h3').textContent;
+                
+                if (confirm(`Are you sure you want to delete "${categoryName}"? This action cannot be undone.`)) {
+                    try {
+                        const response = await fetch(`/admin/categories/${categoryId}`, {
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            showToast('Category deleted successfully');
+                            setTimeout(() => window.location.reload(), 1000);
+                        } else {
+                            showToast(data.message || 'Failed to delete category', 'error');
+                        }
+                    } catch (error) {
+                        showToast('Failed to delete category', 'error');
+                    }
+                }
+            });
+        });
+
+        // Form submission
+        document.getElementById('category-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('category-name').value.trim();
+            const description = document.getElementById('category-description').value.trim();
+            const isActive = document.getElementById('category-status').checked;
+            
+            // Validate
+            if (!name) {
+                showToast('Category name is required', 'error');
+                return;
+            }
+            
+            const formData = {
+                name: name,
+                description: description,
+                is_active: isActive
+            };
+            
+            try {
+                let url = '/admin/categories';
+                let method = 'POST';
+                
+                if (currentCategoryId) {
+                    url = `/admin/categories/${currentCategoryId}`;
+                    method = 'PUT';
+                }
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(currentCategoryId ? 'Category updated successfully' : 'Category created successfully');
+                    hideModal('add-category-modal');
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showToast(data.message || 'Failed to save category', 'error');
+                }
+            } catch (error) {
+                showToast('Failed to save category', 'error');
+            }
+        });
+
+        // Close modal on backdrop click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    hideModal(modal.id);
+                }
+            });
+        });
+
+        // Close modal on X button
+        document.querySelectorAll('.modal-close').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.closest('.modal').classList.remove('active');
+                resetCategoryForm();
+            });
+        });
+    </script>
+</body>
 </html>
