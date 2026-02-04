@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeSearch();
   initializeGlobalSearch();
   syncCartCount();
+  initializeWishlist();
 
   // Hide logged-in account promo blocks on public pages
   try {
@@ -340,6 +341,87 @@ function addToCartFallback(title, price, button) {
   if (button) {
     animateAddToCart(button);
   }
+}
+
+// ========== WISHLIST HANDLERS ==========
+async function updateWishlistBadge() {
+  try {
+    const res = await fetch('/api/wishlist/count');
+    const json = await res.json();
+    if (json.success) {
+      const el = document.getElementById('wishlistBadge');
+      if (el) el.textContent = json.count || 0;
+    }
+  } catch (e) {
+    console.error('Failed to fetch wishlist count', e);
+  }
+}
+
+function initializeWishlist() {
+  // Delegated click handler for wishlist buttons inside product cards
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.product-action-btn');
+    if (!btn) return;
+
+    // Only handle wishlist button (uses heart icon or title)
+    const title = btn.getAttribute('title') || '';
+    if (!/wishlist|wish/i.test(title) && !btn.querySelector('.fa-heart')) return;
+
+    e.stopPropagation();
+    const productCard = btn.closest('.product-card');
+    const productId = productCard?.dataset.productId;
+    if (!productId) {
+      showNotification('Cannot add to wishlist: product id missing', 'error');
+      return;
+    }
+
+    // Toggle state visually immediately
+    const isActive = btn.classList.contains('active');
+    btn.classList.toggle('active');
+
+    try {
+      if (isActive) {
+        // remove
+        const res = await fetch(`/api/wishlist/${productId}`, { method: 'DELETE' });
+        const json = await res.json();
+        if (json.success) {
+          showNotification('Removed from wishlist', 'info');
+          const badge = document.getElementById('wishlistBadge');
+          if (badge) badge.textContent = json.count || 0;
+        } else if (json.message && json.message.toLowerCase().includes('login')) {
+          window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+        } else {
+          showNotification(json.message || 'Failed to remove from wishlist', 'error');
+          btn.classList.toggle('active');
+        }
+      } else {
+        // add
+        const res = await fetch('/api/wishlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showNotification('Added to wishlist!', 'success');
+          const badge = document.getElementById('wishlistBadge');
+          if (badge) badge.textContent = json.count || 0;
+        } else if (json.message && json.message.toLowerCase().includes('login')) {
+          window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+        } else {
+          showNotification(json.message || 'Failed to add to wishlist', 'error');
+          btn.classList.toggle('active');
+        }
+      }
+    } catch (err) {
+      console.error('Wishlist request failed', err);
+      showNotification('Wishlist request failed', 'error');
+      btn.classList.toggle('active');
+    }
+  });
+
+  // initial badge load
+  updateWishlistBadge();
 }
 
 function updateCartBadge() {
