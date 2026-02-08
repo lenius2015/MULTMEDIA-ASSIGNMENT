@@ -3,10 +3,16 @@ const isAuthenticated = (req, res, next) => {
   if (req.session && req.session.userId) {
     return next();
   }
-  return res.status(401).json({ 
-    success: false, 
-    message: 'Authentication required. Please login to continue.' 
-  });
+  // Check if it's an API request or web page
+  const accept = req.headers.accept || '';
+  if (accept.includes('application/json') || req.xhr || req.path.startsWith('/api/')) {
+    return res.status(401).json({ 
+      success: false, 
+      message: 'Authentication required. Please login to continue.' 
+    });
+  }
+  // Redirect to login for web pages
+  return res.redirect('/login');
 };
 
 // Check if user is admin
@@ -29,5 +35,6 @@ const optionalAuth = (req, res, next) => {
 module.exports = {
   isAuthenticated,
   isAdmin,
-  optionalAuth
+  optionalAuth,
+  requireAuth: isAuthenticated  // Alias for backward compatibility
 };

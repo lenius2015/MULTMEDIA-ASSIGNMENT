@@ -1,0 +1,249 @@
+.quickview-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:1200; }
+.quickview { width:90%; max-width:900px; background:#fff; border-radius:8px; overflow:hidden; }
+.qv-body { display:flex; gap:12px; padding:16px; }
+.qv-image img { width:320px; height:320px; object-fit:cover; }
+.qv-info { flex:1; }
+.qv-actions button { margin-right:8px; }
+.qv-close { position:absolute; right:12px; top:12px; background:transparent; border:0; font-size:22px; }
+/**
+ * Quick View Modal Styles
+ */
+
+.quickview-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.quickview-modal {
+  background: white;
+  border-radius: 16px;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.quickview-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10;
+}
+
+.quickview-close:hover {
+  background: #e5e7eb;
+}
+
+.quickview-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.quickview-image {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.quickview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.quickview-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: #ef4444;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.quickview-info {
+  padding: 32px 32px 32px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.quickview-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 8px;
+}
+
+.quickview-vendor {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 16px;
+}
+
+.quickview-price {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.quickview-price .current-price {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.quickview-price .original-price {
+  font-size: 18px;
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
+.quickview-description {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #4b5563;
+  margin: 0 0 20px;
+}
+
+.quickview-stock {
+  margin-bottom: 20px;
+}
+
+.quickview-stock .in-stock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #10b981;
+  font-weight: 500;
+}
+
+.stock-dot {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+}
+
+.quickview-stock .out-of-stock {
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.quickview-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.quickview-add-cart {
+  flex: 1;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.quickview-add-cart:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.quickview-add-cart:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.quickview-wishlist {
+  background: #f3f4f6;
+  color: #1f2937;
+  border: none;
+  padding: 16px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quickview-wishlist:hover {
+  background: #e5e7eb;
+}
+
+.quickview-wishlist.active {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.quickview-meta {
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .quickview-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .quickview-info {
+    padding: 20px;
+  }
+  
+  .quickview-title {
+    font-size: 24px;
+  }
+  
+  .quickview-price .current-price {
+    font-size: 24px;
+  }
+  
+  .quickview-actions {
+    flex-direction: column;
+  }
+}

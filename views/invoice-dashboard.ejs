@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Dashboard - OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-orange: #ff6b35;
+            --primary-blue: #004e89;
+            --accent-amber: #f77f00;
+            --soft-orange: #ff8a65;
+            --very-light-orange: #fff3e0;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #666;
+            --darker-gray: #1a1a1a;
+            --success-green: #28a745;
+            --error-red: #dc3545;
+            --shadow: 0 2px 4px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        .invoice-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .invoice-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .invoice-subtitle {
+            color: var(--dark-gray);
+            font-size: 16px;
+        }
+
+        .invoice-layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        .invoice-form-section {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            height: fit-content;
+        }
+
+        .invoice-preview-section {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--darker-gray);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--darker-gray);
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-orange);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .line-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .line-items-table th {
+            text-align: left;
+            padding: 10px;
+            background: var(--light-gray);
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--darker-gray);
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .line-items-table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--light-gray);
+            font-size: 14px;
+        }
+
+        .line-items-table input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .line-items-table .qty-input {
+            width: 80px;
+        }
+
+        .line-items-table .price-input {
+            width: 120px;
+        }
+
+        .line-items-table .amount-display {
+            font-weight: 600;
+            color: var(--primary-orange);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary-orange);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-blue);
+        }
+
+        .btn-secondary {
+            background: var(--success-green);
+            color: var(--white);
+        }
+
+        .btn-secondary:hover {
+            background: #218838;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--medium-gray);
+            color: var(--dark-gray);
+        }
+
+        .btn-outline:hover {
+            background: var(--light-gray);
+            border-color: var(--primary-orange);
+            color: var(--primary-orange);
+        }
+
+        .invoice-preview {
+            background: var(--light-gray);
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 500px;
+        }
+
+        .invoice-template {
+            background: var(--white);
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .invoice-header-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--medium-gray);
+        }
+
+        .company-info h2 {
+            color: var(--primary-blue);
+            margin-bottom: 5px;
+        }
+
+        .company-info p {
+            color: var(--dark-gray);
+            font-size: 14px;
+            margin: 2px 0;
+        }
+
+        .invoice-details h3 {
+            color: var(--darker-gray);
+            margin-bottom: 10px;
+        }
+
+        .invoice-details .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .customer-info {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .customer-info h4 {
+            color: var(--darker-gray);
+            margin-bottom: 15px;
+        }
+
+        .customer-info .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .items-table th {
+            text-align: left;
+            padding: 12px;
+            background: var(--light-gray);
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--darker-gray);
+            border-bottom: 2px solid var(--medium-gray);
+        }
+
+        .items-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--light-gray);
+            font-size: 14px;
+        }
+
+        .items-table .amount {
+            text-align: right;
+            font-weight: 600;
+            color: var(--primary-orange);
+        }
+
+        .totals-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid var(--medium-gray);
+        }
+
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .totals-row.total {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-orange);
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--medium-gray);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-draft {
+            background: var(--light-gray);
+            color: var(--dark-gray);
+        }
+
+        .status-sent {
+            background: var(--very-light-orange);
+            color: var(--primary-orange);
+        }
+
+        .status-paid {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .sidebar-section {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--darker-gray);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--light-gray);
+            padding-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--light-gray);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--dark-gray);
+            text-transform: uppercase;
+        }
+
+        .recent-invoices {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .invoice-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--light-gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .invoice-item:hover {
+            background: var(--light-gray);
+        }
+
+        .invoice-item .left {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .invoice-item .right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .invoice-number {
+            font-weight: 700;
+            color: var(--darker-gray);
+        }
+
+        .invoice-date {
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+
+        .invoice-amount {
+            font-weight: 700;
+            color: var(--primary-orange);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            display: none;
+        }
+
+        .loading-spinner {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--light-gray);
+            border-top: 4px solid var(--primary-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .invoice-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .invoice-header-info {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .items-table {
+                font-size: 12px;
+            }
+            
+            .items-table th, .items-table td {
+                padding: 8px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/header', { page: 'invoice', user: user }) %>
+
+    <div class="invoice-container">
+        <div class="invoice-header">
+            <h1 class="invoice-title">Invoice Generation Dashboard</h1>
+            <p class="invoice-subtitle">Create professional invoices with ease</p>
+        </div>
+
+        <div class="invoice-layout">
+            <!-- Invoice Form Section -->
+            <div class="invoice-form-section">
+                <form id="invoice-form">
+                    <!-- Company Information -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-building"></i>
+                            Company Information
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Company Name</label>
+                            <input type="text" id="company-name" class="form-input" placeholder="Your Company Name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Company Address</label>
+                            <textarea id="company-address" class="form-input" rows="3" placeholder="Company Address"></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" id="company-phone" class="form-input" placeholder="Phone Number">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" id="company-email" class="form-input" placeholder="Email Address">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Tax ID</label>
+                                <input type="text" id="company-tax-id" class="form-input" placeholder="Tax ID">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Website</label>
+                                <input type="url" id="company-website" class="form-input" placeholder="Website URL">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Information -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-user"></i>
+                            Customer Information
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Customer Name</label>
+                            <input type="text" id="customer-name" class="form-input" placeholder="Customer Name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Customer Address</label>
+                            <textarea id="customer-address" class="form-input" rows="3" placeholder="Customer Address"></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Contact Person</label>
+                                <input type="text" id="contact-person" class="form-input" placeholder="Contact Person">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Customer Email</label>
+                                <input type="email" id="customer-email" class="form-input" placeholder="Customer Email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Details -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-file-invoice"></i>
+                            Invoice Details
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Invoice Number</label>
+                                <input type="text" id="invoice-number" class="form-input" placeholder="INV-001">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Invoice Date</label>
+                                <input type="date" id="invoice-date" class="form-input" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Due Date</label>
+                                <input type="date" id="due-date" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Currency</label>
+                                <select id="currency" class="form-input">
+                                    <option value="TSH">Tanzanian Shilling (TSH)</option>
+                                    <option value="USD">US Dollar (USD)</option>
+                                    <option value="EUR">Euro (EUR)</option>
+                                    <option value="GBP">British Pound (GBP)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Payment Terms</label>
+                            <input type="text" id="payment-terms" class="form-input" placeholder="e.g., Net 30 days">
+                        </div>
+                    </div>
+
+                    <!-- Line Items -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-list"></i>
+                            Line Items
+                        </div>
+                        
+                        <table class="line-items-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40%;">Description</th>
+                                    <th style="width: 15%;">Quantity</th>
+                                    <th style="width: 20%;">Unit Price</th>
+                                    <th style="width: 20%;">Amount</th>
+                                    <th style="width: 5%;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="line-items-body">
+                                <tr>
+                                    <td><input type="text" class="form-input" placeholder="Item description"></td>
+                                    <td><input type="number" class="form-input qty-input" value="1" min="1"></td>
+                                    <td><input type="number" class="form-input price-input" value="0.00" min="0" step="0.01"></td>
+                                    <td class="amount-display">TSH 0.00</td>
+                                    <td><button type="button" class="btn btn-outline" onclick="removeLineItem(this)">Remove</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div class="btn-row">
+                            <button type="button" class="btn btn-outline" onclick="addLineItem()">
+                                <i class="fas fa-plus"></i> Add Item
+                            </button>
+                            <button type="button" class="btn btn-outline" onclick="loadCartItems()">
+                                <i class="fas fa-shopping-cart"></i> Load Cart Items
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tax & Discounts -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-percentage"></i>
+                            Tax & Discounts
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Tax Rate (%)</label>
+                                <input type="number" id="tax-rate" class="form-input" value="0" min="0" max="100" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Discount (%)</label>
+                                <input type="number" id="discount-rate" class="form-input" value="0" min="0" max="100" step="0.1">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Notes</label>
+                            <textarea id="notes" class="form-input" rows="3" placeholder="Additional notes or terms"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-tools"></i>
+                            Actions
+                        </div>
+                        
+                        <div class="btn-row">
+                            <button type="button" class="btn btn-primary" onclick="generateInvoice()">
+                                <i class="fas fa-file-invoice"></i> Generate Invoice
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="saveDraft()">
+                                <i class="fas fa-save"></i> Save Draft
+                            </button>
+                            <button type="button" class="btn btn-outline" onclick="clearForm()">
+                                <i class="fas fa-eraser"></i> Clear Form
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Invoice Preview Section -->
+            <div class="invoice-preview-section">
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Quick Actions</h3>
+                    <div class="btn-row" style="flex-direction: column;">
+                        <button class="btn btn-primary" onclick="printInvoice()">
+                            <i class="fas fa-print"></i> Print Invoice
+                        </button>
+                        <button class="btn btn-secondary" onclick="downloadPDF()">
+                            <i class="fas fa-download"></i> Download PDF
+                        </button>
+                        <button class="btn btn-outline" onclick="sendEmail()">
+                            <i class="fas fa-envelope"></i> Send Email
+                        </button>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Invoice Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-invoices">0</div>
+                            <div class="stat-label">Total Invoices</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-revenue">TSH 0</div>
+                            <div class="stat-label">Total Revenue</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="pending-invoices">0</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="paid-invoices">0</div>
+                            <div class="stat-label">Paid</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Recent Invoices</h3>
+                    <div class="recent-invoices" id="recent-invoices-list">
+                        <!-- Recent invoices will be loaded here -->
+                    </div>
+                </div>
+
+                <div class="invoice-preview">
+                    <div class="invoice-template" id="invoice-template">
+                        <!-- Invoice template will be generated here -->
+                        <div style="text-align: center; color: var(--dark-gray); padding: 40px;">
+                            <i class="fas fa-file-invoice" style="font-size: 48px; margin-bottom: 15px;"></i>
+                            <h3>Invoice Preview</h3>
+                            <p>Fill out the form to generate an invoice preview</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <div>Generating Invoice...</div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize the shared chatbot if available and not already initialized
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.Chatbot && !window.chatbot) {
+                window.chatbot = new Chatbot();
+            }
+            
+            // Initialize invoice form
+            initInvoiceForm();
+        });
+
+        let lineItems = [];
+        let currentInvoice = null;
+
+        // Initialize invoice form
+        function initInvoiceForm() {
+            // Set default dates
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('invoice-date').value = today;
+            
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+            document.getElementById('due-date').value = dueDate.toISOString().split('T')[0];
+
+            // Set default company info
+            document.getElementById('company-name').value = 'OMUNJU SHOPPERS';
+            document.getElementById('company-email').value = 'info@omunju.com';
+            document.getElementById('company-phone').value = '+255 123 456 789';
+
+            // Load statistics
+            loadInvoiceStats();
+
+            // Load recent invoices
+            loadRecentInvoices();
+        }
+
+        // Add line item
+        function addLineItem() {
+            const tbody = document.getElementById('line-items-body');
+            const newRow = document.createElement('tr');
+            
+            newRow.innerHTML = `
+                <td><input type="text" class="form-input" placeholder="Item description"></td>
+                <td><input type="number" class="form-input qty-input" value="1" min="1"></td>
+                <td><input type="number" class="form-input price-input" value="0.00" min="0" step="0.01"></td>
+                <td class="amount-display">TSH 0.00</td>
+                <td><button type="button" class="btn btn-outline" onclick="removeLineItem(this)">Remove</button></td>
+            `;
+
+            tbody.appendChild(newRow);
+
+            // Add event listeners for new inputs
+            const inputs = newRow.querySelectorAll('input');
+            inputs[1].addEventListener('input', calculateTotals);
+            inputs[2].addEventListener('input', calculateTotals);
+        }
+
+        // Remove line item
+        function removeLineItem(button) {
+            const row = button.closest('tr');
+            row.remove();
+            calculateTotals();
+        }
+
+        // Calculate totals
+        function calculateTotals() {
+            let subtotal = 0;
+            const rows = document.querySelectorAll('#line-items-body tr');
+            
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const qty = parseFloat(inputs[1].value) || 0;
+                const price = parseFloat(inputs[2].value) || 0;
+                const amount = qty * price;
+                
+                row.querySelector('.amount-display').textContent = `TSH ${amount.toLocaleString()}`;
+                subtotal += amount;
+            });
+
+            updateInvoicePreview();
+        }
+
+        // Load cart items
+        async function loadCartItems() {
+            try {
+                const response = await fetch('/api/cart');
+                const data = await response.json();
+                
+                if (data.success && data.cart.length > 0) {
+                    const tbody = document.getElementById('line-items-body');
+                    tbody.innerHTML = '';
+                    
+                    data.cart.forEach(item => {
+                        const newRow = document.createElement('tr');
+                        const discountedPrice = item.price - (item.price * (item.discount || 0) / 100);
+                        
+                        newRow.innerHTML = `
+                            <td><input type="text" class="form-input" value="${item.name}" readonly></td>
+                            <td><input type="number" class="form-input qty-input" value="${item.quantity}" min="1"></td>
+                            <td><input type="number" class="form-input price-input" value="${discountedPrice}" min="0" step="0.01"></td>
+                            <td class="amount-display">TSH ${(discountedPrice * item.quantity).toLocaleString()}</td>
+                            <td><button type="button" class="btn btn-outline" onclick="removeLineItem(this)">Remove</button></td>
+                        `;
+                        
+                        tbody.appendChild(newRow);
+                    });
+
+                    // Add event listeners
+                    const inputs = tbody.querySelectorAll('input');
+                    inputs.forEach(input => {
+                        input.addEventListener('input', calculateTotals);
+                    });
+
+                    calculateTotals();
+                } else {
+                    showNotification('Your cart is empty', 'warning');
+                }
+            } catch (error) {
+                console.error('Error loading cart items:', error);
+                showNotification('Error loading cart items', 'error');
+            }
+        }
+
+        // Generate invoice
+        function generateInvoice() {
+            if (!validateForm()) {
+                return;
+            }
+
+            showLoading(true);
+            
+            setTimeout(() => {
+                updateInvoicePreview();
+                showLoading(false);
+                showNotification('Invoice generated successfully!', 'success');
+            }, 1000);
+        }
+
+        // Validate form
+        function validateForm() {
+            const companyName = document.getElementById('company-name').value.trim();
+            const customerName = document.getElementById('customer-name').value.trim();
+            const invoiceDate = document.getElementById('invoice-date').value;
+            const dueDate = document.getElementById('due-date').value;
+
+            if (!companyName) {
+                showNotification('Please enter company name', 'warning');
+                return false;
+            }
+
+            if (!customerName) {
+                showNotification('Please enter customer name', 'warning');
+                return false;
+            }
+
+            if (!invoiceDate || !dueDate) {
+                showNotification('Please select invoice and due dates', 'warning');
+                return false;
+            }
+
+            const rows = document.querySelectorAll('#line-items-body tr');
+            let hasItems = false;
+            
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const qty = parseFloat(inputs[1].value) || 0;
+                const price = parseFloat(inputs[2].value) || 0;
+                
+                if (qty > 0 && price > 0) {
+                    hasItems = true;
+                }
+            });
+
+            if (!hasItems) {
+                showNotification('Please add at least one item', 'warning');
+                return false;
+            }
+
+            return true;
+        }
+
+        // Update invoice preview
+        function updateInvoicePreview() {
+            const template = document.getElementById('invoice-template');
+            const currency = document.getElementById('currency').value;
+            
+            // Collect form data
+            const company = {
+                name: document.getElementById('company-name').value,
+                address: document.getElementById('company-address').value,
+                phone: document.getElementById('company-phone').value,
+                email: document.getElementById('company-email').value,
+                taxId: document.getElementById('company-tax-id').value,
+                website: document.getElementById('company-website').value
+            };
+
+            const customer = {
+                name: document.getElementById('customer-name').value,
+                address: document.getElementById('customer-address').value,
+                contact: document.getElementById('contact-person').value,
+                email: document.getElementById('customer-email').value
+            };
+
+            const invoice = {
+                number: document.getElementById('invoice-number').value || 'INV-' + Date.now(),
+                date: document.getElementById('invoice-date').value,
+                dueDate: document.getElementById('due-date').value,
+                paymentTerms: document.getElementById('payment-terms').value,
+                notes: document.getElementById('notes').value
+            };
+
+            const taxRate = parseFloat(document.getElementById('tax-rate').value) || 0;
+            const discountRate = parseFloat(document.getElementById('discount-rate').value) || 0;
+
+            // Calculate line items
+            let subtotal = 0;
+            const items = [];
+            
+            const rows = document.querySelectorAll('#line-items-body tr');
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const description = inputs[0].value || 'Item';
+                const qty = parseFloat(inputs[1].value) || 0;
+                const price = parseFloat(inputs[2].value) || 0;
+                const amount = qty * price;
+                
+                if (qty > 0 && price > 0) {
+                    items.push({
+                        description,
+                        qty,
+                        price,
+                        amount
+                    });
+                    subtotal += amount;
+                }
+            });
+
+            // Calculate totals
+            const discount = (subtotal * discountRate) / 100;
+            const discountedSubtotal = subtotal - discount;
+            const tax = (discountedSubtotal * taxRate) / 100;
+            const total = discountedSubtotal + tax;
+
+            // Generate HTML
+            template.innerHTML = `
+                <div class="invoice-header-info">
+                    <div class="company-info">
+                        <h2>${company.name}</h2>
+                        <p>${company.address}</p>
+                        <p><i class="fas fa-phone"></i> ${company.phone}</p>
+                        <p><i class="fas fa-envelope"></i> ${company.email}</p>
+                        ${company.taxId ? `<p><i class="fas fa-id-card"></i> Tax ID: ${company.taxId}</p>` : ''}
+                        ${company.website ? `<p><i class="fas fa-globe"></i> ${company.website}</p>` : ''}
+                    </div>
+                    <div class="invoice-details">
+                        <h3>INVOICE</h3>
+                        <div class="detail-row">
+                            <span>Invoice #:</span>
+                            <span>${invoice.number}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Invoice Date:</span>
+                            <span>${formatDate(invoice.date)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Due Date:</span>
+                            <span>${formatDate(invoice.dueDate)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Status:</span>
+                            <span><span class="status-badge status-draft">Draft</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="customer-info">
+                    <h4>BILL TO:</h4>
+                    <div class="detail-row">
+                        <span>Customer:</span>
+                        <span>${customer.name}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span>Address:</span>
+                        <span>${customer.address}</span>
+                    </div>
+                    ${customer.contact ? `<div class="detail-row">
+                        <span>Contact:</span>
+                        <span>${customer.contact}</span>
+                    </div>` : ''}
+                    ${customer.email ? `<div class="detail-row">
+                        <span>Email:</span>
+                        <span>${customer.email}</span>
+                    </div>` : ''}
+                </div>
+
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Qty</th>
+                            <th>Unit Price</th>
+                            <th class="amount">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${items.map(item => `
+                            <tr>
+                                <td>${item.description}</td>
+                                <td>${item.qty}</td>
+                                <td class="amount">${currency} ${item.price.toLocaleString()}</td>
+                                <td class="amount">${currency} ${item.amount.toLocaleString()}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+
+                <div class="totals-section">
+                    <div class="totals-row">
+                        <span>Subtotal:</span>
+                        <span>${currency} ${subtotal.toLocaleString()}</span>
+                    </div>
+                    ${discountRate > 0 ? `<div class="totals-row">
+                        <span>Discount (${discountRate}%):</span>
+                        <span>- ${currency} ${discount.toLocaleString()}</span>
+                    </div>` : ''}
+                    ${discountRate > 0 ? `<div class="totals-row">
+                        <span>Subtotal after Discount:</span>
+                        <span>${currency} ${discountedSubtotal.toLocaleString()}</span>
+                    </div>` : ''}
+                    ${taxRate > 0 ? `<div class="totals-row">
+                        <span>Tax (${taxRate}%):</span>
+                        <span>+ ${currency} ${tax.toLocaleString()}</span>
+                    </div>` : ''}
+                    <div class="totals-row total">
+                        <span>Total:</span>
+                        <span>${currency} ${total.toLocaleString()}</span>
+                    </div>
+                </div>
+
+                ${invoice.paymentTerms ? `<div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--medium-gray);">
+                    <h4>Payment Terms:</h4>
+                    <p>${invoice.paymentTerms}</p>
+                </div>` : ''}
+
+                ${invoice.notes ? `<div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--medium-gray);">
+                    <h4>Notes:</h4>
+                    <p>${invoice.notes}</p>
+                </div>` : ''}
+            `;
+
+            // Store current invoice data
+            currentInvoice = {
+                company,
+                customer,
+                invoice,
+                items,
+                subtotal,
+                discount,
+                tax,
+                total,
+                currency
+            };
+        }
+
+        // Save draft
+        function saveDraft() {
+            const invoiceData = getCurrentInvoiceData();
+            if (!invoiceData) return;
+
+            const drafts = JSON.parse(localStorage.getItem('invoiceDrafts') || '[]');
+            drafts.push({
+                ...invoiceData,
+                savedAt: new Date().toISOString()
+            });
+            localStorage.setItem('invoiceDrafts', JSON.stringify(drafts));
+            
+            showNotification('Invoice draft saved successfully!', 'success');
+            loadRecentInvoices();
+        }
+
+        // Clear form
+        function clearForm() {
+            if (confirm('Are you sure you want to clear all form data?')) {
+                document.getElementById('invoice-form').reset();
+                document.getElementById('line-items-body').innerHTML = `
+                    <tr>
+                        <td><input type="text" class="form-input" placeholder="Item description"></td>
+                        <td><input type="number" class="form-input qty-input" value="1" min="1"></td>
+                        <td><input type="number" class="form-input price-input" value="0.00" min="0" step="0.01"></td>
+                        <td class="amount-display">TSH 0.00</td>
+                        <td><button type="button" class="btn btn-outline" onclick="removeLineItem(this)">Remove</button></td>
+                    </tr>
+                `;
+                document.getElementById('invoice-template').innerHTML = `
+                    <div style="text-align: center; color: var(--dark-gray); padding: 40px;">
+                        <i class="fas fa-file-invoice" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <h3>Invoice Preview</h3>
+                        <p>Fill out the form to generate an invoice preview</p>
+                    </div>
+                `;
+                showNotification('Form cleared successfully', 'info');
+            }
+        }
+
+        // Print invoice
+        function printInvoice() {
+            if (!currentInvoice) {
+                showNotification('Please generate an invoice first', 'warning');
+                return;
+            }
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Invoice - ${currentInvoice.invoice.number}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            .invoice-header-info { display: flex; justify-content: space-between; margin-bottom: 30px; }
+                            .company-info h2 { color: #004e89; }
+                            .invoice-details h3 { margin: 0; }
+                            .detail-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+                            .customer-info { margin-bottom: 30px; }
+                            .items-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                            .items-table th { text-align: left; padding: 12px; background: #f8f9fa; border-bottom: 2px solid #e0e0e0; }
+                            .items-table td { padding: 12px; border-bottom: 1px solid #f0f0f0; }
+                            .amount { text-align: right; font-weight: bold; color: #ff6b35; }
+                            .totals-section { margin-top: 30px; }
+                            .totals-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+                            .totals-row.total { font-size: 20px; font-weight: bold; color: #ff6b35; margin-top: 10px; border-top: 1px solid #e0e0e0; padding-top: 10px; }
+                        </style>
+                    </head>
+                    <body>
+                        ${document.getElementById('invoice-template').innerHTML}
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // Download PDF (placeholder - would need a library like jsPDF)
+        function downloadPDF() {
+            if (!currentInvoice) {
+                showNotification('Please generate an invoice first', 'warning');
+                return;
+            }
+
+            showNotification('PDF download feature requires additional setup', 'info');
+            // In a real implementation, you would use a library like jsPDF or html2pdf
+        }
+
+        // Send email (placeholder)
+        function sendEmail() {
+            if (!currentInvoice) {
+                showNotification('Please generate an invoice first', 'warning');
+                return;
+            }
+
+            showNotification('Email sending feature requires email service integration', 'info');
+            // In a real implementation, you would integrate with an email service
+        }
+
+        // Load invoice statistics
+        function loadInvoiceStats() {
+            const drafts = JSON.parse(localStorage.getItem('invoiceDrafts') || '[]');
+            const sent = JSON.parse(localStorage.getItem('sentInvoices') || '[]');
+            
+            document.getElementById('total-invoices').textContent = drafts.length + sent.length;
+            document.getElementById('pending-invoices').textContent = drafts.length;
+            document.getElementById('paid-invoices').textContent = sent.length;
+            
+            const totalRevenue = drafts.reduce((sum, inv) => sum + (inv.total || 0), 0) + 
+                                sent.reduce((sum, inv) => sum + (inv.total || 0), 0);
+            document.getElementById('total-revenue').textContent = `TSH ${totalRevenue.toLocaleString()}`;
+        }
+
+        // Load recent invoices
+        function loadRecentInvoices() {
+            const drafts = JSON.parse(localStorage.getItem('invoiceDrafts') || '[]');
+            const sent = JSON.parse(localStorage.getItem('sentInvoices') || '[]');
+            
+            const allInvoices = [...drafts, ...sent]
+                .sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt))
+                .slice(0, 5);
+
+            const container = document.getElementById('recent-invoices-list');
+            container.innerHTML = '';
+
+            if (allInvoices.length === 0) {
+                container.innerHTML = '<p style="color: var(--dark-gray); text-align: center; padding: 20px;">No recent invoices</p>';
+                return;
+            }
+
+            allInvoices.forEach(invoice => {
+                const div = document.createElement('div');
+                div.className = 'invoice-item';
+                div.innerHTML = `
+                    <div class="left">
+                        <div class="invoice-number">${invoice.invoice.number}</div>
+                        <div class="invoice-date">${formatDate(invoice.invoice.date)}</div>
+                    </div>
+                    <div class="right">
+                        <div class="invoice-amount">${invoice.currency} ${invoice.total.toLocaleString()}</div>
+                        <span class="status-badge ${invoice.status === 'sent' ? 'status-sent' : 'status-draft'}">
+                            ${invoice.status || 'Draft'}
+                        </span>
+                    </div>
+                `;
+                div.onclick = () => loadInvoiceFromList(invoice);
+                container.appendChild(div);
+            });
+        }
+
+        // Load invoice from list
+        function loadInvoiceFromList(invoice) {
+            // This would load the invoice data back into the form
+            showNotification('Invoice loaded from list', 'info');
+            // Implementation would populate the form with the invoice data
+        }
+
+        // Get current invoice data
+        function getCurrentInvoiceData() {
+            if (!validateForm()) return null;
+
+            return {
+                company: {
+                    name: document.getElementById('company-name').value,
+                    address: document.getElementById('company-address').value,
+                    phone: document.getElementById('company-phone').value,
+                    email: document.getElementById('company-email').value,
+                    taxId: document.getElementById('company-tax-id').value,
+                    website: document.getElementById('company-website').value
+                },
+                customer: {
+                    name: document.getElementById('customer-name').value,
+                    address: document.getElementById('customer-address').value,
+                    contact: document.getElementById('contact-person').value,
+                    email: document.getElementById('customer-email').value
+                },
+                invoice: {
+                    number: document.getElementById('invoice-number').value,
+                    date: document.getElementById('invoice-date').value,
+                    dueDate: document.getElementById('due-date').value,
+                    paymentTerms: document.getElementById('payment-terms').value,
+                    notes: document.getElementById('notes').value
+                },
+                items: Array.from(document.querySelectorAll('#line-items-body tr')).map(row => {
+                    const inputs = row.querySelectorAll('input');
+                    return {
+                        description: inputs[0].value,
+                        qty: parseFloat(inputs[1].value) || 0,
+                        price: parseFloat(inputs[2].value) || 0,
+                        amount: (parseFloat(inputs[1].value) || 0) * (parseFloat(inputs[2].value) || 0)
+                    };
+                }),
+                subtotal: calculateSubtotal(),
+                discount: calculateDiscount(),
+                tax: calculateTax(),
+                total: calculateTotal(),
+                currency: document.getElementById('currency').value,
+                status: 'draft'
+            };
+        }
+
+        // Helper functions
+        function calculateSubtotal() {
+            let subtotal = 0;
+            document.querySelectorAll('#line-items-body tr').forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                subtotal += (parseFloat(inputs[1].value) || 0) * (parseFloat(inputs[2].value) || 0);
+            });
+            return subtotal;
+        }
+
+        function calculateDiscount() {
+            const subtotal = calculateSubtotal();
+            const discountRate = parseFloat(document.getElementById('discount-rate').value) || 0;
+            return (subtotal * discountRate) / 100;
+        }
+
+        function calculateTax() {
+            const subtotal = calculateSubtotal();
+            const discountRate = parseFloat(document.getElementById('discount-rate').value) || 0;
+            const taxRate = parseFloat(document.getElementById('tax-rate').value) || 0;
+            const discountedSubtotal = subtotal - ((subtotal * discountRate) / 100);
+            return (discountedSubtotal * taxRate) / 100;
+        }
+
+        function calculateTotal() {
+            const subtotal = calculateSubtotal();
+            const discount = calculateDiscount();
+            const tax = calculateTax();
+            return subtotal - discount + tax;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function showLoading(show) {
+            const overlay = document.getElementById('loading-overlay');
+            overlay.style.display = show ? 'flex' : 'none';
+        }
+
+        // Add event listeners for form inputs
+        document.querySelectorAll('#line-items-body input').forEach(input => {
+            input.addEventListener('input', calculateTotals);
+        });
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            const existingNotification = document.querySelector('.custom-notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `custom-notification ${type}`;
+
+            // Icon based on type
+            let icon = 'fa-info-circle';
+            if (type === 'success') icon = 'fa-check-circle';
+            if (type === 'warning') icon = 'fa-exclamation-triangle';
+            if (type === 'error') icon = 'fa-times-circle';
+
+            notification.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span>${message}</span>
+            `;
+
+            // Add styles if not exists
+            if (!document.querySelector('#notification-styles')) {
+                const style = document.createElement('style');
+                style.id = 'notification-styles';
+                style.textContent = `
+                    .custom-notification {
+                        position: fixed;
+                        top: 100px;
+                        right: 20px;
+                        padding: 15px 20px;
+                        border-radius: 8px;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        z-index: 10000;
+                        transform: translateX(400px);
+                        transition: transform 0.3s ease;
+                        font-weight: 500;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    }
+                    .custom-notification.show {
+                        transform: translateX(0);
+                    }
+                    .custom-notification.success {
+                        background: #d1fae5;
+                        color: #065f46;
+                        border: 1px solid #a7f3d0;
+                    }
+                    .custom-notification.error {
+                        background: #fee2e2;
+                        color: #991b1b;
+                        border: 1px solid #fecaca;
+                    }
+                    .custom-notification.warning {
+                        background: #fef3c7;
+                        color: #92400e;
+                        border: 1px solid #fde68a;
+                    }
+                    .custom-notification.info {
+                        background: #dbeafe;
+                        color: #1e40af;
+                        border: 1px solid #bfdbfe;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            // Add to body
+            document.body.appendChild(notification);
+
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

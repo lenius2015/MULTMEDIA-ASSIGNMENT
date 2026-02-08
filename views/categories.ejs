@@ -3,78 +3,340 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
+    <title>Categories - OMUNJU SHOPPERS</title>
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="/socket.io/socket.io.js"></script>
+    <style>
+        /* Page-specific styles */
+        .categories-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .categories-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .categories-hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Category Filters */
+        .category-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: #4b5563;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        /* Search Box */
+        .category-search {
+            display: flex;
+            margin-bottom: 30px;
+        }
+
+        .category-search input {
+            flex: 1;
+            padding: 15px 25px;
+            border: 2px solid #e5e7eb;
+            border-radius: 30px 0 0 30px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .category-search input:focus {
+            border-color: #667eea;
+        }
+
+        .category-search button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 0 30px 30px 0;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .category-search button:hover {
+            transform: scale(1.02);
+        }
+
+        /* Categories Grid */
+        .categories-container {
+            padding: 40px 0;
+            background: #f8f9fa;
+            min-height: 60vh;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        .category-card .category-image {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .category-card .category-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .category-card:hover .category-image img {
+            transform: scale(1.1);
+        }
+
+        .category-card .category-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 100%);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .category-card:hover .category-overlay {
+            opacity: 1;
+        }
+
+        .category-btn {
+            padding: 10px 25px;
+            background: white;
+            border: none;
+            border-radius: 25px;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .category-info {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .category-info h3 {
+            font-size: 1.1rem;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .category-info p {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* No Categories */
+        .no-categories {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .no-categories i {
+            font-size: 4rem;
+            color: #e5e7eb;
+            margin-bottom: 20px;
+        }
+
+        .no-categories h3 {
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .no-categories p {
+            color: #6b7280;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .categories-hero h1 {
+                font-size: 2rem;
+            }
+
+            .categories-hero p {
+                font-size: 1rem;
+            }
+
+            .categories-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 15px;
+            }
+
+            .category-filters {
+                justify-content: center;
+            }
+
+            .filter-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .category-card .category-image {
+                height: 150px;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Notification Bar -->
     <div class="notification-bar">
         <div class="notification-content">
             <i class="fas fa-shipping-fast"></i>
-            <span>Free shipping on orders above Tsh 50,000 | Use code: OMUNJU01</span>
+            <span>Free shipping on orders above KSh 5,000 | Use code: OMUNJU</span>
         </div>
     </div>
 
     <!-- Header -->
     <%- include('partials/header', { page: 'categories' }) %>
 
-    <!-- Categories Section -->
-    <section class="categories-page-section">
+    <!-- Hero Section -->
+    <section class="categories-hero">
+        <h1>Shop by Category</h1>
+        <p>Explore our wide range of products organized into convenient categories</p>
+    </section>
+
+    <!-- Categories Container -->
+    <section class="categories-container">
         <div class="container">
-            <div class="section-header">
-                <h2>All Categories</h2>
-                <p>Browse through our wide range of product categories</p>
+            <!-- Search Box -->
+            <div class="category-search">
+                <input type="text" id="categorySearchInput" placeholder="Search categories..." onkeyup="searchCategories()">
+                <button onclick="searchCategories()">
+                    <i class="fas fa-search"></i> Search
+                </button>
             </div>
 
-            <% if (categories && categories.length > 0) { %>
-                <div class="categories-grid">
+            <!-- Category Filters -->
+            <div class="category-filters">
+                <button class="filter-btn active" onclick="filterCategory('all')">All</button>
+                <button class="filter-btn" onclick="filterCategory('electronics')">Electronics</button>
+                <button class="filter-btn" onclick="filterCategory('fashion')">Fashion</button>
+                <button class="filter-btn" onclick="filterCategory('home')">Home</button>
+                <button class="filter-btn" onclick="filterCategory('beauty')">Beauty</button>
+                <button class="filter-btn" onclick="filterCategory('sports')">Sports</button>
+            </div>
+
+            <!-- Categories Grid -->
+            <div class="categories-grid" id="categoriesGrid">
+                <% if (categories && categories.length > 0) { %>
                     <% categories.forEach(category => { %>
-                        <div class="category-card" onclick="exploreCategory('<%= category.name %>')">
+                        <div class="category-card" onclick="exploreCategory('<%= category.name %>')" data-category="<%= category.slug %>">
                             <div class="category-image">
-                                <% if (category.image_url) { %>
-                                    <img src="<%= category.image_url %>" alt="<%= category.name %>">
-                                <% } else { %>
-                                    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=300&fit=crop" alt="<%= category.name %>">
+                                <img src="<%= category.image || 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&h=300&fit=crop' %>" alt="<%= category.name %>">
+                                <div class="category-overlay">
+                                    <button class="category-btn">Explore</button>
+                                </div>
+                            </div>
+                            <div class="category-info">
+                                <h3><%= category.name %></h3>
+                                <p><%= category.product_count || 0 %>+ items</p>
+                                <% if (category.is_featured) { %>
+                                    <span class="category-badge">Featured</span>
+                                <% } else if (category.product_count > 100) { %>
+                                    <span class="category-badge">Popular</span>
                                 <% } %>
-                                <div class="category-overlay">
-                                    <button class="category-btn">Explore</button>
-                                </div>
-                            </div>
-                            <div class="category-info">
-                                <h3><%= category.name %></h3>
-                                <p><%= category.product_count || 0 %> items</p>
                             </div>
                         </div>
                     <% }); %>
-                </div>
-            <% } else if (productCategories && productCategories.length > 0) { %>
-                <!-- Fallback: Show categories from products table -->
-                <div class="categories-grid">
-                    <% productCategories.forEach(category => { %>
-                        <div class="category-card" onclick="exploreCategory('<%= category.name %>')">
-                            <div class="category-image">
-                                <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=300&fit=crop" alt="<%= category.name %>">
-                                <div class="category-overlay">
-                                    <button class="category-btn">Explore</button>
-                                </div>
-                            </div>
-                            <div class="category-info">
-                                <h3><%= category.name %></h3>
-                                <p><%= category.product_count %> items</p>
-                            </div>
-                        </div>
-                    <% }); %>
-                </div>
-            <% } else { %>
-                <div class="no-categories">
-                    <i class="fas fa-folder-open"></i>
-                    <h3>No categories found</h3>
-                    <p>Check back later for new categories!</p>
-                </div>
-            <% } %>
+                <% } else { %>
+                    <div class="no-categories">
+                        <i class="fas fa-box-open"></i>
+                        <h3>No Categories Found</h3>
+                        <p>Categories are being loaded or there are no categories available at the moment.</p>
+                        <button class="btn-primary" onclick="location.reload()">Refresh Page</button>
+                    </div>
+                <% } %>
+            </div>
         </div>
     </section>
 
@@ -84,56 +346,126 @@
     <!-- Cart Sidebar -->
     <%- include('cart') %>
 
+    <!-- Chat Widget -->
     <script src="/script.js"></script>
+    <script src="/chatbot.js"></script>
+
     <script>
+        // Category navigation
         function exploreCategory(categoryName) {
-            const categorySlug = categoryName.toLowerCase().replace(/\s+/g, '-');
+            const categorySlug = categoryName.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and');
             window.location.href = '/category/' + categorySlug;
         }
+
+        // Search functionality
+        function searchCategories() {
+            const searchInput = document.getElementById('categorySearchInput').value.toLowerCase();
+            const categories = document.querySelectorAll('.category-card');
+
+            categories.forEach(card => {
+                const categoryName = card.querySelector('h3').textContent.toLowerCase();
+                if (categoryName.includes(searchInput) || searchInput === '') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Filter functionality
+        function filterCategory(category) {
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filter categories
+            const categories = document.querySelectorAll('.category-card');
+
+            categories.forEach(card => {
+                const categoryName = card.dataset.category.toLowerCase();
+
+                if (category === 'all') {
+                    card.style.display = 'block';
+                } else if (categoryName.includes(category)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Load cart count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCartCount();
+            loadWishlistCount();
+            loadNotificationsCount();
+        });
+
+        function loadCartCount() {
+            fetch('/api/cart')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const count = data.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+                        updateCartBadge(count);
+                    }
+                })
+                .catch(error => console.error('Error loading cart:', error));
+        }
+
+        function loadWishlistCount() {
+            // If user is logged in, load wishlist count
+            <% if (typeof user !== 'undefined' && user) { %>
+            fetch('/api/wishlist')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const count = data.data?.reduce((sum, list) => sum + (list.items?.length || 0), 0) || 0;
+                        updateWishlistBadge(count);
+                    }
+                })
+                .catch(error => console.error('Error loading wishlist:', error));
+            <% } %>
+        }
+
+        function loadNotificationsCount() {
+            <% if (typeof user !== 'undefined' && user) { %>
+            fetch('/api/notifications?unread_only=true')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.unreadCount > 0) {
+                        updateNotificationBadge(data.unreadCount);
+                    }
+                })
+                .catch(error => console.error('Error loading notifications:', error));
+            <% } %>
+        }
+
+        function updateCartBadge(count) {
+            const badges = document.querySelectorAll('.cart-badge');
+            badges.forEach(badge => {
+                badge.textContent = count;
+                badge.style.display = count > 0 ? 'block' : 'none';
+            });
+        }
+
+        function updateWishlistBadge(count) {
+            const badges = document.querySelectorAll('.wishlist-badge');
+            badges.forEach(badge => {
+                badge.textContent = count;
+                badge.style.display = count > 0 ? 'block' : 'none';
+            });
+        }
+
+        function updateNotificationBadge(count) {
+            const badges = document.querySelectorAll('.notification-badge');
+            badges.forEach(badge => {
+                badge.textContent = count;
+                badge.style.display = 'block';
+            });
+        }
     </script>
-
-    <style>
-        .categories-page-section {
-            padding: 60px 0;
-            background: #f8f9fa;
-            min-height: 60vh;
-        }
-
-        .categories-page-section .section-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .categories-page-section .section-header h2 {
-            font-size: 2.5rem;
-            color: #1a1a1a;
-            margin-bottom: 10px;
-        }
-
-        .categories-page-section .section-header p {
-            color: #666;
-            font-size: 1.1rem;
-        }
-
-        .no-categories {
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        .no-categories i {
-            font-size: 4rem;
-            color: #ddd;
-            margin-bottom: 20px;
-        }
-
-        .no-categories h3 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .no-categories p {
-            color: #666;
-        }
-    </style>
 </body>
 </html>

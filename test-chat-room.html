@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .test-result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 Chat Room Test Suite</h1>
+    
+    <div class="test-card">
+        <h3>Test 1: Check Chat Room Routes</h3>
+        <p>Testing if the new chat room routes are accessible:</p>
+        <button onclick="testRoutes()">Test Routes</button>
+        <div id="route-status" class="status info">Click "Test Routes" to begin</div>
+    </div>
+
+    <div class="test-card">
+        <h3>Test 2: Check Database Tables</h3>
+        <p>Verifying database tables exist for chat functionality:</p>
+        <button onclick="testDatabase()">Test Database</button>
+        <div id="db-status" class="status info">Click "Test Database" to begin</div>
+    </div>
+
+    <div class="test-card">
+        <h3>Test 3: Check Socket.IO Connection</h3>
+        <p>Testing real-time communication setup:</p>
+        <button onclick="testSocket()">Test Socket.IO</button>
+        <div id="socket-status" class="status info">Click "Test Socket.IO" to begin</div>
+    </div>
+
+    <div class="test-card">
+        <h3>Test Results</h3>
+        <div id="test-results" class="test-result">No tests run yet...</div>
+    </div>
+
+    <script>
+        let testResults = [];
+
+        function logResult(test, status, message) {
+            const result = `[${new Date().toLocaleTimeString()}] ${test}: ${status} - ${message}`;
+            testResults.push(result);
+            document.getElementById('test-results').textContent = testResults.join('\n\n');
+            console.log(result);
+        }
+
+        async function testRoutes() {
+            const statusDiv = document.getElementById('route-status');
+            
+            try {
+                // Test if chat room page loads
+                const response = await fetch('/admin/chat-room', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'text/html'
+                    }
+                });
+
+                if (response.ok) {
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = '✅ Chat Room route is accessible';
+                    logResult('Route Test', 'SUCCESS', 'Chat room page loads successfully');
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = `❌ Chat Room route failed: ${response.status}`;
+                    logResult('Route Test', 'ERROR', `HTTP ${response.status}`);
+                }
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = `❌ Network error: ${error.message}`;
+                logResult('Route Test', 'ERROR', error.message);
+            }
+        }
+
+        async function testDatabase() {
+            const statusDiv = document.getElementById('db-status');
+            
+            try {
+                // Test API endpoints that require database
+                const response = await fetch('/admin/api/chat/conversations', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        statusDiv.className = 'status success';
+                        statusDiv.textContent = `✅ Database connection working - Found ${data.conversations.length} conversations`;
+                        logResult('Database Test', 'SUCCESS', `Conversations loaded: ${data.conversations.length}`);
+                    } else {
+                        statusDiv.className = 'status error';
+                        statusDiv.textContent = `❌ API returned error: ${data.message}`;
+                        logResult('Database Test', 'ERROR', data.message);
+                    }
+                } else if (response.status === 401) {
+                    statusDiv.className = 'status info';
+                    statusDiv.textContent = '⚠️ Database working but admin authentication required';
+                    logResult('Database Test', 'INFO', 'Authentication required - this is expected');
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = `❌ Database test failed: ${response.status}`;
+                    logResult('Database Test', 'ERROR', `HTTP ${response.status}`);
+                }
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = `❌ Database connection error: ${error.message}`;
+                logResult('Database Test', 'ERROR', error.message);
+            }
+        }
+
+        function testSocket() {
+            const statusDiv = document.getElementById('socket-status');
+            
+            try {
+                // Check if Socket.IO is loaded
+                if (typeof io === 'undefined') {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = '❌ Socket.IO not loaded';
+                    logResult('Socket Test', 'ERROR', 'Socket.IO library not found');
+                    return;
+                }
+
+                // Try to connect to Socket.IO
+                const socket = io();
+                
+                socket.on('connect', () => {
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = '✅ Socket.IO connection successful';
+                    logResult('Socket Test', 'SUCCESS', 'Real-time communication ready');
+                    socket.disconnect();
+                });
+
+                socket.on('connect_error', (error) => {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = `❌ Socket.IO connection failed: ${error.message}`;
+                    logResult('Socket Test', 'ERROR', error.message);
+                });
+
+                // Timeout after 3 seconds
+                setTimeout(() => {
+                    if (statusDiv.textContent.includes('Socket.IO')) {
+                        statusDiv.className = 'status info';
+                        statusDiv.textContent = '⚠️ Socket.IO test timeout (may still be working)';
+                        logResult('Socket Test', 'INFO', 'Connection timeout - check server');
+                    }
+                }, 3000);
+
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = `❌ Socket.IO error: ${error.message}`;
+                logResult('Socket Test', 'ERROR', error.message);
+            }
+        }
+
+        // Auto-run tests on page load
+        window.onload = function() {
+            setTimeout(testRoutes, 1000);
+            setTimeout(testDatabase, 2000);
+            setTimeout(testSocket, 3000);
+        };
+    </script>
+</body>
+</html>

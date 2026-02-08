@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard - OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/user-dashboard-enhanced.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <%- include('./partials/header', { currentPage: 'dashboard' }) %>
+
+    <div class="user-layout">
+        <!-- Sidebar -->
+        <aside class="user-sidebar" id="user-sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile-mini">
+                    <div class="avatar">
+                        <% if (user && user.profile_picture) { %>
+                            <img src="<%= user.profile_picture %>" alt="Profile">
+                        <% } else { %>
+                            <div class="avatar-placeholder"><%= (user && user.name) ? user.name.charAt(0).toUpperCase() : 'U' %></div>
+                        <% } %>
+                    </div>
+                    <div class="user-info">
+                        <h4><%= user ? user.name : 'User' %></h4>
+                        <p><%= user ? user.email : '' %></p>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active" data-section="overview">
+                        <a href="#overview">
+                            <i class="fas fa-home"></i>
+                            <span>Overview</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="orders">
+                        <a href="#orders">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>My Orders</span>
+                            <% if (orderStats.pending > 0) { %>
+                                <span class="nav-badge"><%= orderStats.pending %></span>
+                            <% } %>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="cart">
+                        <a href="#cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Shopping Cart</span>
+                            <% if (cartCount > 0) { %>
+                                <span class="nav-badge"><%= cartCount %></span>
+                            <% } %>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="wishlist">
+                        <a href="#wishlist">
+                            <i class="fas fa-heart"></i>
+                            <span>Wishlist</span>
+                            <% if (wishlistCount > 0) { %>
+                                <span class="nav-badge"><%= wishlistCount %></span>
+                            <% } %>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="inbox">
+                        <a href="#inbox">
+                            <i class="fas fa-envelope"></i>
+                            <span>Messages</span>
+                            <% if (unreadMessages > 0) { %>
+                                <span class="nav-badge"><%= unreadMessages %></span>
+                            <% } %>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="addresses">
+                        <a href="#addresses">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Addresses</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="profile">
+                        <a href="#profile">
+                            <i class="fas fa-user"></i>
+                            <span>Edit Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="password">
+                        <a href="#password">
+                            <i class="fas fa-lock"></i>
+                            <span>Change Password</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="notifications">
+                        <a href="#notifications">
+                            <i class="fas fa-bell"></i>
+                            <span>Notifications</span>
+                            <% if (unreadNotifications > 0) { %>
+                                <span class="nav-badge"><%= unreadNotifications %></span>
+                            <% } %>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="reviews">
+                        <a href="#reviews">
+                            <i class="fas fa-star"></i>
+                            <span>My Reviews</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="activity">
+                        <a href="#activity">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Activity Log</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="user-main">
+            <!-- Overview Section -->
+            <section id="overview" class="section active">
+                <div class="section-header">
+                    <h1>Welcome back, <%= user ? user.name : 'User' %>! 👋</h1>
+                    <p>Here's what's happening with your account</p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon orders">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3><%= orderStats.total %></h3>
+                            <p>Total Orders</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3><%= orderStats.pending %></h3>
+                            <p>Pending Orders</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon cart">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3><%= cartCount %></h3>
+                            <p>Items in Cart</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon wishlist">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3><%= wishlistCount %></h3>
+                            <p>Wishlist Items</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon messages">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3><%= unreadMessages %></h3>
+                            <p>Unread Messages</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon notifications">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3><%= unreadNotifications %></h3>
+                            <p>Unread Notifications</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Activity</h2>
+                        <a href="#activity" class="btn btn-secondary btn-sm">View All</a>
+                    </div>
+                    <div class="card-body">
+                        <% if (recentActivity && recentActivity.length > 0) { %>
+                            <div class="activity-timeline">
+                                <% recentActivity.forEach(activity => { %>
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="fas fa-circle"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <h4><%= activity.action %></h4>
+                                        <p><%= activity.description %></p>
+                                        <span class="activity-time"><%= new Date(activity.created_at).toLocaleString() %></span>
+                                    </div>
+                                </div>
+                                <% }); %>
+                            </div>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fas fa-chart-line"></i>
+                                <h3>No recent activity</h3>
+                                <p>Your activity will appear here</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Orders</h2>
+                        <a href="#orders" class="btn btn-secondary btn-sm">View All</a>
+                    </div>
+                    <div class="card-body">
+                        <% if (recentOrders && recentOrders.length > 0) { %>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Date</th>
+                                        <th>Items</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% recentOrders.forEach(order => { %>
+                                    <tr>
+                                        <td><strong>#<%= order.order_number %></strong></td>
+                                        <td><%= new Date(order.created_at).toLocaleDateString() %></td>
+                                        <td><%= order.item_count || 1 %> items</td>
+                                        <td><strong>$<%= order.final_amount %></strong></td>
+                                        <td>
+                                            <span class="status-badge status-<%= order.status %>">
+                                                <%= order.status %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="/order-details/<%= order.id %>" class="btn btn-sm btn-secondary">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fas fa-shopping-bag"></i>
+                                <h3>No orders yet</h3>
+                                <p>Start shopping to see your orders here</p>
+                                <a href="/products" class="btn btn-primary">Browse Products</a>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Recently Viewed Products -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Continue Shopping</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="products-grid">
+                            <% if (featuredProducts && featuredProducts.length > 0) { %>
+                                <% featuredProducts.slice(0, 4).forEach(product => { %>
+                                <div class="product-card">
+                                    <button class="wishlist-btn" onclick="toggleWishlist(<%= product.id %>)">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                    <img src="<%= product.image_url || '/images/product-placeholder.jpg' %>" 
+                                         alt="<%= product.name %>"
+                                         onerror="this.src='/images/product-placeholder.jpg'">
+                                    <div class="product-info">
+                                        <h4><%= product.name %></h4>
+                                        <p class="price">$<%= product.price %></p>
+                                        <div class="product-actions">
+                                            <button class="btn btn-sm btn-primary" onclick="addToCart(<%= product.id %>)">
+                                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                                            </button>
+                                            <a href="/product/<%= product.id %>" class="btn btn-sm btn-outline">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }); %>
+                            <% } else { %>
+                                <div class="empty-state">
+                                    <i class="fas fa-box"></i>
+                                    <h3>No products available</h3>
+                                    <p>Check back later for new products</p>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Orders Section -->
+            <section id="orders" class="section">
+                <div class="section-header">
+                    <h1>My Orders</h1>
+                    <p>Track and manage your orders</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Order History</h2>
+                        <div class="filter-bar">
+                            <select id="orderFilter" onchange="filterOrders()">
+                                <option value="all">All Orders</option>
+                                <option value="pending">Pending</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="processing">Processing</option>
+                                <option value="shipped">Shipped</option>
+                                <option value="out_for_delivery">Out for Delivery</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="cancelled">Cancelled</option>
+                                <option value="refunded">Refunded</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <% if (allOrders && allOrders.length > 0) { %>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Date</th>
+                                        <th>Shipping Address</th>
+                                        <th>Items</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTableBody">
+                                    <% allOrders.forEach(order => { %>
+                                    <tr class="order-row" data-status="<%= order.status %>">
+                                        <td><strong>#<%= order.order_number %></strong></td>
+                                        <td><%= new Date(order.created_at).toLocaleDateString() %></td>
+                                        <td>
+                                            <%= order.shipping_address ? (typeof order.shipping_address === 'string' ? JSON.parse(order.shipping_address).city : order.shipping_address.city) : 'N/A' %>
+                                        </td>
+                                        <td><%= order.item_count || 'N/A' %> items</td>
+                                        <td><strong>$<%= order.final_amount %></strong></td>
+                                        <td>
+                                            <span class="status-badge status-<%= order.status %>">
+                                                <%= order.status %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <a href="/order-details/<%= order.id %>" class="btn btn-sm btn-secondary" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <% if (order.status === 'delivered') { %>
+                                                    <button class="btn btn-sm btn-primary" title="Buy Again" onclick="buyAgain(<%= order.id %>)">
+                                                        <i class="fas fa-redo"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline" title="Write Review" onclick="writeReview(<%= order.id %>)">
+                                                        <i class="fas fa-star"></i>
+                                                    </button>
+                                                <% } %>
+                                                <% if (order.status === 'pending' || order.status === 'confirmed') { %>
+                                                    <button class="btn btn-sm btn-danger" title="Cancel Order" onclick="cancelOrder('<%= order.id %>')">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                <% } %>
+                                                <% if (order.status === 'delivered' && !order.has_refund) { %>
+                                                    <button class="btn btn-sm btn-warning" title="Request Refund" onclick="requestRefund(<%= order.id %>)">
+                                                        <i class="fas fa-undo"></i>
+                                                    </button>
+                                                <% } %>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fas fa-shopping-bag"></i>
+                                <h3>No orders found</h3>
+                                <p>You haven't placed any orders yet</p>
+                                <a href="/products" class="btn btn-primary">Start Shopping</a>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cart Section -->
+            <section id="cart" class="section">
+                <div class="section-header">
+                    <h1>Shopping Cart</h1>
+                    <p><%= cartItems.length %> items in your cart</p>
+                </div>
+
+                <div class="cart-layout">
+                    <div class="cart-items">
+                        <% if (cartItems && cartItems.length > 0) { %>
+                            <% cartItems.forEach(item => { %>
+                            <div class="cart-item" data-product-id="<%= item.product_id %>">
+                                <img src="<%= item.image_url || '/images/product-placeholder.jpg' %>" 
+                                     alt="<%= item.name %>"
+                                     onerror="this.src='/images/product-placeholder.jpg'">
+                                <div class="item-details">
+                                    <h4><%= item.name %></h4>
+                                    <p class="price">$<%= item.price %></p>
+                                    <div class="quantity-control">
+                                        <button onclick="updateCartQuantity(<%= item.product_id %>, -1)">-</button>
+                                        <input type="number" value="<%= item.quantity %>" min="1" onchange="updateCartQuantityDirect(<%= item.product_id %>, this.value)">
+                                        <button onclick="updateCartQuantity(<%= item.product_id %>, 1)">+</button>
+                                    </div>
+                                    <div class="item-subtotal">
+                                        Subtotal: <strong>$<%= (item.price * item.quantity).toFixed(2) %></strong>
+                                    </div>
+                                </div>
+                                <div class="item-actions">
+                                    <button class="btn btn-sm btn-outline" onclick="moveToWishlist(<%= item.product_id %>)">
+                                        <i class="fas fa-heart"></i> Save for Later
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="removeFromCart(<%= item.product_id %>)">
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button>
+                                </div>
+                            </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fas fa-shopping-cart"></i>
+                                <h3>Your cart is empty</h3>
+                                <p>Add some products to get started</p>
+                                <a href="/products" class="btn btn-primary">Browse Products</a>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="cart-summary">
+                        <h3>Order Summary</h3>
+                        <div class="summary-row">
+                            <span>Subtotal (<%= cartCount %> items)</span>
+                            <span>$<%= cartTotal.toFixed(2) %></span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping</span>
+                            <span>$<%= shippingCost.toFixed(2) %></span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Tax</span>
+                            <span>$<%= taxAmount.toFixed(2) %></span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <span>$<%= (cartTotal + shippingCost + taxAmount).toFixed(2) %></span>
+                        </div>
+                        <div class="summary-actions">
+                            <button class="btn btn-outline btn-block" onclick="clearCart()">
+                                <i class="fas fa-broom"></i> Clear Cart
+                            </button>
+                            <a href="/checkout" class="btn btn-primary btn-block">
+                                <i class="fas fa-lock"></i> Proceed to Checkout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Wishlist Section -->
+            <section id="wishlist" class="section">
+                <div class="section-header">
+                    <h1>My Wishlist</h1>
+                    <p><%= wishlistItems.length %> items saved</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <% if (wishlistItems && wishlistItems.length > 0) { %>
+                            <div class="products-grid">
+                                <% wishlistItems.forEach(item => { %>
+                                <div class="product-card">
+                                    <button class="wishlist-btn active" onclick="removeFromWishlist(<%= item.product_id %>)">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                    <img src="<%= item.image_url || '/images/product-placeholder.jpg' %>" 
+                                         alt="<%= item.name %>"
+                                         onerror="this.src='/images/product-placeholder.jpg'">
+                                    <div class="product-info">
+                                        <h4><%= item.name %></h4>
+                                        <p class="price">$<%= item.price %></p>
+                                        <div class="product-actions">
+                                            <button class="btn btn-sm btn-primary" onclick="addToCart(<%= item.product_id %>)">
+                                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                                            </button>
+                                            <button class="btn btn-sm btn-outline" onclick="removeFromWishlist(<%= item.product_id %>)">
+                                                <i class="fas fa-trash"></i> Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }); %>
+                            </div>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fas fa-heart"></i>
+                                <h3>Your wishlist is empty</h3>
+                                <p>Save items you love to your wishlist</p>
+                                <a href="/products" class="btn btn-primary">Browse Products</a>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Messages Section -->
+            <section id="inbox" class="section">
+                <div class="section-header">
+                    <h1>Messages</h1>
+                    <p>Contact us or view conversations</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="messages-container">
+                            <div class="compose-message">
+                                <button class="btn btn-primary" onclick="showComposeModal()">
+                                    <i class="fas fa-pen"></i> New Message
+                                </button>
+                            </div>
+
+                            <% if (conversations && conversations.length > 0) { %>
+                                <div class="conversations-list">
+                                    <% conversations.forEach(conv => { %>
+                                    <div class="conversation-item <%= conv.unread_count > 0 ? 'unread' : '' %>" 
+                                         onclick="openConversation(<%= conv.id %>)">
+                                        <div class="conv-avatar">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="conv-content">
+                                            <h4><%= conv.user_name || 'Support Team' %></h4>
+                                            <p><%= conv.last_message || 'No messages yet' %></p>
+                                            <span class="conv-time">
+                                                <%= conv.last_message_at ? new Date(conv.last_message_at).toLocaleDateString() : '' %>
+                                            </span>
+                                        </div>
+                                        <% if (conv.unread_count > 0) { %>
+                                            <span class="unread-badge"><%= conv.unread_count %></span>
+                                        <% } %>
+                                    </div>
+                                    <% }); %>
+                                </div>
+                            <% } else { %>
+                                <div class="empty-state">
+                                    <i class="fas fa-envelope"></i>
+                                    <h3>No messages</h3>
+                                    <p>Start a conversation with our support team</p>
+                                    <button class="btn btn-primary" onclick="showComposeModal()">
+                                        <i class="fas fa-paper-plane"></i> Send Message
+                                    </button>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Addresses Section -->
+            <section id="addresses" class="section">
+                <div class="section-header">
+                    <h1>My Addresses</h1>
+                    <p>Manage your shipping addresses</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Saved Addresses</h2>
+                        <button class="btn btn-primary btn-sm" onclick="showAddressModal()">
+                            <i class="fas fa-plus"></i> Add Address
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="addresses-grid">
+                            <% if (addresses && addresses.length > 0) { %>
+                                <% addresses.forEach((addr, index) => { %>
+                                <div class="address-card <%= addr.is_default ? 'default' : '' %>">
+                                    <% if (addr.is_default) { %>
+                                        <span class="default-badge">Default</span>
+                                    <% } %>
+                                    <h4><%= addr.label || 'Address ' + (index + 1) %></h4>
+                                    <p><strong><%= addr.full_name %></strong></p>
+                                    <p><%= addr.address_line1 %></p>
+                                    <% if (addr.address_line2) { %>
+                                        <p><%= addr.address_line2 %></p>
+                                    <% } %>
+                                    <p><%= addr.city %>, <%= addr.state %> <%= addr.postal_code %></p>
+                                    <p><%= addr.country %></p>
+                                    <p><i class="fas fa-phone"></i> <%= addr.phone %></p>
+                                    <% if (addr.alternate_phone) { %>
+                                        <p><i class="fas fa-mobile-alt"></i> <%= addr.alternate_phone %></p>
+                                    <% } %>
+                                    <div class="address-actions">
+                                        <button class="btn btn-sm btn-secondary" onclick="editAddress(<%= addr.id %>)">Edit</button>
+                                        <% if (!addr.is_default) { %>
+                                            <button class="btn btn-sm btn-outline" onclick="setDefaultAddress(<%= addr.id %>)">Set Default</button>
+                                        <% } %>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteAddress(<%= addr.id %>)">Delete</button>
+                                    </div>
+                                </div>
+                                <% }); %>
+                            <% } else { %>
+                                <div class="empty-state">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <h3>No addresses saved</h3>
+                                    <p>Add an address for faster checkout</p>
+                                    <button class="btn btn-primary" onclick="showAddressModal()">
+                                        <i class="fas fa-plus"></i> Add Address
+                                    </button>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Profile Section -->
+            <section id="profile" class="section">
+                <div class="section-header">
+                    <h1>Edit Profile</h1>
+                    <p>Update your personal information</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <form id="profileForm" onsubmit="updateProfile(event)">
+                            <div class="profile-picture-section">
+                                <div class="profile-avatar-large">
+                                    <% if (user && user.profile_picture) { %>
+                                        <img src="<%= user.profile_picture %>" alt="Profile" id="profilePreview">
+                                    <% } else { %>
+                                        <div class="avatar-placeholder" id="profilePreview">
+                                            <%= (user && user.name) ? user.name.charAt(0).toUpperCase() : 'U' %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <div class="profile-picture-actions">
+                                    <input type="file" id="profilePictureInput" accept="image/*" onchange="previewProfilePicture(event)">
+                                    <label for="profilePictureInput" class="btn btn-secondary">
+                                        <i class="fas fa-camera"></i> Change Photo
+                                    </label>
+                                    <% if (user && user.profile_picture) { %>
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeProfilePicture()">
+                                            <i class="fas fa-trash"></i> Remove
+                                        </button>
+                                    <% } %>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Full Name</label>
+                                    <input type="text" name="name" value="<%= user ? user.name : '' %>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Email Address</label>
+                                    <input type="email" value="<%= user ? user.email : '' %>" readonly>
+                                    <small>Email cannot be changed</small>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Phone Number</label>
+                                    <input type="tel" name="phone" value="<%= user ? user.phone || '' : '' %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Date of Birth</label>
+                                    <input type="date" name="date_of_birth" value="<%= user ? user.date_of_birth || '' : '' %>">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Bio</label>
+                                <textarea name="bio" rows="4" placeholder="Tell us about yourself..."><%= user ? user.bio || '' : '' %></textarea>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="resetProfileForm()">
+                                    <i class="fas fa-undo"></i> Reset
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Password Section -->
+            <section id="password" class="section">
+                <div class="section-header">
+                    <h1>Change Password</h1>
+                    <p>Update your password for security</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <form id="passwordForm" onsubmit="changePassword(event)">
+                            <div class="form-group">
+                                <label>Current Password</label>
+                                <input type="password" name="currentPassword" required>
+                            </div>
+                            <div class="form-group">
+                                <label>New Password</label>
+                                <input type="password" name="newPassword" required minlength="8">
+                                <small>Minimum 8 characters</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm New Password</label>
+                                <input type="password" name="confirmPassword" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-lock"></i> Update Password
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Notifications Section -->
+            <section id="notifications" class="section">
+                <div class="section-header">
+                    <h1>Notifications</h1>
+                    <p>Manage your notification preferences</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="notifications-settings">
+                            <div class="setting-group">
+                                <h3>Email Notifications</h3>
+                                <div class="setting-item">
+                                    <label>
+                                        <input type="checkbox" id="emailNotifications" <%= userPreferences && userPreferences.email_notifications ? 'checked' : '' %>>
+                                        <span>Enable email notifications</span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label>
+                                        <input type="checkbox" id="orderUpdates" <%= userPreferences && userPreferences.order_updates ? 'checked' : '' %>>
+                                        <span>Order updates</span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label>
+                                        <input type="checkbox" id="promotionalEmails" <%= userPreferences && userPreferences.promotional_emails ? 'checked' : '' %>>
+                                        <span>Promotional emails</span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label>
+                                        <input type="checkbox" id="priceAlerts" <%= userPreferences && userPreferences.price_alerts ? 'checked' : '' %>>
+                                        <span>Price alerts</span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label>
+                                        <input type="checkbox" id="newsletter" <%= userPreferences && userPreferences.newsletter ? 'checked' : '' %>>
+                                        <span>Newsletter</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="setting-group">
+                                <h3>SMS Notifications</h3>
+                                <div class="setting-item">
+                                    <label>
+                                        <input type="checkbox" id="smsNotifications" <%= userPreferences && userPreferences.sms_notifications ? 'checked' : '' %>>
+                                        <span>Enable SMS notifications</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="setting-group">
+                                <h3>General Settings</h3>
+                                <div class="setting-item">
+                                    <label>
+                                        <input type="checkbox" id="accountSecurity" <%= userPreferences && userPreferences.account_security ? 'checked' : '' %>>
+                                        <span>Account security alerts</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button class="btn btn-primary" onclick="saveNotificationPreferences()">
+                                    <i class="fas fa-save"></i> Save Preferences
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Notifications</h2>
+                        <button class="btn btn-secondary btn-sm" onclick="markAllNotificationsAsRead()">Mark All Read</button>
+                    </div>
+                    <div class="card-body">
+                        <% if (notifications && notifications.length > 0) { %>
+                            <div class="notifications-list">
+                                <% notifications.forEach(notification => { %>
+                                <div class="notification-item <%= notification.is_read ? 'read' : 'unread' %>">
+                                    <div class="notification-icon">
+                                        <i class="fas fa-bell"></i>
+                                    </div>
+                                    <div class="notification-content">
+                                        <h4><%= notification.title %></h4>
+                                        <p><%= notification.message %></p>
+                                        <span class="notification-time"><%= new Date(notification.created_at).toLocaleString() %></span>
+                                    </div>
+                                    <div class="notification-actions">
+                                        <button class="btn btn-sm btn-outline" onclick="markNotificationAsRead(<%= notification.id %>)">
+                                            <i class="fas fa-check"></i> Mark Read
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteNotification(<%= notification.id %>)">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                </div>
+                                <% }); %>
+                            </div>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fas fa-bell"></i>
+                                <h3>No notifications</h3>
+                                <p>You're all caught up!</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reviews Section -->
+            <section id="reviews" class="section">
+                <div class="section-header">
+                    <h1>My Reviews</h1>
+                    <p>Manage your product reviews</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <% if (userReviews && userReviews.length > 0) { %>
+                            <div class="reviews-list">
+                                <% userReviews.forEach(review => { %>
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <div class="review-product">
+                                            <img src="<%= review.image_url || '/images/product-placeholder.jpg' %>" alt="<%= review.product_name %>">
+                                            <div class="product-info">
+                                                <h4><%= review.product_name %></h4>
+                                                <div class="rating">
+                                                    <% for(let i = 1; i <= 5; i++) { %>
+                                                        <% if (i <= review.rating) { %>
+                                                            <i class="fas fa-star"></i>
+                                                        <% } else { %>
+                                                            <i class="far fa-star"></i>
+                                                        <% } %>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span class="review-date"><%= new Date(review.created_at).toLocaleDateString() %></span>
+                                    </div>
+                                    <div class="review-content">
+                                        <p><%= review.comment %></p>
+                                    </div>
+                                    <div class="review-actions">
+                                        <button class="btn btn-sm btn-outline" onclick="editReview(<%= review.id %>)">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteReview(<%= review.id %>)">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                </div>
+                                <% }); %>
+                            </div>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fas fa-star"></i>
+                                <h3>No reviews yet</h3>
+                                <p>Write reviews for products you've purchased</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Activity Log Section -->
+            <section id="activity" class="section">
+                <div class="section-header">
+                    <h1>Activity Log</h1>
+                    <p>Your account activity history</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <% if (userActivity && userActivity.length > 0) { %>
+                            <div class="activity-timeline">
+                                <% userActivity.forEach(activity => { %>
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="fas fa-circle"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <h4><%= activity.action %></h4>
+                                        <p><%= activity.description %></p>
+                                        <div class="activity-meta">
+                                            <span class="activity-time"><%= new Date(activity.created_at).toLocaleString() %></span>
+                                            <span class="activity-location"><%= activity.location || 'Unknown Location' %></span>
+                                            <span class="activity-ip">IP: <%= activity.ip_address %></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }); %>
+                            </div>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fas fa-chart-line"></i>
+                                <h3>No activity yet</h3>
+                                <p>Your activity will appear here</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Compose Message Modal -->
+    <div class="modal" id="compose-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">New Message</h3>
+                <button class="modal-close" onclick="hideComposeModal()">&times;</button>
+            </div>
+            <form id="composeForm" onsubmit="sendMessage(event)">
+                <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" name="subject" required>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea name="message" rows="5" required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="hideComposeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Address Modal -->
+    <div class="modal" id="address-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="addressModalTitle">Add Address</h3>
+                <button class="modal-close" onclick="hideAddressModal()">&times;</button>
+            </div>
+            <form id="addressForm" onsubmit="saveAddress(event)">
+                <input type="hidden" name="addressId" id="addressId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Label</label>
+                        <select name="label" required>
+                            <option value="home">Home</option>
+                            <option value="work">Work</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" name="full_name" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Alternate Phone</label>
+                        <input type="tel" name="alternate_phone">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Address Line 1</label>
+                    <input type="text" name="address_line1" required>
+                </div>
+                <div class="form-group">
+                    <label>Address Line 2</label>
+                    <input type="text" name="address_line2">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" name="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label>State/Province</label>
+                        <input type="text" name="state">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Postal Code</label>
+                        <input type="text" name="postal_code" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Country</label>
+                        <input type="text" name="country" value="Kenya" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Delivery Instructions</label>
+                    <textarea name="delivery_instructions" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="is_default">
+                        <span>Set as default address</span>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="hideAddressModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Address
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/user-dashboard-enhanced.js"></script>
+    <script>
+        // Initialize user dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initNavigation();
+            initForms();
+            initRealTimeUpdates();
+        });
+    </script>
+</body>
+</html>

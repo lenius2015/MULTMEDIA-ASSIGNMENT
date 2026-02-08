@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin-enhanced.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h2>OMUNJU ADMIN</h2>
+                        <p>Management Panel</p>
+                    </div>
+                </div>
+                <button class="sidebar-toggle" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active" data-section="dashboard">
+                        <a href="#dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="products">
+                        <a href="#products">
+                            <i class="fas fa-box"></i>
+                            <span>Products</span>
+                            <span class="nav-badge" id="product-count">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="orders">
+                        <a href="#orders">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Orders</span>
+                            <span class="nav-badge" id="pending-orders">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="customers">
+                        <a href="#customers">
+                            <i class="fas fa-users"></i>
+                            <span>Customers</span>
+                            <span class="nav-badge" id="new-customers">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="categories">
+                        <a href="#categories">
+                            <i class="fas fa-tags"></i>
+                            <span>Categories</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="messages">
+                        <a href="#messages">
+                            <i class="fas fa-envelope"></i>
+                            <span>Messages</span>
+                            <span class="nav-badge" id="unread-messages">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="analytics">
+                        <a href="#analytics">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Analytics</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="settings">
+                        <a href="#settings">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="avatar">
+                        <% if (admin && admin.profile_picture) { %>
+                            <img src="<%= admin.profile_picture %>" alt="Admin">
+                        <% } else { %>
+                            <div class="avatar-placeholder"><%= (admin && admin.name) ? admin.name.charAt(0).toUpperCase() : 'A' %></div>
+                        <% } %>
+                    </div>
+                    <div class="user-details">
+                        <h4><%= admin ? admin.name : 'Admin' %></h4>
+                        <p>Administrator</p>
+                    </div>
+                </div>
+                <div class="sidebar-actions">
+                    <a href="/admin/profile" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-user"></i> Profile
+                    </a>
+                    <a href="/logout" class="btn btn-danger btn-sm">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main" id="admin-main">
+            <!-- Header -->
+            <header class="admin-header">
+                <div class="header-left">
+                    <button class="sidebar-toggle-header" id="sidebar-toggle-header">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title" id="page-title">Dashboard</h1>
+                </div>
+                
+                <div class="header-center">
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" id="global-search" placeholder="Search products, orders, customers...">
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <button class="header-btn" id="notification-btn" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
+                    </button>
+                    
+                    <button class="header-btn" id="message-btn" title="Messages">
+                        <i class="fas fa-envelope"></i>
+                        <span class="notification-badge" id="message-badge" style="display: none;">0</span>
+                    </button>
+                    
+                    <div class="profile-dropdown" id="profile-dropdown">
+                        <button class="profile-btn" id="profile-btn">
+                            <div class="profile-avatar">
+                                <% if (admin && admin.profile_picture) { %>
+                                    <img src="<%= admin.profile_picture %>" alt="Admin">
+                                <% } else { %>
+                                    <div class="avatar-placeholder"><%= (admin && admin.name) ? admin.name.charAt(0).toUpperCase() : 'A' %></div>
+                                <% } %>
+                            </div>
+                            <div class="profile-info">
+                                <span class="profile-name"><%= admin ? admin.name : 'Admin' %></span>
+                                <span class="profile-role">Administrator</span>
+                            </div>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        
+                        <div class="dropdown-menu">
+                            <a href="/admin/profile">
+                                <i class="fas fa-user"></i> Profile
+                            </a>
+                            <a href="/admin/settings">
+                                <i class="fas fa-cog"></i> Settings
+                            </a>
+                            <a href="/logout">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Notification Dropdown -->
+            <div class="dropdown-menu notification-dropdown" id="notification-dropdown">
+                <div class="dropdown-header">
+                    <h3>Notifications</h3>
+                    <button class="btn btn-sm btn-outline" id="mark-all-read">Mark All Read</button>
+                </div>
+                <div class="notification-list" id="notification-list">
+                    <!-- Notifications will be loaded here -->
+                </div>
+                <div class="dropdown-footer">
+                    <a href="/admin/notifications">View All Notifications</a>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="admin-content">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="admin-section active">
+                    <!-- Welcome Banner -->
+                    <div class="welcome-banner">
+                        <div class="welcome-content">
+                            <h1>Welcome back, <%= admin ? admin.name : 'Admin' %> 👋</h1>
+                            <p>Here's what's happening with your store today.</p>
+                        </div>
+                        <div class="welcome-actions">
+                            <a href="/admin/products/add" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Product
+                            </a>
+                            <a href="/admin/orders" class="btn btn-secondary">
+                                <i class="fas fa-shopping-cart"></i> View Orders
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon orders">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="total-orders"><%= stats.totalOrders || 0 %></h3>
+                                <p>Total Orders</p>
+                            </div>
+                            <div class="stat-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Active</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon users">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="total-users"><%= stats.totalUsers || 0 %></h3>
+                                <p>Total Users</p>
+                            </div>
+                            <div class="stat-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Registered</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon products">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="total-products"><%= stats.totalProducts || 0 %></h3>
+                                <p>Total Products</p>
+                            </div>
+                            <div class="stat-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Available</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon messages">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="total-messages"><%= stats.totalMessages || 0 %></h3>
+                                <p>Contact Messages</p>
+                            </div>
+                            <div class="stat-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Inquiries</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Sales Overview</h3>
+                                <div class="chart-controls">
+                                    <button class="chart-btn active" data-period="week">Week</button>
+                                    <button class="chart-btn" data-period="month">Month</button>
+                                    <button class="chart-btn" data-period="year">Year</button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="sales-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Order Status Distribution</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="status-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="activity-grid">
+                        <div class="activity-card">
+                            <div class="card-header">
+                                <h3>Recent Orders</h3>
+                                <a href="/admin/orders" class="btn btn-secondary btn-sm">View All</a>
+                            </div>
+                            <div class="activity-list">
+                                <% if (recentOrders && recentOrders.length > 0) { %>
+                                    <% recentOrders.forEach(order => { %>
+                                    <div class="activity-item">
+                                        <div class="activity-icon order">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">Order #<%= order.id %></div>
+                                            <div class="activity-desc"><%= order.customer_name || 'Customer' %> - $<%= order.total_amount %></div>
+                                            <div class="activity-time"><%= AdminUtils.formatDateTime(order.created_at) %></div>
+                                        </div>
+                                        <div class="activity-status <%= order.status %>"><%= order.status %></div>
+                                    </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <div class="empty-state">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        <p>No recent orders</p>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-card">
+                            <div class="card-header">
+                                <h3>Recent Messages</h3>
+                                <a href="/admin/messages" class="btn btn-secondary btn-sm">View All</a>
+                            </div>
+                            <div class="activity-list">
+                                <% if (recentMessages && recentMessages.length > 0) { %>
+                                    <% recentMessages.forEach(message => { %>
+                                    <div class="activity-item">
+                                        <div class="activity-icon message">
+                                            <i class="fas fa-envelope"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="activity-title"><%= message.name %></div>
+                                            <div class="activity-desc"><%= message.subject || 'No subject' %></div>
+                                            <div class="activity-time"><%= AdminUtils.formatDateTime(message.created_at) %></div>
+                                        </div>
+                                        <div class="activity-status <%= message.is_read ? 'read' : 'unread' %>">
+                                            <%= message.is_read ? 'Read' : 'Unread' %>
+                                        </div>
+                                    </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <div class="empty-state">
+                                        <i class="fas fa-envelope"></i>
+                                        <p>No recent messages</p>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Products Section -->
+                <section id="products" class="admin-section">
+                    <div class="section-header">
+                        <h1>Product Management</h1>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" onclick="showAddProductModal()">
+                                <i class="fas fa-plus"></i> Add Product
+                            </button>
+                            <button class="btn btn-secondary" onclick="exportProducts()">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3>All Products</h3>
+                            <div class="search-filters">
+                                <input type="text" id="product-search" placeholder="Search products..." class="search-input">
+                                <select id="category-filter" class="filter-select">
+                                    <option value="all">All Categories</option>
+                                    <!-- Categories will be loaded here -->
+                                </select>
+                                <select id="status-filter" class="filter-select">
+                                    <option value="all">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="admin-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Stock</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="products-table-body">
+                                    <!-- Products will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Orders Section -->
+                <section id="orders" class="admin-section">
+                    <div class="section-header">
+                        <h1>Order Management</h1>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" onclick="refreshOrders()">
+                                <i class="fas fa-refresh"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3>All Orders</h3>
+                            <div class="search-filters">
+                                <input type="text" id="order-search" placeholder="Search orders..." class="search-input">
+                                <select id="order-status-filter" class="filter-select">
+                                    <option value="all">All Status</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="processing">Processing</option>
+                                    <option value="shipped">Shipped</option>
+                                    <option value="delivered">Delivered</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="admin-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-table-body">
+                                    <!-- Orders will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Customers Section -->
+                <section id="customers" class="admin-section">
+                    <div class="section-header">
+                        <h1>Customer Management</h1>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" onclick="exportCustomers()">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3>All Customers</h3>
+                            <div class="search-filters">
+                                <input type="text" id="customer-search" placeholder="Search customers..." class="search-input">
+                                <select id="customer-filter" class="filter-select">
+                                    <option value="all">All Customers</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="admin-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Orders</th>
+                                        <th>Last Order</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customers-table-body">
+                                    <!-- Customers will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Categories Section -->
+                <section id="categories" class="admin-section">
+                    <div class="section-header">
+                        <h1>Category Management</h1>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" onclick="showAddCategoryModal()">
+                                <i class="fas fa-plus"></i> Add Category
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3>All Categories</h3>
+                        </div>
+                        <div class="admin-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Description</th>
+                                        <th>Products</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="categories-table-body">
+                                    <!-- Categories will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Messages Section -->
+                <section id="messages" class="admin-section">
+                    <div class="section-header">
+                        <h1>Message Management</h1>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" onclick="markAllMessagesRead()">
+                                <i class="fas fa-check"></i> Mark All Read
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3>All Messages</h3>
+                            <div class="search-filters">
+                                <input type="text" id="message-search" placeholder="Search messages..." class="search-input">
+                                <select id="message-filter" class="filter-select">
+                                    <option value="all">All Messages</option>
+                                    <option value="read">Read</option>
+                                    <option value="unread">Unread</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="admin-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>From</th>
+                                        <th>Subject</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="messages-table-body">
+                                    <!-- Messages will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Analytics Section -->
+                <section id="analytics" class="admin-section">
+                    <div class="section-header">
+                        <h1>Analytics & Reports</h1>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" onclick="generateReport()">
+                                <i class="fas fa-file-alt"></i> Generate Report
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Revenue Trends</h3>
+                                <select id="revenue-period" class="filter-select">
+                                    <option value="week">This Week</option>
+                                    <option value="month">This Month</option>
+                                    <option value="year">This Year</option>
+                                </select>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="revenue-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Product Performance</h3>
+                                <select id="product-performance" class="filter-select">
+                                    <option value="week">This Week</option>
+                                    <option value="month">This Month</option>
+                                    <option value="year">This Year</option>
+                                </select>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="product-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="revenue-today">$0</h3>
+                                <p>Revenue Today</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="avg-order-value">$0</h3>
+                                <p>Avg Order Value</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="new-customers-today">0</h3>
+                                <p>New Customers Today</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="conversion-rate">0%</h3>
+                                <p>Conversion Rate</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings" class="admin-section">
+                    <div class="section-header">
+                        <h1>System Settings</h1>
+                    </div>
+
+                    <div class="settings-grid">
+                        <div class="admin-card">
+                            <div class="card-header">
+                                <h3>General Settings</h3>
+                            </div>
+                            <form id="general-settings-form" class="settings-form">
+                                <div class="form-group">
+                                    <label>Store Name</label>
+                                    <input type="text" name="store_name" value="<%= settings ? settings.store_name : 'OMUNJU SHOPPERS' %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Contact Email</label>
+                                    <input type="email" name="contact_email" value="<%= settings ? settings.contact_email : '' %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone Number</label>
+                                    <input type="tel" name="phone" value="<%= settings ? settings.phone : '' %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Address</label>
+                                    <textarea name="address" rows="3"><%= settings ? settings.address : '' %></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="admin-card">
+                            <div class="card-header">
+                                <h3>Notification Settings</h3>
+                            </div>
+                            <form id="notification-settings-form" class="settings-form">
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" name="email_notifications" <%= settings && settings.email_notifications ? 'checked' : '' %>>
+                                        <span>Email Notifications</span>
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" name="order_notifications" <%= settings && settings.order_notifications ? 'checked' : '' %>>
+                                        <span>Order Notifications</span>
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" name="low_stock_alerts" <%= settings && settings.low_stock_alerts ? 'checked' : '' %>>
+                                        <span>Low Stock Alerts</span>
+                                    </label>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Modals -->
+    <!-- Add Product Modal -->
+    <div class="modal" id="add-product-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="product-modal-title">Add Product</h3>
+                <button class="modal-close" onclick="hideAddProductModal()">&times;</button>
+            </div>
+            <form id="product-form" class="modal-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select name="category_id" required>
+                            <option value="">Select Category</option>
+                            <!-- Categories will be loaded here -->
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="description" rows="4" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Price</label>
+                        <input type="number" name="price" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Stock</label>
+                        <input type="number" name="stock" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="url" name="image_url">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="hideAddProductModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div class="modal" id="add-category-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="category-modal-title">Add Category</h3>
+                <button class="modal-close" onclick="hideAddCategoryModal()">&times;</button>
+            </div>
+            <form id="category-form" class="modal-form">
+                <div class="form-group">
+                    <label>Category Name</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="description" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="hideAddCategoryModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/admin-enhanced.js"></script>
+    <script>
+        // Initialize admin dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            AdminDashboard.init();
+        });
+    </script>
+</body>
+</html>

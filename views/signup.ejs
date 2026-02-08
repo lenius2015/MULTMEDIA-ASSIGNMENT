@@ -137,5 +137,15 @@
   </div>
 
   <script src="/signup.js"></script>
+  
+  <!-- Shared Chatbot Widget -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/script.js"></script>
+  <script src="/chatbot.js"></script>
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          window.chatbot = new Chatbot();
+      });
+  </script>
 </body>
 </html>

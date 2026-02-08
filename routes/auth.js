@@ -300,6 +300,16 @@ router.post('/logout', (req, res) => {
   });
 });
 
+// Logout user - GET route for easy access
+router.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Logout error:', err);
+    }
+    res.redirect('/');
+  });
+});
+
 // Admin login (separate from regular user login)
 router.post('/admin-login', async (req, res) => {
   try {
@@ -360,6 +370,27 @@ router.post('/admin-login', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Admin login failed. Please try again.'
+    });
+  }
+});
+
+// Get current user info (for frontend authentication)
+router.get('/me', (req, res) => {
+  if (req.session && req.session.userId) {
+    res.json({
+      success: true,
+      data: {
+        id: req.session.userId,
+        name: req.session.userName,
+        email: req.session.userEmail,
+        role: req.session.role,
+        profile_picture: req.session.userProfilePicture
+      }
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      message: 'Not authenticated'
     });
   }
 });

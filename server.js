@@ -13,7 +13,7 @@ const { securityConfig, securityMiddleware } = require('./config/security');
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Security Middleware (Order matters!)
 app.use(securityMiddleware.securityHeaders); // Security headers first
@@ -49,6 +49,25 @@ app.use(Logger.accessLogger());
 // Secure Session Configuration
 app.use(session(securityConfig.session));
 
+// Middleware to add user data to res.locals for all templates
+app.use(async (req, res, next) => {
+    res.locals.user = null;
+    if (req.session && req.session.userId) {
+        try {
+            const [users] = await pool.query(
+                'SELECT id, name, email, role, profile_picture FROM users WHERE id = ?',
+                [req.session.userId]
+            );
+            if (users.length > 0) {
+                res.locals.user = users[0];
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    next();
+});
+
 // Passport Configuration
 app.use(passport.initialize());
 app.use(passport.session());
@@ -57,6 +76,7 @@ app.use(passport.session());
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
+const checkoutRoutes = require('./routes/checkout');
 const orderRoutes = require('./routes/orders');
 const notificationRoutes = require('./routes/notifications');
 const contactRoutes = require('./routes/contact');
@@ -66,6 +86,8 @@ const auctionRoutes = require('./routes/auctions');
 const countdownRoutes = require('./routes/countdowns');
 const auctionPublicRoutes = require('./routes/auction-public');
 const adminNotificationsRoutes = require('./routes/admin-notifications');
+const dealsRoutes = require('./routes/deals');
+const promotionsRoutes = require('./routes/promotions');
 
 // Separate admin authentication system
 const adminAuthRoutes = require('./routes/adminAuth.routes');
@@ -76,23 +98,47 @@ const invoiceRoutes = require('./routes/invoices');
 const onboardingRoutes = require('./routes/onboarding');
 const deliveryRoutes = require('./routes/delivery');
 const conversationsRoutes = require('./routes/conversations');
+const userAccountRoutes = require('./routes/userAccount.routes');
+const wishlistRoutes = require('./routes/wishlist');
+const userDashboardRoutes = require('./routes/userDashboard.routes');
+const categoriesRoutes = require('./routes/categories');
 const { addAdminData } = require('./middleware/adminAuth');
 
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/products', productRoutes);
+app.use('/api/categories', categoriesRoutes);
+app.use('/categories', categoriesRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/payments', require('./src/routes/payments'));
+app.use('/api/delivery', require('./src/routes/delivery'));
+app.use('/api/invoices', invoiceRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/notifications', notificationRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/profile', profileRoutes);
 app.use('/api/inbox', inboxRoutes);
-app.use('/api/invoices', invoiceRoutes);
 app.use('/api/onboarding', onboardingRoutes);
-app.use('/api/delivery', deliveryRoutes);
 app.use('/api/conversations', conversationsRoutes);
+app.use('/api/user', userAccountRoutes);
+app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/checkout', checkoutRoutes);
+app.use('/api/deals', dealsRoutes);
+app.use('/api/promotions', promotionsRoutes);
+
+// User routes
+app.use('/dashboard', userDashboardRoutes);
+
+// Profile page route - redirect to the view route which fetches full user data
+app.get('/profile', (req, res) => {
+    if (!req.session.userId) {
+        return res.redirect('/login');
+    }
+    res.redirect('/profile/view');
+});
 
 // Admin routes - Order matters: more specific routes first
 app.use('/admin', addAdminData); // Add admin data to all admin routes
@@ -108,6 +154,36 @@ app.use('/auctions', auctionPublicRoutes);
 // Separate Admin Authentication System
 app.use('/admin', adminAuthRoutes);
 app.use('/admin', adminDashboardRoutes);
+
+// Enhanced Admin Dashboard Route - Use admin session variables
+app.get('/admin/dashboard-enhanced', (req, res) => {
+  // Check for admin session variables (set by adminAuth routes)
+  const isAdmin = req.session && (req.session.adminId || 
+    (req.session.userId && (req.session.role === 'admin' || req.session.adminIsSuperAdmin)));
+  
+  if (!isAdmin) {
+    return res.redirect('/admin/login');
+  }
+  
+  res.render('admin/dashboard-enhanced', {
+    title: 'Admin Dashboard - OMUNJU SHOPPERS',
+    admin: {
+      id: req.session.adminId || req.session.userId,
+      name: req.session.adminName || req.session.userName,
+      email: req.session.adminEmail || req.session.userEmail,
+      profile_picture: req.session.adminProfilePicture || req.session.userProfilePicture
+    },
+    stats: {
+      totalOrders: 0,
+      totalUsers: 0,
+      totalProducts: 0,
+      totalMessages: 0
+    },
+    recentOrders: [],
+    recentMessages: [],
+    settings: {}
+  });
+});
 
 // Socket.IO Configuration
 io.use((socket, next) => {
@@ -409,22 +485,30 @@ io.on('connection', (socket) => {
   });
 });
 
-// Temporary test route for admin access
-app.get('/test-admin', (req, res) => {
-  req.session.role = 'admin';
-  req.session.userId = 1;
-  req.session.userName = 'Test Admin';
-  req.session.userEmail = 'test@admin.com';
-  res.redirect('/admin/dashboard');
-});
-
-// Test admin dashboard without auth
-app.get('/admin-test', (req, res) => {
-  res.render('admin/dashboard', {
-    title: 'Admin Dashboard - OMUNJU SHOPPERS',
-    currentPage: 'dashboard'
+// TEMPORARY TEST ROUTES - DISABLE IN PRODUCTION
+// These routes are for development/testing only and should be removed in production
+if (process.env.NODE_ENV !== 'production') {
+  // Temporary test route for admin access
+  app.get('/test-admin', (req, res) => {
+    req.session.role = 'admin';
+    req.session.userId = 1;
+    req.session.userName = 'Test Admin';
+    req.session.userEmail = 'test@admin.com';
+    res.redirect('/admin/dashboard');
   });
-});
+
+  // Test admin dashboard without auth - FOR TESTING ONLY
+  app.get('/admin-test', (req, res) => {
+    // Only allow in development
+    if (process.env.NODE_ENV === 'production') {
+      return res.status(403).send('This route is disabled in production');
+    }
+    res.render('admin/dashboard', {
+      title: 'Admin Dashboard - OMUNJU SHOPPERS',
+      currentPage: 'dashboard'
+    });
+  });
+}
 
 // Page Routes
 app.get('/', (req, res) => {
@@ -482,40 +566,7 @@ app.get('/admin-login', (req, res) => {
   });
 });
 
-app.get('/dashboard', async (req, res) => {
-  if (!req.session.userId) {
-    return res.redirect('/login');
-  }
 
-  // Check onboarding status for regular users (not admins)
-  if (req.session.role !== 'admin') {
-    try {
-      const [onboardingRecords] = await pool.query(
-        'SELECT completed FROM user_onboarding WHERE user_id = ?',
-        [req.session.userId]
-      );
-
-      // If no onboarding record or not completed, redirect to onboarding
-      if (onboardingRecords.length === 0 || !onboardingRecords[0].completed) {
-        return res.redirect('/onboarding');
-      }
-    } catch (error) {
-      console.error('Error checking onboarding status:', error);
-      // Continue to dashboard if there's an error
-    }
-  }
-
-  res.render('dashboard', {
-    user: {
-      id: req.session.userId,
-      name: req.session.userName,
-      email: req.session.userEmail,
-      phone: req.session.userPhone,
-      address: req.session.userAddress,
-      profile_picture: req.session.userProfilePicture
-    }
-  });
-});
 
 app.get('/onboarding', (req, res) => {
   if (!req.session.userId) {
@@ -656,6 +707,15 @@ app.get('/categories', async (req, res) => {
   }
 });
 
+// Test pages
+app.get('/test-cart-functionality.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'test-cart-functionality.html'));
+});
+
+app.get('/test-cart.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'test-cart.html'));
+});
+
 app.get('/deals', (req, res) => {
   res.render('deals', {
     user: req.session.userId ? {
@@ -667,24 +727,99 @@ app.get('/deals', (req, res) => {
   });
 });
 
-app.get('/cart', (req, res) => {
-  if (!req.session.userId) {
-    return res.redirect('/login');
-  }
-  res.render('cart', {
-    user: {
+app.get('/promotions', (req, res) => {
+  res.render('promotions', {
+    title: 'Promotions - OMUNJU SHOPPERS',
+    user: req.session.userId ? {
       id: req.session.userId,
       name: req.session.userName,
       email: req.session.userEmail,
       profile_picture: req.session.userProfilePicture
-    }
+    } : null
   });
+});
+
+app.get('/cart', async (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect('/login');
+  }
+  
+  try {
+    // Fetch cart items from database
+    const [cartItems] = await pool.query(
+      `SELECT ci.*, p.name, p.price, p.image_url, p.stock 
+       FROM cart ci 
+       JOIN products p ON ci.product_id = p.id 
+       WHERE ci.user_id = ? 
+       ORDER BY ci.created_at DESC`,
+      [req.session.userId]
+    );
+    
+    // Calculate totals
+    const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const shipping = subtotal > 50000 ? 0 : 5000;
+    const total = subtotal + shipping;
+    
+    res.render('cart', {
+      user: {
+        id: req.session.userId,
+        name: req.session.userName,
+        email: req.session.userEmail,
+        profile_picture: req.session.userProfilePicture
+      },
+      cartItems: cartItems,
+      subtotal: subtotal,
+      shipping: shipping,
+      total: total
+    });
+  } catch (error) {
+    console.error('Cart error:', error);
+    res.render('cart', {
+      user: {
+        id: req.session.userId,
+        name: req.session.userName,
+        email: req.session.userEmail,
+        profile_picture: req.session.userProfilePicture
+      },
+      cartItems: [],
+      subtotal: 0,
+      shipping: 0,
+      total: 0
+    });
+  }
 });
 
 app.get('/category/:type', async (req, res) => {
   const { type } = req.params;
   try {
-    const [products] = await pool.query('SELECT * FROM products WHERE category = ?', [type]);
+    // First try to find category by slug
+    const [categories] = await pool.query('SELECT id FROM categories WHERE slug = ?', [type]);
+    let categoryId = null;
+    
+    if (categories.length > 0) {
+      categoryId = categories[0].id;
+    } else {
+      // If not found by slug, try by id
+      const categoryIdNum = parseInt(type);
+      if (!isNaN(categoryIdNum)) {
+        categoryId = categoryIdNum;
+      }
+    }
+    
+    let products = [];
+    if (categoryId) {
+      [products] = await pool.query('SELECT * FROM products WHERE category_id = ? AND is_active = 1', [categoryId]);
+    }
+    
+    // Get category name
+    let categoryName = type;
+    if (categories.length > 0) {
+      [categories] = await pool.query('SELECT name FROM categories WHERE id = ?', [categoryId]);
+      if (categories.length > 0) {
+        categoryName = categories[0].name;
+      }
+    }
+    
     res.render('category', {
       user: req.session.userId ? {
         id: req.session.userId,
@@ -694,18 +829,19 @@ app.get('/category/:type', async (req, res) => {
         address: req.session.userAddress,
         profile_picture: req.session.userProfilePicture
       } : null,
-      type: type,
+      type: categoryName,
       products: products
     });
   } catch (error) {
-    console.error(error);
+    console.error('Category page error:', error);
     res.status(500).render('404', {
       user: req.session.userId ? {
         id: req.session.userId,
         name: req.session.userName,
         email: req.session.userEmail,
         profile_picture: req.session.userProfilePicture
-      } : null
+      } : null,
+      message: 'Failed to load category'
     });
   }
 });
@@ -727,9 +863,105 @@ app.get('/profile', (req, res) => {
    if (!req.session.userId) {
        return res.redirect('/login');
    }
+   // Redirect to profile view page
+   res.redirect('/profile/view');
+});
 
-   // Redirect to profile view
-   res.redirect('/api/profile/view');
+// Profile view page
+app.get('/profile/view', async (req, res) => {
+   if (!req.session.userId) {
+       return res.redirect('/login');
+   }
+   try {
+       const userId = req.session.userId;
+       
+       // Get user basic info
+       const [users] = await pool.query(
+           'SELECT id, name, email, phone, address, role, profile_picture, created_at FROM users WHERE id = ?',
+           [userId]
+       );
+       
+       if (users.length === 0) {
+           return res.redirect('/login');
+       }
+       
+       // Get user's orders
+       const [orders] = await pool.query(
+           'SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT 10',
+           [userId]
+       );
+       
+       // Get cart count
+       const [cartItems] = await pool.query(
+           'SELECT SUM(quantity) as total FROM cart WHERE user_id = ?',
+           [userId]
+       );
+       
+       res.render('profile', {
+           title: 'My Profile - OMUNJU SHOPPERS',
+           user: users[0],
+           orders: orders,
+           cartCount: cartItems[0].total || 0
+       });
+   } catch (error) {
+       console.error('Profile view error:', error);
+       res.redirect('/dashboard');
+   }
+});
+
+// Modern User Dashboard
+app.get('/dashboard', async (req, res) => {
+   if (!req.session.userId) {
+       return res.redirect('/login');
+   }
+
+   // Check onboarding status for regular users (not admins)
+   if (req.session.role !== 'admin') {
+       try {
+           const [onboardingRecords] = await pool.query(
+               'SELECT completed FROM user_onboarding WHERE user_id = ?',
+               [req.session.userId]
+           );
+
+           // If no onboarding record or not completed, redirect to onboarding
+           if (onboardingRecords.length === 0 || !onboardingRecords[0].completed) {
+               return res.redirect('/onboarding');
+           }
+       } catch (error) {
+           console.error('Error checking onboarding status:', error);
+           // Continue to dashboard if there's an error
+       }
+   }
+
+   try {
+       const userId = req.session.userId;
+
+       // Get user info
+       const [users] = await pool.query(
+           'SELECT id, name, email, phone, address, profile_picture, created_at FROM users WHERE id = ?',
+           [userId]
+       );
+
+       if (users.length === 0) {
+           return res.redirect('/login');
+       }
+
+       res.render('dashboard-new', {
+           title: 'My Account - OMUNJU SHOPPERS',
+           user: users[0]
+       });
+   } catch (error) {
+       console.error('Dashboard error:', error);
+       res.status(500).render('error', {
+           user: req.session.userId ? {
+               id: req.session.userId,
+               name: req.session.userName,
+               email: req.session.userEmail,
+               profile_picture: req.session.userProfilePicture
+           } : null,
+           message: 'Failed to load dashboard'
+       });
+   }
 });
 
 app.get('/product/:id', async (req, res) => {
@@ -769,6 +1001,234 @@ app.get('/product/:id', async (req, res) => {
     });
   }
 });
+
+// Products page - lists all products
+app.get('/products', async (req, res) => {
+  try {
+    // Get all active products
+    const [products] = await pool.query(`
+      SELECT p.*, c.name as category_name
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.id
+      WHERE p.is_active = 1
+      ORDER BY p.created_at DESC
+      LIMIT 100
+    `);
+    
+    // Get categories for filter
+    const [categories] = await pool.query(`
+      SELECT c.*, COUNT(p.id) as product_count
+      FROM categories c
+      LEFT JOIN products p ON c.id = p.category_id AND p.is_active = 1
+      WHERE c.is_active = 1
+      GROUP BY c.id
+      ORDER BY c.name
+    `);
+    
+    res.render('products', {
+      title: 'All Products - OMUNJU SHOPPERS',
+      user: req.session.userId ? {
+        id: req.session.userId,
+        name: req.session.userName,
+        email: req.session.userEmail,
+        profile_picture: req.session.userProfilePicture
+      } : null,
+      products: products || [],
+      categories: categories || []
+    });
+  } catch (error) {
+    console.error('Products page error:', error);
+    res.status(500).render('404', {
+      user: req.session.userId ? {
+        id: req.session.userId,
+        name: req.session.userName,
+        email: req.session.userEmail,
+        profile_picture: req.session.userProfilePicture
+      } : null,
+      message: 'Failed to load products'
+    });
+  }
+});
+
+// Auctions page
+app.get('/auctions', async (req, res) => {
+  try {
+    // Get all active auctions
+    const [auctions] = await pool.query(`
+      SELECT a.*, p.name as product_name, p.image_url as product_image
+      FROM auctions a
+      LEFT JOIN products p ON a.product_id = p.id
+      WHERE a.status = 'active' AND a.end_date > NOW()
+      ORDER BY a.end_date ASC
+      LIMIT 50
+    `);
+    
+    res.render('auctions', {
+      title: 'Live Auctions - OMUNJU SHOPPERS',
+      user: req.session.userId ? {
+        id: req.session.userId,
+        name: req.session.userName,
+        email: req.session.userEmail,
+        profile_picture: req.session.userProfilePicture
+      } : null,
+      auctions: auctions || []
+    });
+  } catch (error) {
+    console.error('Auctions page error:', error);
+    res.status(500).render('404', {
+      user: req.session.userId ? {
+        id: req.session.userId,
+        name: req.session.userName,
+        email: req.session.userEmail,
+        profile_picture: req.session.userProfilePicture
+      } : null,
+      message: 'Failed to load auctions'
+    });
+  }
+});
+
+// Single auction page
+app.get('/auctions/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const [auctions] = await pool.query(`
+      SELECT a.*, p.name as product_name, p.description as product_description, p.image_url as product_image
+      FROM auctions a
+      LEFT JOIN products p ON a.product_id = p.id
+      WHERE a.id = ?
+    `, [id]);
+    
+    if (auctions.length === 0) {
+      return res.status(404).render('404', {
+        user: req.session.userId ? {
+          id: req.session.userId,
+          name: req.session.userName,
+          email: req.session.userEmail,
+          profile_picture: req.session.userProfilePicture
+        } : null,
+        message: 'Auction not found'
+      });
+    }
+    
+    // Get bids for this auction
+    const [bids] = await pool.query(`
+      SELECT b.*, u.name as bidder_name
+      FROM auction_bids b
+      LEFT JOIN users u ON b.user_id = u.id
+      WHERE b.auction_id = ?
+      ORDER BY b.amount DESC
+      LIMIT 20
+    `, [id]);
+    
+    res.render('auction-detail', {
+      title: `Auction: ${auctions[0].product_name} - OMUNJU SHOPPERS`,
+      user: req.session.userId ? {
+        id: req.session.userId,
+        name: req.session.userName,
+        email: req.session.userEmail,
+        profile_picture: req.session.userProfilePicture
+      } : null,
+      auction: auctions[0],
+      bids: bids || []
+    });
+  } catch (error) {
+    console.error('Auction detail page error:', error);
+    res.status(500).render('404', {
+      user: req.session.userId ? {
+        id: req.session.userId,
+        name: req.session.userName,
+        email: req.session.userEmail,
+        profile_picture: req.session.userProfilePicture
+      } : null,
+      message: 'Failed to load auction'
+    });
+  }
+});
+
+// Checkout page
+app.get('/checkout', async (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect('/login');
+  }
+
+  try {
+    const userId = req.session.userId;
+
+    // Get cart items
+    const [cartItems] = await pool.query(`
+      SELECT
+        c.id,
+        c.quantity,
+        p.id as product_id,
+        p.name,
+        p.price,
+        p.discount,
+        p.image_url,
+        p.stock,
+        (p.price - (p.price * COALESCE(p.discount, 0) / 100)) as discounted_price
+      FROM cart c
+      JOIN products p ON c.product_id = p.id
+      WHERE c.user_id = ?
+      ORDER BY c.created_at DESC
+    `, [userId]);
+
+    if (cartItems.length === 0) {
+      return res.redirect('/cart');
+    }
+
+    // Calculate totals
+    const subtotal = cartItems.reduce((sum, item) => {
+      const price = parseFloat(item.discounted_price) || item.price;
+      return sum + (price * item.quantity);
+    }, 0);
+
+    const deliveryFee = subtotal > 50000 ? 0 : 5000; // Free delivery over 50k
+    const tax = subtotal * 0.16; // 16% VAT
+    const total = subtotal + deliveryFee + tax;
+
+    // Get user addresses
+    const [addresses] = await pool.query(
+      'SELECT * FROM addresses WHERE user_id = ? ORDER BY is_default DESC',
+      [userId]
+    );
+
+    // Get delivery fees for different locations
+    const [deliveryFees] = await pool.query(
+      'SELECT * FROM delivery_fees WHERE is_active = 1 ORDER BY city'
+    );
+
+    res.render('checkout', {
+      title: 'Checkout - OMUNJU SHOPPERS',
+      user: {
+        id: req.session.userId,
+        name: req.session.userName,
+        email: req.session.userEmail,
+        profile_picture: req.session.userProfilePicture
+      },
+      cartItems,
+      subtotal: subtotal.toFixed(2),
+      deliveryFee: deliveryFee.toFixed(2),
+      tax: tax.toFixed(2),
+      total: total.toFixed(2),
+      addresses,
+      deliveryFees
+    });
+  } catch (error) {
+    console.error('Checkout error:', error);
+    res.status(500).render('error', {
+      user: req.session.userId ? {
+        id: req.session.userId,
+        name: req.session.userName,
+        email: req.session.userEmail,
+        profile_picture: req.session.userProfilePicture
+      } : null,
+      message: 'Failed to load checkout page'
+    });
+  }
+});
+
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {

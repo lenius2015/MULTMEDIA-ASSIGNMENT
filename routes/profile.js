@@ -107,6 +107,11 @@ router.post('/picture', isAuthenticated, upload.single('profilePicture'), async 
 
         // Update session so header avatar reflects immediately
         req.session.userProfilePicture = profilePicturePath;
+        
+        // Save session to ensure persistence
+        req.session.save((err) => {
+            if (err) console.error('Session save error:', err);
+        });
 
         res.json({
             success: true,

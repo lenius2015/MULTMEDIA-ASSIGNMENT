@@ -147,6 +147,16 @@ const postAdminLogout = (req, res) => {
   });
 };
 
+// Handle admin logout - GET route (redirects to login)
+const getAdminLogout = (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Admin logout error:', err);
+    }
+    res.redirect('/admin/login');
+  });
+};
+
 // Check admin authentication status
 const getAdminStatus = (req, res) => {
   if (req.session && req.session.adminId) {
@@ -174,5 +184,6 @@ module.exports = {
   getAdminLogin,
   postAdminLogin,
   postAdminLogout,
+  getAdminLogout,
   getAdminStatus
 };

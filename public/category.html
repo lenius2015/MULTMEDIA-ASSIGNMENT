@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category - Omunju Shopers</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="category.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <div class="container">
+                <span>Welcome to Omunju Shopers! Free shipping on orders over $50</span>
+            </div>
+        </div>
+        <div class="container">
+            <div class="header-main">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-shopping-bag"></i>
+                    Omunju Shopers
+                </a>
+                <div class="search-box">
+                    <input type="text" placeholder="Search for products..." id="searchInput">
+                    <button onclick="performSearch()" aria-label="Search">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div class="header-actions" id="headerActions">
+                    <a href="/profile" class="header-action" id="accountAction">
+                        <i class="far fa-user"></i>
+                        <span>Account</span>
+                    </a>
+                    <div class="header-action" onclick="toggleWishlist()">
+                        <i class="far fa-heart"></i>
+                        <span>Wishlist</span>
+                    </div>
+                    <div class="header-action" onclick="toggleCart()">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Cart</span>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-categories">
+            <div class="container">
+                <nav class="nav-categories-list">
+                    <a href="index.html">Home</a>
+                    <a href="category.html?category=all">All Products</a>
+                    <a href="category.html?category=electronics">Electronics</a>
+                    <a href="category.html?category=fashion">Fashion</a>
+                    <a href="category.html?category=home">Home & Garden</a>
+                    <a href="category.html?category=sports">Sports</a>
+                    <a href="category.html?category=deals">Deals</a>
+                    <a href="category.html?category=new_arrivals">New Arrivals</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Category Page Content -->
+    <main class="category-page">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <a href="index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <span id="breadcrumbCurrent">All Products</span>
+            </nav>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <h1 id="categoryTitle">All Products</h1>
+                    <p id="categoryDescription">Browse our complete collection of products</p>
+                </div>
+                <div class="page-header-stats">
+                    <span id="productCount">0 products found</span>
+                </div>
+            </div>
+
+            <div class="category-layout">
+                <!-- Sidebar Filters -->
+                <aside class="filters-sidebar">
+                    <div class="filters-header">
+                        <h3><i class="fas fa-filter"></i> Filters</h3>
+                        <button class="clear-filters" onclick="clearAllFilters()">Clear All</button>
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="filter-section">
+                        <h4 class="filter-title" onclick="toggleFilter('category')">
+                            Categories
+                            <i class="fas fa-chevron-down"></i>
+                        </h4>
+                        <div class="filter-options" id="categoryFilters">
+                            <label class="filter-option">
+                                <input type="radio" name="category" value="all" checked>
+                                <span>All Categories</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="category" value="electronics">
+                                <span>Electronics</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="category" value="fashion">
+                                <span>Fashion</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="category" value="home">
+                                <span>Home & Garden</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="category" value="sports">
+                                <span>Sports</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="category" value="beauty">
+                                <span>Beauty</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="category" value="books">
+                                <span>Books</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Price Filter -->
+                    <div class="filter-section">
+                        <h4 class="filter-title" onclick="toggleFilter('price')">
+                            Price Range
+                            <i class="fas fa-chevron-down"></i>
+                        </h4>
+                        <div class="filter-options" id="priceFilter">
+                            <div class="price-inputs">
+                                <input type="number" id="minPrice" placeholder="Min" min="0">
+                                <span>-</span>
+                                <input type="number" id="maxPrice" placeholder="Max" min="0">
+                            </div>
+                            <button class="apply-price-btn" onclick="applyPriceFilter()">Apply</button>
+                        </div>
+                    </div>
+
+                    <!-- Brand Filter -->
+                    <div class="filter-section">
+                        <h4 class="filter-title" onclick="toggleFilter('brand')">
+                            Brand
+                            <i class="fas fa-chevron-down"></i>
+                        </h4>
+                        <div class="filter-options" id="brandFilters">
+                            <div class="search-filter">
+                                <input type="text" placeholder="Search brands..." id="brandSearch" oninput="filterBrands()">
+                            </div>
+                            <div class="brand-list" id="brandList">
+                                <!-- Brands loaded dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rating Filter -->
+                    <div class="filter-section">
+                        <h4 class="filter-title" onclick="toggleFilter('rating')">
+                            Rating
+                            <i class="fas fa-chevron-down"></i>
+                        </h4>
+                        <div class="filter-options" id="ratingFilters">
+                            <label class="filter-option">
+                                <input type="radio" name="rating" value="4" onclick="applyRatingFilter(4)">
+                                <span class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </span>
+                                <span>& Up</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="rating" value="3" onclick="applyRatingFilter(3)">
+                                <span class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </span>
+                                <span>& Up</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="rating" value="2" onclick="applyRatingFilter(2)">
+                                <span class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </span>
+                                <span>& Up</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="rating" value="1" onclick="applyRatingFilter(1)">
+                                <span class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </span>
+                                <span>& Up</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Apply Filters Button (Mobile) -->
+                    <button class="apply-filters-btn mobile-only" onclick="applyAllFilters()">
+                        Apply Filters
+                    </button>
+                </aside>
+
+                <!-- Products Section -->
+                <section class="products-section">
+                    <!-- Sort and View Options -->
+                    <div class="products-toolbar">
+                        <div class="sort-options">
+                            <label for="sortSelect">Sort by:</label>
+                            <select id="sortSelect" onchange="applySorting()">
+                                <option value="newest">Newest</option>
+                                <option value="price_low">Price: Low to High</option>
+                                <option value="price_high">Price: High to Low</option>
+                                <option value="bestselling">Best Selling</option>
+                                <option value="rating">Top Rated</option>
+                            </select>
+                        </div>
+                        <div class="view-options">
+                            <button class="view-btn active" onclick="setGridView()" aria-label="Grid view">
+                                <i class="fas fa-th-large"></i>
+                            </button>
+                            <button class="view-btn" onclick="setListView()" aria-label="List view">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Active Filters -->
+                    <div class="active-filters" id="activeFilters">
+                        <!-- Active filters tags appear here -->
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="products-grid" id="productsGrid">
+                        <!-- Loading Skeleton -->
+                        <div class="product-skeleton" id="loadingSkeleton">
+                            <div class="skeleton-image"></div>
+                            <div class="skeleton-content">
+                                <div class="skeleton-line"></div>
+                                <div class="skeleton-line short"></div>
+                                <div class="skeleton-line"></div>
+                            </div>
+                        </div>
+                        <div class="product-skeleton">
+                            <div class="skeleton-image"></div>
+                            <div class="skeleton-content">
+                                <div class="skeleton-line"></div>
+                                <div class="skeleton-line short"></div>
+                                <div class="skeleton-line"></div>
+                            </div>
+                        </div>
+                        <div class="product-skeleton">
+                            <div class="skeleton-image"></div>
+                            <div class="skeleton-content">
+                                <div class="skeleton-line"></div>
+                                <div class="skeleton-line short"></div>
+                                <div class="skeleton-line"></div>
+                            </div>
+                        </div>
+                        <div class="product-skeleton">
+                            <div class="skeleton-image"></div>
+                            <div class="skeleton-content">
+                                <div class="skeleton-line"></div>
+                                <div class="skeleton-line short"></div>
+                                <div class="skeleton-line"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div class="empty-state" id="emptyState" style="display: none;">
+                        <i class="fas fa-box-open"></i>
+                        <h3>No products found</h3>
+                        <p>Try adjusting your filters or browse our other categories</p>
+                        <button class="clear-filters-btn" onclick="clearAllFilters()">Clear Filters</button>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination buttons loaded dynamically -->
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h2><i class="fas fa-shopping-bag"></i> ShopEase</h2>
+                    <p>Your one-stop shop for everything you need. Quality products, great prices, and excellent customer service.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Customer Service</h4>
+                    <ul>
+                        <li><a href="#">My Account</a></li>
+                        <li><a href="#">Track Order</a></li>
+                        <li><a href="#">Returns & Refunds</a></li>
+                        <li><a href="#">FAQs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-envelope"></i> support@omunjushopers.com</a></li>
+                        <li><a href="#"><i class="fas fa-phone"></i> 1-800-SHOPEASE</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Omunju Shopers. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar -->
+    <div class="overlay" id="overlay" onclick="toggleCart()"></div>
+    <div class="login-modal" id="loginModal">
+        <div class="login-modal-content">
+            <button class="login-modal-close" onclick="closeLoginModal()">&times;</button>
+            <h2>Welcome Back</h2>
+            <p>Sign in to your account to continue shopping</p>
+            
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="login-btn">Sign In</button>
+            </form>
+            
+            <div class="login-divider"><span>or continue with</span></div>
+            
+            <div class="social-login">
+                <button onclick="socialLogin('google')">
+                    <i class="fab fa-google"></i> Google
+                </button>
+                <button onclick="socialLogin('facebook')">
+                    <i class="fab fa-facebook-f"></i> Facebook
+                </button>
+            </div>
+            
+            <p class="register-link">
+                Don't have an account? <a href="#" onclick="switchToRegister()">Sign Up</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div class="overlay" id="overlay" onclick="toggleCart()"></div>
+    <div class="user-dropdown" id="userDropdown">
+        <div class="user-dropdown-header">
+            <div class="avatar" id="userAvatar">J</div>
+            <div class="info">
+                <h4 id="userName">John Doe</h4>
+                <span id="userEmail">john@example.com</span>
+            </div>
+        </div>
+        <ul class="user-dropdown-menu">
+            <li><a href="/profile"><i class="fas fa-user"></i> My Profile</a></li>
+            <li><a href="/profile#orders"><i class="fas fa-box"></i> My Orders</a></li>
+            <li><a href="/profile#wishlist"><i class="fas fa-heart"></i> My Wishlist</a></li>
+            <li><a href="/profile#settings"><i class="fas fa-cog"></i> Settings</a></li>
+        </ul>
+        <div class="user-dropdown-footer">
+            <button class="logout-btn" onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div class="overlay" id="overlay" onclick="closeAllModals()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Shopping Cart</h3>
+            <button class="cart-close" onclick="toggleCart()">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <p style="text-align: center; padding: 40px; color: #6c757d;">Your cart is empty</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0.00</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script src="category.js"></script>
+</body>
+</html>

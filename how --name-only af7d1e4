@@ -1,0 +1,53 @@
+[33mcommit af7d1e438181d63ef4aedca0abf49da85858cad3[m
+Author: lenius <leniustizanga@gmail.com>
+Date:   Fri Jan 30 18:04:51 2026 +0300
+
+    Feature updates: Enhanced admin system, wishlist, and seed data
+    
+    - Added wishlist database schema and functionality
+    - Implemented seed scripts for categories, orders, notifications
+    - Enhanced admin notification system
+    - Updated security configurations
+    - Added checkout, orders, product, and wishlist views
+    - Improved frontend styling and scripts
+
+config/security.js
+db_init.sql
+db_wishlist_init.sql
+init_database.js
+public/admin-messages.js
+public/admin.css
+public/script.js
+public/style.css
+routes/admin-notifications.js
+routes/admin.js
+routes/adminDashboard.routes.js
+routes/newsletter.js
+routes/orders.js
+routes/products.js
+routes/reviews.js
+routes/wishlist.js
+seed_categories.js
+seed_messages.js
+seed_notifications.js
+seed_orders.js
+server.js
+utils/notificationService.js
+views/about.ejs
+views/admin/categories.ejs
+views/admin/dashboard.ejs
+views/admin/orders.ejs
+views/admin/products.ejs
+views/cart.ejs
+views/categories.ejs
+views/category.ejs
+views/checkout.ejs
+views/contact.ejs
+views/deals.ejs
+views/index.ejs
+views/order-confirmation.ejs
+views/orders.ejs
+views/partials/header.ejs
+views/product.ejs
+views/promotions.ejs
+views/wishlist.ejs

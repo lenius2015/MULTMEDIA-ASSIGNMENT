@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-02-04T10:59:10.898Z",
+  "summary": {
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "successRate": "83.3%"
+  },
+  "tests": [
+    {
+      "name": "Admin CSS accessible",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "name": "Admin JS accessible",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "name": "Unauthorized admin access blocked",
+      "passed": false,
+      "message": "Should redirect to login"
+    },
+    {
+      "name": "SQL injection protection",
+      "passed": true,
+      "message": "Login correctly rejected"
+    },
+    {
+      "name": "Admin login page accessible",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "name": "Admin login API works",
+      "passed": true,
+      "message": ""
+    }
+  ]
+}

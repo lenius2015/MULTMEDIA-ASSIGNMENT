@@ -57,17 +57,27 @@
         <!-- Navigation Links -->
         <ul class="nav-links" id="navLinks">
           <li><a href="/" class="active"><i class="fas fa-home"></i> Home</a></li>
-          <li><a href="#categories"><i class="fas fa-th-large"></i> Categories</a></li>
-          <li><a href="#deals"><i class="fas fa-tags"></i> Deals</a></li>
+          <li><a href="/categories"><i class="fas fa-th-large"></i> Categories</a></li>
+          <li><a href="/deals"><i class="fas fa-fire"></i> Deals</a></li>
+          <li><a href="/promotions"><i class="fas fa-tags"></i> Promotions</a></li>
+          <li><a href="/auctions"><i class="fas fa-gavel"></i> Auctions</a></li>
           <li><a href="/about"><i class="fas fa-info-circle"></i> About Us</a></li>
           <li><a href="/contact"><i class="fas fa-envelope"></i> Contact</a></li>
+          <% if (user) { %>
+          <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+          <% } %>
         </ul>
 
         <!-- Right Side Icons -->
         <div class="nav-icons">
           <% if (user) { %>
+            <a href="/notifications" class="nav-icon-link" title="Notifications" style="position: relative;">
+              <i class="fas fa-bell"></i>
+              <span class="icon-label">Notifications</span>
+              <span class="notification-badge" id="notificationBadge" style="display: none;"></span>
+            </a>
             <a href="/profile" class="nav-icon-link" title="My Account">
-              <i class="fas fa-user-circle"></i>
+              <img src="<%= user.profile_picture ? user.profile_picture : '/images/default-avatar.png' %>" alt="Profile" class="nav-profile-picture" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">
               <span class="icon-label">Account</span>
             </a>
           <% } else { %>
@@ -77,11 +87,11 @@
             </a>
           <% } %>
           
-          <button class="nav-icon-link cart-icon" id="cartBtn" title="Shopping Cart">
+          <a href="/cart" class="nav-icon-link cart-icon" title="Shopping Cart">
             <i class="fas fa-shopping-cart"></i>
             <span class="cart-badge">0</span>
             <span class="icon-label">Cart</span>
-          </button>
+          </a>
         </div>
       </div>
     </nav>
@@ -95,28 +105,28 @@
             All Categories
           </button>
           <div class="category-dropdown">
-            <a href="#" class="category-dropdown-item">
+            <a href="/category/electronics" class="category-dropdown-item">
               <i class="fas fa-laptop"></i> Electronics
             </a>
-            <a href="#" class="category-dropdown-item">
+            <a href="/category/fashion" class="category-dropdown-item">
               <i class="fas fa-tshirt"></i> Fashion & Apparel
             </a>
-            <a href="#" class="category-dropdown-item">
+            <a href="/category/home" class="category-dropdown-item">
               <i class="fas fa-home"></i> Home & Garden
             </a>
-            <a href="#" class="category-dropdown-item">
+            <a href="/category/sports" class="category-dropdown-item">
               <i class="fas fa-dumbbell"></i> Sports & Outdoors
             </a>
-            <a href="#" class="category-dropdown-item">
+            <a href="/category/beauty" class="category-dropdown-item">
               <i class="fas fa-spa"></i> Beauty & Health
             </a>
-            <a href="#" class="category-dropdown-item">
+            <a href="/category/baby" class="category-dropdown-item">
               <i class="fas fa-baby"></i> Baby & Kids
             </a>
-            <a href="#" class="category-dropdown-item">
+            <a href="/category/books" class="category-dropdown-item">
               <i class="fas fa-book"></i> Books & Media
             </a>
-            <a href="#" class="category-dropdown-item">
+            <a href="/category/toys" class="category-dropdown-item">
               <i class="fas fa-gamepad"></i> Toys & Games
             </a>
           </div>
@@ -653,6 +663,76 @@
     </div>
   </section>
 
+  <!-- Benefits/Features Section -->
+  <section style="background: white; padding: 60px 0;">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+      <div style="text-align: center; margin-bottom: 50px;">
+        <h2 style="font-size: 36px; font-weight: 700; color: #004e89; margin-bottom: 16px;">
+          Why Shop with OMUNJU SHOPPERS?
+        </h2>
+        <p style="font-size: 16px; color: #666; max-width: 600px; margin: 0 auto;">
+          We're committed to delivering the best shopping experience with quality products, great prices, and excellent service
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+        <!-- Benefit 1 -->
+        <div style="text-align: center; padding: 30px; background: #f8f9fa; border-radius: 12px; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="font-size: 48px; color: #ff6b35; margin-bottom: 16px;">
+            <i class="fas fa-shipping-fast"></i>
+          </div>
+          <h3 style="font-size: 20px; font-weight: 700; color: #004e89; margin-bottom: 12px;">Fast Delivery</h3>
+          <p style="color: #666; line-height: 1.6;">Get your orders delivered in 1-3 business days to major cities in Tanzania and East Africa</p>
+        </div>
+
+        <!-- Benefit 2 -->
+        <div style="text-align: center; padding: 30px; background: #f8f9fa; border-radius: 12px; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="font-size: 48px; color: #f7931e; margin-bottom: 16px;">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3 style="font-size: 20px; font-weight: 700; color: #004e89; margin-bottom: 12px;">100% Safe & Secure</h3>
+          <p style="color: #666; line-height: 1.6;">Your personal information and payment details are protected with advanced encryption</p>
+        </div>
+
+        <!-- Benefit 3 -->
+        <div style="text-align: center; padding: 30px; background: #f8f9fa; border-radius: 12px; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="font-size: 48px; color: #28a745; margin-bottom: 16px;">
+            <i class="fas fa-undo"></i>
+          </div>
+          <h3 style="font-size: 20px; font-weight: 700; color: #004e89; margin-bottom: 12px;">Easy Returns</h3>
+          <p style="color: #666; line-height: 1.6;">7-day return policy with free return shipping. No questions asked, hassle-free returns</p>
+        </div>
+
+        <!-- Benefit 4 -->
+        <div style="text-align: center; padding: 30px; background: #f8f9fa; border-radius: 12px; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="font-size: 48px; color: #007bff; margin-bottom: 16px;">
+            <i class="fas fa-headset"></i>
+          </div>
+          <h3 style="font-size: 20px; font-weight: 700; color: #004e89; margin-bottom: 12px;">24/7 Support</h3>
+          <p style="color: #666; line-height: 1.6;">Our customer service team is available 24/7 via phone, email, WhatsApp, and live chat</p>
+        </div>
+
+        <!-- Benefit 5 -->
+        <div style="text-align: center; padding: 30px; background: #f8f9fa; border-radius: 12px; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="font-size: 48px; color: #e83e8c; margin-bottom: 16px;">
+            <i class="fas fa-tags"></i>
+          </div>
+          <h3 style="font-size: 20px; font-weight: 700; color: #004e89; margin-bottom: 12px;">Best Prices</h3>
+          <p style="color: #666; line-height: 1.6;">Price match guarantee. Find it cheaper elsewhere? We'll match the price and add an extra 5% discount</p>
+        </div>
+
+        <!-- Benefit 6 -->
+        <div style="text-align: center; padding: 30px; background: #f8f9fa; border-radius: 12px; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="font-size: 48px; color: #fd7e14; margin-bottom: 16px;">
+            <i class="fas fa-gift"></i>
+          </div>
+          <h3 style="font-size: 20px; font-weight: 700; color: #004e89; margin-bottom: 12px;">Loyalty Rewards</h3>
+          <p style="color: #666; line-height: 1.6;">Earn points on every purchase and redeem them for discounts on future orders</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Promotional Section -->
   <section class="promotional-section" id="deals">
     <div class="container">
@@ -883,6 +963,138 @@
             <li><a href="#">Payment Methods</a></li>
           </ul>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section style="background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); padding: 80px 0;">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+      <div style="text-align: center; margin-bottom: 50px;">
+        <h2 style="font-size: 36px; font-weight: 700; color: #004e89; margin-bottom: 16px;">
+          <i class="fas fa-star" style="color: #ffc107; margin-right: 8px;"></i> Customer Testimonials
+        </h2>
+        <p style="font-size: 16px; color: #666; max-width: 600px; margin: 0 auto;">
+          See what our satisfied customers have to say about their shopping experience
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+        <!-- Testimonial 1 -->
+        <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.08)'">
+          <div style="display: flex; align-items: center; margin-bottom: 16px;">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 20px; margin-right: 16px;">
+              MK
+            </div>
+            <div>
+              <h4 style="font-weight: 700; color: #004e89; margin: 0; margin-bottom: 4px;">Muhammad K.</h4>
+              <p style="color: #666; font-size: 14px; margin: 0;">Verified Buyer</p>
+            </div>
+          </div>
+          <div style="color: #ffc107; margin-bottom: 12px;">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <p style="color: #666; line-height: 1.6; margin: 0;">
+            "Excellent service! The products arrived quickly and in perfect condition. The customer support team was very helpful when I had questions. Will definitely shop again!"
+          </p>
+        </div>
+
+        <!-- Testimonial 2 -->
+        <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.08)'">
+          <div style="display: flex; align-items: center; margin-bottom: 16px;">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 20px; margin-right: 16px;">
+              AJ
+            </div>
+            <div>
+              <h4 style="font-weight: 700; color: #004e89; margin: 0; margin-bottom: 4px;">Amina J.</h4>
+              <p style="color: #666; font-size: 14px; margin: 0;">Verified Buyer</p>
+            </div>
+          </div>
+          <div style="color: #ffc107; margin-bottom: 12px;">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <p style="color: #666; line-height: 1.6; margin: 0;">
+            "Great prices and variety of products. I love the easy checkout process and the multiple payment options. Shipping was faster than expected. Highly recommended!"
+          </p>
+        </div>
+
+        <!-- Testimonial 3 -->
+        <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.08)'">
+          <div style="display: flex; align-items: center; margin-bottom: 16px;">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 20px; margin-right: 16px;">
+              DR
+            </div>
+            <div>
+              <h4 style="font-weight: 700; color: #004e89; margin: 0; margin-bottom: 4px;">David R.</h4>
+              <p style="color: #666; font-size: 14px; margin: 0;">Verified Buyer</p>
+            </div>
+          </div>
+          <div style="color: #ffc107; margin-bottom: 12px;">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star-half-alt"></i>
+          </div>
+          <p style="color: #666; line-height: 1.6; margin: 0;">
+            "Very impressed with the quality of products and the competitive pricing. The website is user-friendly and I appreciated the order tracking feature. Best online shopping experience!"
+          </p>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 50px;">
+        <button style="padding: 14px 40px; background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 16px; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+          Read More Reviews
+          <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-content">
+        <!-- About -->
+        <div class="footer-section">
+          <h4>About</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+
+        <!-- Help -->
+        <div class="footer-section">
+          <h4>Help</h4>
+          <ul>
+            <li><a href="#">Customer Service</a></li>
+            <li><a href="#">Returns</a></li>
+            <li><a href="#">Shipping Info</a></li>
+            <li><a href="#">FAQ</a></li>
+          </ul>
+        </div>
+
+        <!-- Policies -->
+        <div class="footer-section">
+          <h4>Policies</h4>
+          <ul>
+            <li><a href="#">Terms & Conditions</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Payment Methods</a></li>
+          </ul>
+        </div>
 
         <!-- Newsletter -->
         <div class="footer-section">
@@ -1021,6 +1233,46 @@
     function exploreCategory(category) {
       window.location.href = `/products?category=${encodeURIComponent(category)}`;
     }
+
+    // Hamburger Menu Toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const hamburger = document.getElementById('hamburger');
+      const navLinks = document.getElementById('navLinks');
+      
+      if (hamburger && navLinks) {
+        hamburger.addEventListener('click', function() {
+          navLinks.classList.toggle('active');
+          hamburger.classList.toggle('active');
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+            navLinks.classList.remove('active');
+            hamburger.classList.remove('active');
+          }
+        });
+        
+        // Close menu when clicking on a link
+        navLinks.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', function() {
+            navLinks.classList.remove('active');
+            hamburger.classList.remove('active');
+          });
+        });
+      }
+    });
+  </script>
+
+  <!-- Shared Chatbot Widget -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/script.js"></script>
+  <script src="/chatbot.js"></script>
+  <script>
+      // Initialize the shared chatbot
+      document.addEventListener('DOMContentLoaded', function() {
+          window.chatbot = new Chatbot();
+      });
   </script>
 </body>
 </html>

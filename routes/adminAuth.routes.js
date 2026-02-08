@@ -15,6 +15,9 @@ router.post('/login', adminAuthController.postAdminLogin);
 // Admin logout API
 router.post('/logout', requireAdminAuth, adminAuthController.postAdminLogout);
 
+// Admin logout - GET route for easy access
+router.get('/logout', requireAdminAuth, adminAuthController.getAdminLogout);
+
 // Admin status check
 router.get('/status', adminAuthController.getAdminStatus);
 

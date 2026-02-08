@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard Test - OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin-modern.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Test-specific styles */
+        .test-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .test-banner a {
+            color: white;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-banner">
+        This is a test page. <a href="/admin/dashboard">Go to real admin dashboard</a>
+    </div>
+
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <span>OMUNJU ADMIN</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active">
+                        <a href="#">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-box"></i>
+                            <span>Products</span>
+                            <span class="nav-badge">24</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-tags"></i>
+                            <span>Categories</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Orders</span>
+                            <span class="nav-badge">5</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-users"></i>
+                            <span>Customers</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-gavel"></i>
+                            <span>Auctions</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-percent"></i>
+                            <span>Promotions</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Analytics</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-bell"></i>
+                            <span>Notifications</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-comments"></i>
+                            <span>Messages</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div class="admin-main" id="admin-main">
+            <!-- Header -->
+            <header class="admin-header">
+                <div class="header-left">
+                    <button class="sidebar-toggle-header" id="sidebar-toggle-header">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">Dashboard</h1>
+                </div>
+                <div class="header-center">
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" placeholder="Search products, orders, users...">
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="header-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <div class="profile-dropdown">
+                        <button class="profile-btn" id="profile-btn">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect fill='%23ff6b35' width='40' height='40' rx='8'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='18' font-weight='bold'%3EA%3C/text%3E%3C/svg%3E" alt="Admin" class="profile-avatar">
+                            <div class="profile-info">
+                                <div class="profile-name">Admin User</div>
+                                <div class="profile-role">Administrator</div>
+                            </div>
+                        </button>
+                        <div class="dropdown-menu" id="profile-dropdown">
+                            <a href="#"><i class="fas fa-user"></i> My Profile</a>
+                            <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                            <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="admin-content">
+                <!-- Welcome Banner -->
+                <div class="welcome-banner" style="background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%); color: white; padding: 32px; border-radius: var(--border-radius-lg); margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 8px;">Welcome back, Admin! 👋</h1>
+                        <p style="opacity: 0.9; font-size: 1rem;">Here's what's happening with your store today.</p>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn btn-primary" style="background: white; color: var(--primary);">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                        <button class="btn btn-secondary" style="background: rgba(255,255,255,0.2); border: none; color: white;">
+                            <i class="fas fa-shopping-cart"></i> View Orders
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <a href="#" class="quick-action-card">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <h4>Add Product</h4>
+                            <p>Create new product listing</p>
+                        </div>
+                    </a>
+                    <a href="#" class="quick-action-card secondary" style="background: linear-gradient(135deg, var(--success) 0%, #059669 100%);">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <h4>Pending Orders</h4>
+                            <p>5 orders to process</p>
+                        </div>
+                    </a>
+                    <a href="#" class="quick-action-card secondary">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <h4>New Customers</h4>
+                            <p>12 this week</p>
+                        </div>
+                    </a>
+                    <a href="#" class="quick-action-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <h4>Messages</h4>
+                            <p>3 unread</p>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <div class="kpi-icon sales">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Active</span>
+                            </div>
+                        </div>
+                        <div class="kpi-value">156</div>
+                        <div class="kpi-label">Total Orders</div>
+                    </div>
+
+                    <div class="kpi-card success">
+                        <div class="kpi-header">
+                            <div class="kpi-icon orders">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Registered</span>
+                            </div>
+                        </div>
+                        <div class="kpi-value">1,234</div>
+                        <div class="kpi-label">Total Users</div>
+                    </div>
+
+                    <div class="kpi-card info">
+                        <div class="kpi-header">
+                            <div class="kpi-icon products">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Available</span>
+                            </div>
+                        </div>
+                        <div class="kpi-value">89</div>
+                        <div class="kpi-label">Total Products</div>
+                    </div>
+
+                    <div class="kpi-card warning">
+                        <div class="kpi-header">
+                            <div class="kpi-icon customers">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Inquiries</span>
+                            </div>
+                        </div>
+                        <div class="kpi-value">24</div>
+                        <div class="kpi-label">Contact Messages</div>
+                    </div>
+
+                    <div class="kpi-card" style="--primary: #8b5cf6;">
+                        <div class="kpi-header">
+                            <div class="kpi-icon auctions">
+                                <i class="fas fa-gavel"></i>
+                            </div>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Live</span>
+                            </div>
+                        </div>
+                        <div class="kpi-value">8</div>
+                        <div class="kpi-label">Active Auctions</div>
+                    </div>
+
+                    <div class="kpi-card danger">
+                        <div class="kpi-header">
+                            <div class="kpi-icon countdowns">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Running</span>
+                            </div>
+                        </div>
+                        <div class="kpi-value">3</div>
+                        <div class="kpi-label">Active Events</div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Sales Overview</h3>
+                            <div class="chart-tabs">
+                                <button class="chart-tab active" onclick="updateChart('week')">Week</button>
+                                <button class="chart-tab" onclick="updateChart('month')">Month</button>
+                                <button class="chart-tab" onclick="updateChart('year')">Year</button>
+                            </div>
+                        </div>
+                        <canvas id="salesChart" height="300"></canvas>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Order Status</h3>
+                        </div>
+                        <canvas id="statusChart" height="300"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Orders & Messages -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Orders</h3>
+                            <a href="#" class="btn btn-secondary btn-sm">View All</a>
+                        </div>
+                        <div class="admin-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>#1234</strong></td>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <div style="width: 32px; height: 32px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: 600;">J</div>
+                                                <div>
+                                                    <div style="font-weight: 500;">John Doe</div>
+                                                    <div style="font-size: 0.75rem; color: var(--text-muted);">john@email.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><strong>$149.99</strong></td>
+                                        <td><span class="status delivered">Delivered</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>#1235</strong></td>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <div style="width: 32px; height: 32px; background: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: 600;">S</div>
+                                                <div>
+                                                    <div style="font-weight: 500;">Sarah Smith</div>
+                                                    <div style="font-size: 0.75rem; color: var(--text-muted);">sarah@email.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><strong>$89.50</strong></td>
+                                        <td><span class="status processing">Processing</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>#1236</strong></td>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <div style="width: 32px; height: 32px; background: var(--warning); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: 600;">M</div>
+                                                <div>
+                                                    <div style="font-weight: 500;">Mike Johnson</div>
+                                                    <div style="font-size: 0.75rem; color: var(--text-muted);">mike@email.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><strong>$229.00</strong></td>
+                                        <td><span class="status pending">Pending</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Messages</h3>
+                            <a href="#" class="btn btn-secondary btn-sm">View All</a>
+                        </div>
+                        <div class="admin-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>From</th>
+                                        <th>Subject</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <div style="width: 32px; height: 32px; background: var(--info); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: 600;">A</div>
+                                                <div>
+                                                    <div style="font-weight: 500;">Alice Brown</div>
+                                                    <div style="font-size: 0.75rem; color: var(--text-muted);">alice@email.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Product Inquiry</td>
+                                        <td>Today</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <div style="width: 32px; height: 32px; background: #8b5cf6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: 600;">B</div>
+                                                <div>
+                                                    <div style="font-weight: 500;">Bob Wilson</div>
+                                                    <div style="font-size: 0.75rem; color: var(--text-muted);">bob@email.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Shipping Question</td>
+                                        <td>Yesterday</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Products & System Status -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Top Products</h3>
+                            <a href="#" class="btn btn-secondary btn-sm">View All</a>
+                        </div>
+                        <div class="admin-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Price</th>
+                                        <th>Stock</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect fill='%23e2e8f0' width='48' height='48' rx='8'/%3E%3C/svg%3E" alt="Product" style="width: 48px; height: 48px; border-radius: 8px;">
+                                                <div>
+                                                    <div style="font-weight: 500;">Premium Headphones</div>
+                                                    <div style="font-size: 0.75rem; color: var(--text-muted);">ID: 1</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><strong>$199.99</strong></td>
+                                        <td>45</td>
+                                        <td><span class="status delivered">In Stock</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect fill='%23e2e8f0' width='48' height='48' rx='8'/%3E%3C/svg%3E" alt="Product" style="width: 48px; height: 48px; border-radius: 8px;">
+                                                <div>
+                                                    <div style="font-weight: 500;">Wireless Mouse</div>
+                                                    <div style="font-size: 0.75rem; color: var(--text-muted);">ID: 2</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><strong>$49.99</strong></td>
+                                        <td>8</td>
+                                        <td><span class="status warning">Low Stock</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3 class="card-title">System Status</h3>
+                        </div>
+                        <div style="padding: 16px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+                                <span><i class="fas fa-database" style="color: var(--success); margin-right: 12px;"></i> Database</span>
+                                <span class="status delivered">Connected</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+                                <span><i class="fas fa-server" style="color: var(--info); margin-right: 12px;"></i> Server</span>
+                                <span class="status delivered">Online</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+                                <span><i class="fas fa-bell" style="color: var(--warning); margin-right: 12px;"></i> Notifications</span>
+                                <span class="status processing">3 unread</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                                <span><i class="fas fa-shield-alt" style="color: var(--primary); margin-right: 12px;"></i> Security</span>
+                                <span class="status delivered">Secure</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // Initialize Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sales Chart
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: [1200, 1900, 1500, 2100, 1800, 2400, 2200],
+                        borderColor: '#ff6b35',
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#ff6b35',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }, {
+                        label: 'Orders',
+                        data: [15, 25, 20, 30, 25, 35, 32],
+                        borderColor: '#004e89',
+                        backgroundColor: 'rgba(0, 78, 137, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#004e89',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // Status Chart
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+                    datasets: [{
+                        data: [15, 25, 20, 35, 5],
+                        backgroundColor: ['#f59e0b', '#3b82f6', '#8b5cf6', '#10b981', '#ef4444'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true, padding: 16 }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+
+            // Sidebar toggle
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebarToggleHeader = document.getElementById('sidebar-toggle-header');
+            const sidebar = document.getElementById('admin-sidebar');
+            const adminMain = document.getElementById('admin-main');
+
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    adminMain.classList.toggle('sidebar-collapsed');
+                });
+            }
+
+            if (sidebarToggleHeader) {
+                sidebarToggleHeader.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                });
+            }
+
+            // Profile dropdown
+            const profileBtn = document.getElementById('profile-btn');
+            const profileDropdown = document.getElementById('profile-dropdown');
+
+            if (profileBtn && profileDropdown) {
+                profileBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    profileDropdown.classList.toggle('show');
+                });
+            }
+
+            document.addEventListener('click', function() {
+                if (profileDropdown) profileDropdown.classList.remove('show');
+            });
+        });
+
+        // Update chart function
+        function updateChart(period) {
+            const tabs = document.querySelectorAll('.chart-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            console.log('Chart updated for:', period);
+        }
+    </script>
+</body>
+</html>

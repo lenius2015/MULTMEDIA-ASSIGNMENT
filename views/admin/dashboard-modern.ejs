@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin-modern.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="admin-layout">
+        <%- include('./partials/sidebar', { currentPage: 'dashboard' }) %>
+
+        <div class="admin-main" id="admin-main">
+            <%- include('./partials/header', { pageTitle: 'Dashboard' }) %>
+
+            <main class="admin-content">
+                <!-- Welcome Banner -->
+                <div class="welcome-banner" style="background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%); color: white; padding: 32px; border-radius: var(--border-radius-lg); margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 8px;">Welcome back, <%= admin.name || 'Admin' %> 👋</h1>
+                        <p style="opacity: 0.9; font-size: 1rem;">Here's what's happening with your store today.</p>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <a href="/admin/products" class="btn btn-primary" style="background: white; color: var(--primary);">
+                            <i class="fas fa-plus"></i> Add Product
+                        </a>
+                        <a href="/admin/orders" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); border: none; color: white;">
+                            <i class="fas fa-shopping-cart"></i> View Orders
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <a href="/admin/products" class="quick-action-card">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <h4>Add Product</h4>
+                            <p>Create new product listing</p>
+                        </div>
+                    </a>
+                    <a href="/admin/orders" class="quick-action-card secondary" style="background: linear-gradient(135deg, var(--success) 0%, #059669 100%);">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <h4>Pending Orders</h4>
+                            <p><%= stats.pendingOrders || 0 %> orders to process</p>
+                        </div>
+                    </a>
+                    <a href="/admin/customers" class="quick-action-card secondary">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <h4>New Customers</h4>
+                            <p><%= stats.newCustomers || 0 %> this week</p>
+                        </div>
+                    </a>
+                    <a href="/admin/messages" class="quick-action-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <h4>Messages</h4>
+                            <p><%= stats.unreadMessages || 0 %> unread</p>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <div class="kpi-icon sales">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Active</span>
+                            </div>
+                        </div>
+                        <div class="kpi-value" id="total-orders"><%= stats.totalOrders || 0 %></div>
+                        <div class="kpi-label">Total Orders</div>
+                    </div>
+
+                    <div class="kpi-card success">
+                        <div class="kpi-header">
+                            <div class="kpi-icon orders">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Registered</span>
+                            </div>
+                        </div>
+                        <div class="kpi-value" id="total-users"><%= stats.totalUsers || 0 %></div>
+                        <div class="kpi-label">Total Users</div>
+                    </div>
+
+                    <div class="kpi-card info">
+                        <div class="kpi-header">
+                            <div class="kpi-icon products">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Available</span>
+                            </div>
+                        </div>
+                        <div class="kpi-value" id="total-products"><%= stats.totalProducts || 0 %></div>
+                        <div class="kpi-label">Total Products</div>
+                    </div>
+
+                    <div class="kpi-card warning">
+                        <div class="kpi-header">
+                            <div class="kpi-icon customers">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Inquiries</span>
+                            </div>
+                        </div>
+                        <div class="kpi-value" id="total-messages"><%= stats.totalMessages || 0 %></div>
+                        <div class="kpi-label">Contact Messages</div>
+                    </div>
+
+                    <div class="kpi-card" style="--primary: #8b5cf6;">
+                        <div class="kpi-header">
+                            <div class="kpi-icon auctions">
+                                <i class="fas fa-gavel"></i>
+                            </div>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Live</span>
+                            </div>
+                        </div>
+                        <div class="kpi-value" id="active-auctions"><%= stats.activeAuctions || 0 %></div>
+                        <div class="kpi-label">Active Auctions</div>
+                    </div>
+
+                    <div class="kpi-card danger">
+                        <div class="kpi-header">
+                            <div class="kpi-icon countdowns">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="kpi-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Running</span>
+                            </div>
+                        </div>
+                        <div class="kpi-value" id="active-events"><%= stats.activeCountdowns || 0 %></div>
+                        <div class="kpi-label">Active Events</div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Sales Overview</h3>
+                            <div class="chart-tabs">
+                                <button class="chart-tab active" onclick="updateChart('week')">Week</button>
+                                <button class="chart-tab" onclick="updateChart('month')">Month</button>
+                                <button class="chart-tab" onclick="updateChart('year')">Year</button>
+                            </div>
+                        </div>
+                        <canvas id="salesChart" height="300"></canvas>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Order Status</h3>
+                        </div>
+                        <canvas id="statusChart" height="300"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Data Section -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                    <!-- Recent Orders -->
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Orders</h3>
+                            <a href="/admin/orders" class="btn btn-secondary btn-sm">View All</a>
+                        </div>
+                        <div class="admin-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (recentOrders && recentOrders.length > 0) { %>
+                                        <% recentOrders.forEach(order => { %>
+                                        <tr>
+                                            <td><strong>#<%= order.id %></strong></td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 10px;">
+                                                    <div style="width: 32px; height: 32px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: 600;">
+                                                        <%= (order.customer_name || 'G').charAt(0).toUpperCase() %>
+                                                    </div>
+                                                    <div>
+                                                        <div style="font-weight: 500;"><%= order.customer_name || 'Guest' %></div>
+                                                        <div style="font-size: 0.75rem; color: var(--text-muted);"><%= order.customer_email || '' %></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><strong>$<%= order.total_amount || 0 %></strong></td>
+                                            <td>
+                                                <span class="status <%= order.status %>"><%= order.status %></span>
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                                                <i class="fas fa-shopping-cart" style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>
+                                                No orders yet
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Recent Messages -->
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Messages</h3>
+                            <a href="/admin/messages" class="btn btn-secondary btn-sm">View All</a>
+                        </div>
+                        <div class="admin-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>From</th>
+                                        <th>Subject</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (recentMessages && recentMessages.length > 0) { %>
+                                        <% recentMessages.forEach(message => { %>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 10px;">
+                                                    <div style="width: 32px; height: 32px; background: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: 600;">
+                                                        <%= message.name.charAt(0).toUpperCase() %>
+                                                    </div>
+                                                    <div>
+                                                        <div style="font-weight: 500;"><%= message.name %></div>
+                                                        <div style="font-size: 0.75rem; color: var(--text-muted);"><%= message.email %></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><%= message.subject || 'No subject' %></td>
+                                            <td><%= new Date(message.created_at).toLocaleDateString() %></td>
+                                        </tr>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                                                <i class="fas fa-envelope" style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>
+                                                No messages yet
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Products & Activity -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+                    <!-- Top Products -->
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Top Products</h3>
+                            <a href="/admin/products" class="btn btn-secondary btn-sm">View All</a>
+                        </div>
+                        <div class="admin-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Stock</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (topProducts && topProducts.length > 0) { %>
+                                        <% topProducts.forEach(product => { %>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 12px;">
+                                                    <img src="<%= product.image_url || '/images/product-placeholder.jpg' %>" 
+                                                         alt="<%= product.name %>" 
+                                                         style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover;"
+                                                         onerror="this.src='/images/product-placeholder.jpg'">
+                                                    <div>
+                                                        <div style="font-weight: 500;"><%= product.name %></div>
+                                                        <div style="font-size: 0.75rem; color: var(--text-muted);">ID: <%= product.id %></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><%= product.category_name || 'Uncategorized' %></td>
+                                            <td><strong>$<%= product.price %></strong></td>
+                                            <td><%= product.stock || 0 %></td>
+                                            <td>
+                                                <% if (product.stock > 5) { %>
+                                                    <span class="status delivered">In Stock</span>
+                                                <% } else if (product.stock > 0) { %>
+                                                    <span class="status warning">Low Stock</span>
+                                                <% } else { %>
+                                                    <span class="status cancelled">Out of Stock</span>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                                                <i class="fas fa-box" style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>
+                                                No products yet
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- System Status -->
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3 class="card-title">System Status</h3>
+                        </div>
+                        <div style="padding: 16px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+                                <span><i class="fas fa-database" style="color: var(--success); margin-right: 12px;"></i> Database</span>
+                                <span class="status delivered">Connected</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+                                <span><i class="fas fa-server" style="color: var(--info); margin-right: 12px;"></i> Server</span>
+                                <span class="status delivered">Online</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+                                <span><i class="fas fa-bell" style="color: var(--warning); margin-right: 12px;"></i> Notifications</span>
+                                <span class="status processing"><%= stats.unreadMessages || 0 %> unread</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                                <span><i class="fas fa-shield-alt" style="color: var(--primary); margin-right: 12px;"></i> Security</span>
+                                <span class="status delivered">Secure</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="/admin.js"></script>
+    <script src="/admin-buttons.js"></script>
+    <script>
+        // Dashboard data from server
+        const dashboardData = {
+            orderStatus: {
+                pending: <%= orderStatus.pending || 0 %>,
+                processing: <%= orderStatus.processing || 0 %>,
+                shipped: <%= orderStatus.shipped || 0 %>,
+                delivered: <%= orderStatus.delivered || 0 %>,
+                cancelled: <%= orderStatus.cancelled || 0 %>
+            }
+        };
+
+        // Initialize Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+            loadRealTimeData();
+        });
+
+        function initCharts() {
+            // Sales Chart
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            window.salesChart = new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: [1200, 1900, 1500, 2100, 1800, 2400, 2200],
+                        borderColor: '#ff6b35',
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#ff6b35',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }, {
+                        label: 'Orders',
+                        data: [15, 25, 20, 30, 25, 35, 32],
+                        borderColor: '#004e89',
+                        backgroundColor: 'rgba(0, 78, 137, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#004e89',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Status Chart
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            window.statusChart = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+                    datasets: [{
+                        data: [
+                            dashboardData.orderStatus.pending,
+                            dashboardData.orderStatus.processing,
+                            dashboardData.orderStatus.shipped,
+                            dashboardData.orderStatus.delivered,
+                            dashboardData.orderStatus.cancelled
+                        ],
+                        backgroundColor: [
+                            '#f59e0b',
+                            '#3b82f6',
+                            '#8b5cf6',
+                            '#10b981',
+                            '#ef4444'
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 16
+                            }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+
+        function updateChart(period) {
+            // Update chart data based on period
+            const tabs = document.querySelectorAll('.chart-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Simulate data update (replace with actual API call)
+            const dataMap = {
+                week: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    revenue: [1200, 1900, 1500, 2100, 1800, 2400, 2200],
+                    orders: [15, 25, 20, 30, 25, 35, 32]
+                },
+                month: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    revenue: [8500, 9200, 7800, 10500],
+                    orders: [120, 135, 110, 150]
+                },
+                year: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    revenue: [15000, 18000, 22000, 19000, 25000, 28000, 32000, 30000, 35000, 38000, 42000, 45000],
+                    orders: [200, 250, 320, 280, 380, 420, 480, 450, 520, 580, 630, 680]
+                }
+            };
+
+            const data = dataMap[period];
+            window.salesChart.data.labels = data.labels;
+            window.salesChart.data.datasets[0].data = data.revenue;
+            window.salesChart.data.datasets[1].data = data.orders;
+            window.salesChart.update();
+        }
+
+        function loadRealTimeData() {
+            // Load real-time data every 30 seconds
+            setInterval(async () => {
+                try {
+                    const response = await fetch('/admin/api/dashboard/stats');
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        updateDashboardStats(data.stats);
+                    }
+                } catch (error) {
+                    console.error('Error loading dashboard stats:', error);
+                }
+            }, 30000);
+        }
+
+        function updateDashboardStats(stats) {
+            // Update KPI cards with animation
+            animateValue('total-orders', stats.totalOrders);
+            animateValue('total-users', stats.totalUsers);
+            animateValue('total-products', stats.totalProducts);
+            animateValue('total-messages', stats.totalMessages);
+            animateValue('active-auctions', stats.activeAuctions);
+            animateValue('active-events', stats.activeCountdowns);
+        }
+
+        function animateValue(elementId, newValue) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                const currentValue = parseInt(element.textContent);
+                if (currentValue !== newValue) {
+                    element.style.transform = 'scale(1.1)';
+                    element.style.transition = 'transform 0.2s';
+                    setTimeout(() => {
+                        element.textContent = newValue;
+                        element.style.transform = 'scale(1)';
+                    }, 100);
+                }
+            }
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.innerHTML = '<i class="fas fa-' + (type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle') + '"></i><span>' + message + '</span>';
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebarToggleHeader = document.getElementById('sidebar-toggle-header');
+            const sidebar = document.querySelector('.admin-sidebar');
+            const adminMain = document.getElementById('admin-main');
+
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    adminMain.classList.toggle('sidebar-collapsed');
+                });
+            }
+
+            if (sidebarToggleHeader) {
+                sidebarToggleHeader.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

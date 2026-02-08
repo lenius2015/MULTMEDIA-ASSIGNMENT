@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Add to Cart Functionality</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #004e89;
+            border-bottom: 3px solid #ff6b35;
+            padding-bottom: 10px;
+        }
+        
+        .status-box {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .status-success {
+            background-color: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+        
+        .status-error {
+            background-color: #f8d7da;
+            border-left-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .status-warning {
+            background-color: #fff3cd;
+            border-left-color: #ffc107;
+            color: #856404;
+        }
+        
+        .test-button {
+            background: linear-gradient(135deg, #ff6b35, #f77f00);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s;
+            margin: 5px;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .test-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .product-info h3 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        
+        .product-info p {
+            margin: 0;
+            color: #666;
+        }
+        
+        .auth-info {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .auth-info h4 {
+            margin: 0 0 10px 0;
+            color: #495057;
+        }
+        
+        .auth-info code {
+            background: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Add to Cart Test Suite</h1>
+        
+        <div class="auth-info">
+            <h4>Authentication Status</h4>
+            <p><strong>Current User:</strong> <span id="currentUser">Checking...</span></p>
+            <p><strong>Data User Attribute:</strong> <code id="dataUserAttr">N/A</code></p>
+            <p><strong>Is Logged In:</strong> <span id="isLoggedIn">Checking...</span></p>
+        </div>
+
+        <div class="status-box" id="testStatus">
+            <strong>Test Status:</strong> Ready to test
+        </div>
+
+        <h3>Test Products</h3>
+        
+        <div class="product-card">
+            <div class="product-image">👕</div>
+            <div class="product-info">
+                <h3>Classic T-Shirt</h3>
+                <p>Product ID: 1 | Price: Tsh 29,990</p>
+                <button class="test-button" onclick="testAddToCart(1, 'Classic T-Shirt')">
+                    Test Add to Cart (ID: 1)
+                </button>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">👖</div>
+            <div class="product-info">
+                <h3>Vintage Jeans</h3>
+                <p>Product ID: 2 | Price: Tsh 59,990</p>
+                <button class="test-button" onclick="testAddToCart(2, 'Vintage Jeans')">
+                    Test Add to Cart (ID: 2)
+                </button>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">👟</div>
+            <div class="product-info">
+                <h3>Sneakers</h3>
+                <p>Product ID: 3 | Price: Tsh 89,990</p>
+                <button class="test-button" onclick="testAddToCart(3, 'Sneakers')">
+                    Test Add to Cart (ID: 3)
+                </button>
+            </div>
+        </div>
+
+        <h3>Additional Tests</h3>
+        
+        <button class="test-button" onclick="testGetCart()">Get Cart Contents</button>
+        <button class="test-button" onclick="testSyncCartCount()">Sync Cart Count</button>
+        <button class="test-button" onclick="testAuthentication()">Test Authentication</button>
+        <button class="test-button" onclick="clearLocalStorage()">Clear Guest Cart</button>
+        <button class="test-button" onclick="refreshPage()">Refresh Page</button>
+
+        <h3>Debug Information</h3>
+        <div class="status-box" id="debugInfo">
+            <strong>Debug Output:</strong> <span id="debugOutput">No debug info yet</span>
+        </div>
+    </div>
+
+    <script>
+        // Test functions for Add to Cart functionality
+        
+        function updateAuthStatus() {
+            const dataUser = document.body.getAttribute('data-user');
+            const isLoggedIn = checkAuthentication();
+            const userData = getUserData();
+            
+            document.getElementById('dataUserAttr').textContent = dataUser || 'null';
+            document.getElementById('isLoggedIn').textContent = isLoggedIn ? 'Yes' : 'No';
+            
+            if (userData && userData.id) {
+                document.getElementById('currentUser').textContent = `${userData.name} (${userData.email})`;
+            } else {
+                document.getElementById('currentUser').textContent = 'Not logged in';
+            }
+        }
+
+        function checkAuthentication() {
+            const userData = document.body.getAttribute('data-user');
+            const sessionUserId = document.body.getAttribute('data-session-user-id');
+            
+            let user = null;
+            try {
+                if (userData && userData !== 'null' && userData !== 'undefined') {
+                    user = JSON.parse(userData);
+                }
+            } catch (e) {
+                console.warn('Failed to parse data-user attribute:', e);
+            }
+            
+            const isLoggedIn = (user && user.id) || 
+                               (sessionUserId && sessionUserId !== 'null' && sessionUserId !== 'undefined');
+            
+            return isLoggedIn;
+        }
+
+        function getUserData() {
+            const userData = document.body.getAttribute('data-user');
+            if (userData && userData !== 'null' && userData !== 'undefined') {
+                try {
+                    return JSON.parse(userData);
+                } catch (e) {
+                    console.warn('Failed to parse user data:', e);
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        async function testAddToCart(productId, productName) {
+            const statusBox = document.getElementById('testStatus');
+            const debugBox = document.getElementById('debugOutput');
+            
+            statusBox.className = 'status-box status-warning';
+            statusBox.innerHTML = `<strong>Testing:</strong> Adding ${productName} (ID: ${productId}) to cart...`;
+            
+            try {
+                // Check authentication first
+                const isLoggedIn = checkAuthentication();
+                const userData = getUserData();
+                
+                if (!isLoggedIn) {
+                    statusBox.className = 'status-box status-error';
+                    statusBox.innerHTML = `
+                        <strong>Authentication Required:</strong> You need to be logged in to test this functionality.
+                        <br><br>
+                        <strong>Solution:</strong> 
+                        <ul>
+                            <li>1. Go to the login page and sign in</li>
+                            <li>2. Make sure your session is active</li>
+                            <li>3. Check that the data-user attribute is properly set</li>
+                        </ul>
+                    `;
+                    debugBox.textContent = `Authentication failed: User not logged in. data-user: ${document.body.getAttribute('data-user')}`;
+                    return;
+                }
+
+                // Make the API request
+                const response = await fetch('/api/cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        productId: productId,
+                        quantity: 1
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    statusBox.className = 'status-box status-success';
+                    statusBox.innerHTML = `
+                        <strong>✅ SUCCESS:</strong> ${productName} was successfully added to cart!
+                        <br><br>
+                        <strong>Response:</strong> ${result.message || 'Item added successfully'}
+                        <br>
+                        <strong>Cart Items:</strong> ${result.itemCount || 'Unknown'}
+                    `;
+                    debugBox.textContent = `API Response: ${JSON.stringify(result, null, 2)}`;
+                    
+                    // Update cart badge if possible
+                    updateCartBadge(result.itemCount);
+                } else {
+                    statusBox.className = 'status-box status-error';
+                    statusBox.innerHTML = `
+                        <strong>❌ FAILED:</strong> Could not add ${productName} to cart.
+                        <br><br>
+                        <strong>Error:</strong> ${result.message || 'Unknown error'}
+                        <br>
+                        <strong>Response Code:</strong> ${response.status}
+                    `;
+                    debugBox.textContent = `API Error Response: ${JSON.stringify(result, null, 2)}`;
+                }
+                
+            } catch (error) {
+                statusBox.className = 'status-box status-error';
+                statusBox.innerHTML = `
+                    <strong>❌ NETWORK ERROR:</strong> Could not connect to the server.
+                    <br><br>
+                    <strong>Error:</strong> ${error.message}
+                    <br><br>
+                    <strong>Possible Issues:</strong>
+                    <ul>
+                        <li>Server is not running</li>
+                        <li>Network connection problem</li>
+                        <li>CORS policy blocking requests</li>
+                        <li>Server is returning HTTP error</li>
+                    </ul>
+                `;
+                debugBox.textContent = `Network Error: ${error.message}`;
+            }
+        }
+
+        async function testGetCart() {
+            const statusBox = document.getElementById('testStatus');
+            const debugBox = document.getElementById('debugOutput');
+            
+            statusBox.className = 'status-box status-warning';
+            statusBox.innerHTML = '<strong>Testing:</strong> Fetching cart contents...';
+            
+            try {
+                const response = await fetch('/api/cart');
+                const result = await response.json();
+                
+                if (result.success) {
+                    statusBox.className = 'status-box status-success';
+                    statusBox.innerHTML = `
+                        <strong>✅ SUCCESS:</strong> Cart fetched successfully!
+                        <br><br>
+                        <strong>Items in Cart:</strong> ${result.cart.length}
+                        <br>
+                        <strong>Total:</strong> ${result.total}
+                    `;
+                    debugBox.textContent = `Cart Contents: ${JSON.stringify(result.cart, null, 2)}`;
+                } else {
+                    statusBox.className = 'status-box status-error';
+                    statusBox.innerHTML = `
+                        <strong>❌ FAILED:</strong> Could not fetch cart.
+                        <br><br>
+                        <strong>Error:</strong> ${result.message || 'Unknown error'}
+                    `;
+                    debugBox.textContent = `Cart Error: ${JSON.stringify(result, null, 2)}`;
+                }
+                
+            } catch (error) {
+                statusBox.className = 'status-box status-error';
+                statusBox.innerHTML = `
+                    <strong>❌ NETWORK ERROR:</strong> Could not fetch cart.
+                    <br><br>
+                    <strong>Error:</strong> ${error.message}
+                `;
+                debugBox.textContent = `Network Error: ${error.message}`;
+            }
+        }
+
+        async function testSyncCartCount() {
+            const statusBox = document.getElementById('testStatus');
+            const debugBox = document.getElementById('debugOutput');
+            
+            statusBox.className = 'status-box status-warning';
+            statusBox.innerHTML = '<strong>Testing:</strong> Syncing cart count...';
+            
+            try {
+                // Simulate the syncCartCount function
+                const userData = document.body.getAttribute('data-user');
+                const isLoggedIn = userData && userData !== 'null' && userData !== '{"id":null}';
+                
+                if (!isLoggedIn) {
+                    statusBox.className = 'status-box status-warning';
+                    statusBox.innerHTML = `
+                        <strong>⚠️ GUEST USER:</strong> Using localStorage for cart count.
+                        <br><br>
+                        <strong>Guest Cart:</strong> ${localStorage.getItem('guestCart') || '[]'}
+                    `;
+                    debugBox.textContent = `Guest cart data: ${localStorage.getItem('guestCart') || 'No guest cart found'}`;
+                    return;
+                }
+                
+                const response = await fetch('/api/cart');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const cartCount = typeof result.itemCount === 'number' ? result.itemCount : (result.cart?.reduce((sum, it) => sum + (it.quantity || 0), 0) || 0);
+                    
+                    statusBox.className = 'status-box status-success';
+                    statusBox.innerHTML = `
+                        <strong>✅ SUCCESS:</strong> Cart count synced successfully!
+                        <br><br>
+                        <strong>Cart Count:</strong> ${cartCount}
+                    `;
+                    debugBox.textContent = `Synced cart count: ${cartCount}`;
+                    
+                    // Update cart badge
+                    updateCartBadge(cartCount);
+                } else {
+                    statusBox.className = 'status-box status-error';
+                    statusBox.innerHTML = `
+                        <strong>❌ FAILED:</strong> Could not sync cart count.
+                        <br><br>
+                        <strong>Error:</strong> ${result.message || 'Unknown error'}
+                    `;
+                    debugBox.textContent = `Sync Error: ${JSON.stringify(result, null, 2)}`;
+                }
+                
+            } catch (error) {
+                statusBox.className = 'status-box status-error';
+                statusBox.innerHTML = `
+                    <strong>❌ NETWORK ERROR:</strong> Could not sync cart count.
+                    <br><br>
+                    <strong>Error:</strong> ${error.message}
+                `;
+                debugBox.textContent = `Network Error: ${error.message}`;
+            }
+        }
+
+        function testAuthentication() {
+            const statusBox = document.getElementById('testStatus');
+            const isLoggedIn = checkAuthentication();
+            const userData = getUserData();
+            
+            if (isLoggedIn && userData && userData.id) {
+                statusBox.className = 'status-box status-success';
+                statusBox.innerHTML = `
+                    <strong>✅ AUTHENTICATED:</strong> User is properly logged in.
+                    <br><br>
+                    <strong>User ID:</strong> ${userData.id}
+                    <br>
+                    <strong>Name:</strong> ${userData.name}
+                    <br>
+                    <strong>Email:</strong> ${userData.email}
+                `;
+            } else {
+                statusBox.className = 'status-box status-error';
+                statusBox.innerHTML = `
+                    <strong>❌ NOT AUTHENTICATED:</strong> User is not logged in or session is invalid.
+                    <br><br>
+                    <strong>data-user attribute:</strong> ${document.body.getAttribute('data-user')}
+                    <br>
+                    <strong>Is Logged In:</strong> ${isLoggedIn}
+                `;
+            }
+        }
+
+        function updateCartBadge(count) {
+            const cartBadge = document.querySelector('.cart-badge');
+            if (cartBadge) {
+                cartBadge.textContent = count || 0;
+                cartBadge.style.animation = 'none';
+                setTimeout(() => {
+                    cartBadge.style.animation = 'pulse 0.5s ease';
+                }, 10);
+            }
+        }
+
+        function clearLocalStorage() {
+            localStorage.removeItem('guestCart');
+            document.getElementById('testStatus').className = 'status-box status-success';
+            document.getElementById('testStatus').innerHTML = '<strong>✅ SUCCESS:</strong> Guest cart cleared from localStorage.';
+        }
+
+        function refreshPage() {
+            location.reload();
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAuthStatus();
+            
+            // Add some basic styles for cart badge if it exists
+            const style = document.createElement('style');
+            style.textContent = `
+                .cart-badge {
+                    display: inline-block;
+                    background: #ff6b35;
+                    color: white;
+                    padding: 2px 8px;
+                    border-radius: 50%;
+                    font-size: 12px;
+                    font-weight: bold;
+                    margin-left: 5px;
+                }
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.2); }
+                    100% { transform: scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart Functionality Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #004e89;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        
+        .test-section h3 {
+            color: #ff6b35;
+            margin-top: 0;
+        }
+        
+        .product-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .product-image {
+            width: 60px;
+            height: 60px;
+            background: #e9ecef;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .btn {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #f77f00;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .status-box {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .cart-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .auth-status {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .badge {
+            background: #007bff;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        .test-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 Cart Functionality Test</h1>
+        
+        <!-- Authentication Status -->
+        <div class="test-section">
+            <h3>🔐 Authentication Status</h3>
+            <div class="auth-status">
+                <span class="badge" id="auth-badge">Checking...</span>
+                <span id="auth-status-text">Loading authentication status...</span>
+            </div>
+            <div class="test-actions">
+                <button class="btn btn-secondary" onclick="checkAuth()">Check Auth</button>
+                <button class="btn btn-secondary" onclick="clearAuth()">Clear Auth</button>
+            </div>
+        </div>
+
+        <!-- Cart Status -->
+        <div class="test-section">
+            <h3>🛒 Cart Status</h3>
+            <div class="cart-info">
+                <div>
+                    <strong>Cart Count:</strong> <span id="cart-count">0</span>
+                </div>
+                <div>
+                    <strong>Guest Cart:</strong> <span id="guest-cart-count">0</span>
+                </div>
+            </div>
+            <div class="test-actions">
+                <button class="btn btn-secondary" onclick="syncCartCount()">Sync Cart Count</button>
+                <button class="btn btn-secondary" onclick="clearGuestCart()">Clear Guest Cart</button>
+                <button class="btn btn-secondary" onclick="viewCart()">View Cart</button>
+            </div>
+        </div>
+
+        <!-- Product Tests -->
+        <div class="test-section">
+            <h3>🛍️ Product Tests</h3>
+            <div class="product-card">
+                <div class="product-info">
+                    <div class="product-image">📱</div>
+                    <div>
+                        <div><strong>Smartphone</strong></div>
+                        <div style="color: #6c757d;">Tsh 500,000</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="testAddToCart(1)">Add to Cart</button>
+            </div>
+            
+            <div class="product-card">
+                <div class="product-info">
+                    <div class="product-image">💻</div>
+                    <div>
+                        <div><strong>Laptop</strong></div>
+                        <div style="color: #6c757d;">Tsh 1,500,000</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="testAddToCart(2)">Add to Cart</button>
+            </div>
+            
+            <div class="product-card">
+                <div class="product-info">
+                    <div class="product-image">🎧</div>
+                    <div>
+                        <div><strong>Headphones</strong></div>
+                        <div style="color: #6c757d;">Tsh 100,000</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="testAddToCart(3)">Add to Cart</button>
+            </div>
+        </div>
+
+        <!-- Test Results -->
+        <div class="test-section">
+            <h3>📊 Test Results</h3>
+            <div id="test-results" class="status-box status-info">
+                Ready to test cart functionality. Click the buttons above to test.
+            </div>
+        </div>
+
+        <!-- Manual API Tests -->
+        <div class="test-section">
+            <h3>🔧 Manual API Tests</h3>
+            <div class="test-actions">
+                <button class="btn btn-secondary" onclick="testCartAPI()">Test Cart API</button>
+                <button class="btn btn-secondary" onclick="testWishlistAPI()">Test Wishlist API</button>
+                <button class="btn btn-secondary" onclick="testAuthAPI()">Test Auth API</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the main script -->
+    <script src="public/script.js"></script>
+    
+    <script>
+        // Test functions
+        function checkAuth() {
+            const isLoggedIn = checkAuthentication();
+            const authBadge = document.getElementById('auth-badge');
+            const authText = document.getElementById('auth-status-text');
+            
+            if (isLoggedIn) {
+                authBadge.textContent = 'AUTHENTICATED';
+                authBadge.style.background = '#28a745';
+                authText.textContent = 'User is logged in';
+                document.getElementById('test-results').innerHTML = '✅ Authentication check successful - User is authenticated';
+                document.getElementById('test-results').className = 'status-box status-success';
+            } else {
+                authBadge.textContent = 'GUEST';
+                authBadge.style.background = '#6c757d';
+                authText.textContent = 'User is browsing as guest';
+                document.getElementById('test-results').innerHTML = 'ℹ️ Authentication check successful - User is a guest';
+                document.getElementById('test-results').className = 'status-box status-info';
+            }
+        }
+        
+        function clearAuth() {
+            // Clear any authentication data
+            document.body.removeAttribute('data-user');
+            document.body.removeAttribute('data-session-user-id');
+            localStorage.removeItem('user');
+            checkAuth();
+            document.getElementById('test-results').innerHTML = '🧹 Cleared authentication data';
+            document.getElementById('test-results').className = 'status-box status-info';
+        }
+        
+        function syncCartCount() {
+            // Use the debounced version to prevent excessive API calls
+            debouncedSyncCartCount();
+            document.getElementById('test-results').innerHTML = '🔄 Syncing cart count (rate limited)...';
+            document.getElementById('test-results').className = 'status-box status-info';
+        }
+        
+        function clearGuestCart() {
+            localStorage.removeItem('guestCart');
+            document.getElementById('guest-cart-count').textContent = '0';
+            document.getElementById('test-results').innerHTML = '🧹 Cleared guest cart';
+            document.getElementById('test-results').className = 'status-box status-info';
+        }
+        
+        function viewCart() {
+            window.location.href = '/cart';
+        }
+        
+        async function testAddToCart(productId) {
+            const result = await addToCart(productId, 1, null);
+            document.getElementById('test-results').innerHTML = `🛒 Attempted to add product ${productId} to cart`;
+            document.getElementById('test-results').className = 'status-box status-info';
+        }
+        
+        async function testCartAPI() {
+            try {
+                const response = await fetch('/api/cart');
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('test-results').innerHTML = `✅ Cart API test successful: ${JSON.stringify(result.cart || result)}`;
+                    document.getElementById('test-results').className = 'status-box status-success';
+                } else {
+                    document.getElementById('test-results').innerHTML = `❌ Cart API test failed: ${result.message}`;
+                    document.getElementById('test-results').className = 'status-box status-error';
+                }
+            } catch (error) {
+                document.getElementById('test-results').innerHTML = `❌ Cart API test error: ${error.message}`;
+                document.getElementById('test-results').className = 'status-box status-error';
+            }
+        }
+        
+        async function testWishlistAPI() {
+            try {
+                const response = await fetch('/api/wishlist/count');
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('test-results').innerHTML = `✅ Wishlist API test successful: Count = ${result.count}`;
+                    document.getElementById('test-results').className = 'status-box status-success';
+                } else {
+                    document.getElementById('test-results').innerHTML = `❌ Wishlist API test failed: ${result.message}`;
+                    document.getElementById('test-results').className = 'status-box status-error';
+                }
+            } catch (error) {
+                document.getElementById('test-results').innerHTML = `❌ Wishlist API test error: ${error.message}`;
+                document.getElementById('test-results').className = 'status-box status-error';
+            }
+        }
+        
+        async function testAuthAPI() {
+            try {
+                const response = await fetch('/api/auth/status');
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('test-results').innerHTML = `✅ Auth API test successful: ${JSON.stringify(result)}`;
+                    document.getElementById('test-results').className = 'status-box status-success';
+                } else {
+                    document.getElementById('test-results').innerHTML = `❌ Auth API test failed: ${result.message}`;
+                    document.getElementById('test-results').className = 'status-box status-error';
+                }
+            } catch (error) {
+                document.getElementById('test-results').innerHTML = `❌ Auth API test error: ${error.message}`;
+                document.getElementById('test-results').className = 'status-box status-error';
+            }
+        }
+        
+        // Update cart counts periodically
+        setInterval(() => {
+            const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+            const guestCount = guestCart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+            document.getElementById('guest-cart-count').textContent = guestCount;
+        }, 1000);
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            syncCartCount();
+        });
+    </script>
+</body>
+</html>

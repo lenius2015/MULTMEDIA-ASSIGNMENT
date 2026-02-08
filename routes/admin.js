@@ -445,6 +445,181 @@ router.post('/api/messages/logs', requireAdminAuth, async (req, res) => {
     }
 });
 
+// API endpoints for admin dashboard
+router.get('/api/dashboard/stats', requireAdminAuth, async (req, res) => {
+    try {
+        // Get basic statistics
+        const [orderStats] = await db.query('SELECT COUNT(*) as totalOrders FROM orders');
+        const [userStats] = await db.query('SELECT COUNT(*) as totalUsers FROM users');
+        const [productStats] = await db.query('SELECT COUNT(*) as totalProducts FROM products');
+        const [messageStats] = await db.query('SELECT COUNT(*) as totalMessages FROM contact_messages');
+
+        // Get auction statistics
+        const [activeAuctions] = await db.query(`
+            SELECT COUNT(*) as count FROM auctions
+            WHERE status = 'active' AND end_date > NOW()
+        `);
+
+        // Get countdown statistics
+        const [activeCountdowns] = await db.query(`
+            SELECT COUNT(*) as count FROM countdown_events
+            WHERE is_active = 1 AND end_date > NOW()
+        `);
+
+        res.json({
+            success: true,
+            stats: {
+                totalOrders: orderStats[0].totalOrders,
+                totalUsers: userStats[0].totalUsers,
+                totalProducts: productStats[0].totalProducts,
+                totalMessages: messageStats[0].totalMessages,
+                activeAuctions: activeAuctions[0].count,
+                activeCountdowns: activeCountdowns[0].count
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch dashboard stats' });
+    }
+});
+
+// Products API
+router.get('/api/products', requireAdminAuth, async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+        const offset = (page - 1) * limit;
+
+        // Get products with pagination
+        const [products] = await db.query(`
+            SELECT p.*,
+                   c.name as category_name,
+                   (SELECT COUNT(*) FROM order_items oi WHERE oi.product_id = p.id) as total_orders,
+                   (SELECT COUNT(*) FROM product_reviews pr WHERE pr.product_id = p.id) as total_reviews,
+                   (SELECT AVG(rating) FROM product_reviews pr WHERE pr.product_id = p.id) as avg_rating
+            FROM products p
+            LEFT JOIN categories c ON p.category_id = c.id
+            ORDER BY p.created_at DESC
+            LIMIT ? OFFSET ?
+        `, [limit, offset]);
+
+        // Get total count
+        const [countResult] = await db.query('SELECT COUNT(*) as total FROM products');
+        const totalProducts = countResult[0].total;
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        res.json({
+            success: true,
+            products: products,
+            pagination: {
+                page: page,
+                limit: limit,
+                total: totalProducts,
+                totalPages: totalPages
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch products' });
+    }
+});
+
+// Orders API
+router.get('/api/orders', requireAdminAuth, async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+        const offset = (page - 1) * limit;
+
+        // Get orders with pagination
+        const [orders] = await db.query(`
+            SELECT o.*,
+                   u.name as customer_name,
+                   u.email as customer_email
+            FROM orders o
+            LEFT JOIN users u ON o.user_id = u.id
+            ORDER BY o.created_at DESC
+            LIMIT ? OFFSET ?
+        `, [limit, offset]);
+
+        // Get total count
+        const [countResult] = await db.query('SELECT COUNT(*) as total FROM orders');
+        const totalOrders = countResult[0].total;
+        const totalPages = Math.ceil(totalOrders / limit);
+
+        res.json({
+            success: true,
+            orders: orders,
+            pagination: {
+                page: page,
+                limit: limit,
+                total: totalOrders,
+                totalPages: totalPages
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch orders' });
+    }
+});
+
+// Customers API
+router.get('/api/customers', requireAdminAuth, async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+        const offset = (page - 1) * limit;
+
+        // Get customers with pagination
+        const [customers] = await db.query(
+            'SELECT id, name, email, phone, role, created_at FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?',
+            [limit, offset]
+        );
+
+        // Get total count
+        const [countResult] = await db.query('SELECT COUNT(*) as total FROM users');
+        const totalCustomers = countResult[0].total;
+        const totalPages = Math.ceil(totalCustomers / limit);
+
+        res.json({
+            success: true,
+            customers: customers,
+            pagination: {
+                page: page,
+                limit: limit,
+                total: totalCustomers,
+                totalPages: totalPages
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching customers:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch customers' });
+    }
+});
+
+// Categories API
+router.get('/api/categories', requireAdminAuth, async (req, res) => {
+    try {
+        // Get all categories with product counts
+        const [categories] = await db.query(`
+            SELECT c.*,
+                   COUNT(p.id) as product_count
+            FROM categories c
+            LEFT JOIN products p ON c.id = p.category_id
+            GROUP BY c.id
+            ORDER BY c.sort_order, c.name
+        `);
+
+        res.json({
+            success: true,
+            categories: categories
+        });
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch categories' });
+    }
+});
+
 // Dashboard
 router.get('/dashboard', requireAdminAuth, async (req, res) => {
     try {

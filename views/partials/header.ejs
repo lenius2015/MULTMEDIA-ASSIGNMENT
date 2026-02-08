@@ -12,7 +12,7 @@
     <div class="nav-container">
       <!-- Logo -->
       <div class="logo">
-        <a href="<%= user ? '/dashboard' : '/' %>">
+        <a href="<%= typeof user !== 'undefined' && user ? '/dashboard' : '/' %>">
           <i class="fas fa-shopping-bag logo-icon"></i>
           <div class="logo-text" aria-label="OMUNJUSHOPPERS">
             <span class="logo-main">OMUNJU</span>
@@ -45,27 +45,35 @@
       </div>
 
       <!-- Navigation Links -->
+      <% const currentPage = typeof page !== 'undefined' ? page : (typeof currentPage !== 'undefined' ? currentPage : ''); %>
       <ul class="nav-links" id="navLinks">
-        <li><a href="<%= user ? '/dashboard' : '/' %>" class="<%= typeof page !== 'undefined' && page === 'home' ? 'active' : '' %>"><i class="fas fa-home"></i> Home</a></li>
-        <li><a href="/categories" class="<%= typeof page !== 'undefined' && page === 'categories' ? 'active' : '' %>"><i class="fas fa-th-large"></i> Categories</a></li>
-        <li><a href="/deals" class="<%= typeof page !== 'undefined' && page === 'deals' ? 'active' : '' %>"><i class="fas fa-fire"></i> Deals</a></li>
-        <li><a href="/promotions" class="<%= typeof page !== 'undefined' && page === 'promotions' ? 'active' : '' %>"><i class="fas fa-tags"></i> Promotions</a></li>
-        <li><a href="/auctions" class="<%= typeof page !== 'undefined' && page === 'auctions' ? 'active' : '' %>"><i class="fas fa-gavel"></i> Auctions</a></li>
-        <li><a href="/about" class="<%= typeof page !== 'undefined' && page === 'about' ? 'active' : '' %>"><i class="fas fa-info-circle"></i> About Us</a></li>
-        <li><a href="/contact" class="<%= typeof page !== 'undefined' && page === 'contact' ? 'active' : '' %>"><i class="fas fa-envelope"></i> Contact</a></li>
+        <li><a href="<%= typeof user !== 'undefined' && user ? '/dashboard' : '/' %>" class="<%= currentPage === 'home' ? 'active' : '' %>"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="/categories" class="<%= currentPage === 'categories' ? 'active' : '' %>"><i class="fas fa-th-large"></i> Categories</a></li>
+        <li><a href="/deals" class="<%= currentPage === 'deals' ? 'active' : '' %>"><i class="fas fa-fire"></i> Deals</a></li>
+        <li><a href="/promotions" class="<%= currentPage === 'promotions' ? 'active' : '' %>"><i class="fas fa-tags"></i> Promotions</a></li>
+        <li><a href="/auctions" class="<%= currentPage === 'auctions' ? 'active' : '' %>"><i class="fas fa-gavel"></i> Auctions</a></li>
+        <li><a href="/about" class="<%= currentPage === 'about' ? 'active' : '' %>"><i class="fas fa-info-circle"></i> About Us</a></li>
+        <li><a href="/contact" class="<%= currentPage === 'contact' ? 'active' : '' %>"><i class="fas fa-envelope"></i> Contact</a></li>
+        <% if (typeof user !== 'undefined' && user) { %>
+        <li><a href="/dashboard" class="<%= currentPage === 'dashboard' ? 'active' : '' %>"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <% } %>
       </ul>
 
       <!-- Right Side Icons -->
       <div class="nav-icons">
-        <% if (user) { %>
+        <% if (typeof user !== 'undefined' && user) { %>
           <a href="/notifications" class="nav-icon-link" title="Notifications" style="position: relative;">
             <i class="fas fa-bell"></i>
             <span class="icon-label">Notifications</span>
             <span class="notification-badge" id="notificationBadge" style="display: none;"></span>
           </a>
-          <a href="/profile/view" class="nav-icon-link" title="My Account">
+          <a href="/profile" class="nav-icon-link" title="My Account">
             <img src="<%= user && user.profile_picture ? user.profile_picture : '/images/default-avatar.png' %>" alt="Profile" class="nav-profile-picture">
             <span class="icon-label">Account</span>
+          </a>
+          <a href="/auth/logout" class="nav-icon-link logout-btn" title="Logout" onclick="event.preventDefault(); logoutUser();">
+            <i class="fas fa-sign-out-alt"></i>
+            <span class="icon-label">Logout</span>
           </a>
         <% } else { %>
           <a href="/login" class="nav-icon-link" title="Login">
@@ -74,11 +82,17 @@
           </a>
         <% } %>
         
-        <a class="nav-icon-link cart-icon" href="/cart" title="Shopping Cart">
-          <i class="fas fa-shopping-cart"></i>
-          <span class="cart-badge">0</span>
-          <span class="icon-label">Cart</span>
-        </a>
+          <a class="nav-icon-link wishlist-icon" href="/wishlist" title="Wishlist" style="position: relative; margin-right: 12px;">
+            <i class="fas fa-heart"></i>
+            <span class="wishlist-badge" id="wishlistBadge">0</span>
+            <span class="icon-label">Wishlist</span>
+          </a>
+
+          <a class="nav-icon-link cart-icon" href="/cart" title="Shopping Cart">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-badge">0</span>
+            <span class="icon-label">Cart</span>
+          </a>
       </div>
     </div>
   </nav>

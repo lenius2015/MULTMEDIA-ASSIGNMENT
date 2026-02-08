@@ -1074,3 +1074,54 @@ function showQuickViewModal(title, price, image) {
 // ========== CONSOLE WELCOME MESSAGE ==========
 console.log('%c🛍️ Welcome to OMUNJU SHOPPERS! ', 'background: #ff6b35; color: white; font-size: 20px; padding: 10px; border-radius: 5px;');
 console.log('%cYour Premier E-Commerce Destination', 'color: #004e89; font-size: 14px; font-weight: bold;');
+
+// ========== LOGOUT FUNCTION ==========
+async function logoutUser() {
+    try {
+        const response = await fetch('/auth/logout', {
+            method: 'GET',
+            credentials: 'same-origin'
+        });
+        
+        if (response.redirected) {
+            // Clear any local storage data
+            localStorage.removeItem('userData');
+            sessionStorage.clear();
+            
+            // Redirect to home page
+            window.location.href = response.url;
+        } else {
+            const result = await response.json();
+            if (result.success) {
+                window.location.href = '/';
+            } else {
+                showNotification('Logout failed. Please try again.', 'error');
+            }
+        }
+    } catch (error) {
+        console.error('Logout error:', error);
+        // Fallback - redirect to home
+        window.location.href = '/';
+    }
+}
+
+// ========== ADMIN LOGOUT FUNCTION ==========
+async function adminLogout() {
+    try {
+        const response = await fetch('/admin/auth/logout', {
+            method: 'GET',
+            credentials: 'same-origin'
+        });
+        
+        if (response.redirected) {
+            localStorage.removeItem('adminData');
+            sessionStorage.clear();
+            window.location.href = response.url;
+        } else {
+            window.location.href = '/admin/login';
+        }
+    } catch (error) {
+        console.error('Admin logout error:', error);
+        window.location.href = '/admin/login';
+    }
+}

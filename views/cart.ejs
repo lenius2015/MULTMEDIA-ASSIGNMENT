@@ -309,7 +309,7 @@
 </head>
 <body>
     <!-- Navigation Bar -->
-    <%- include('./partials/header', { currentPage: 'cart' }) %>
+    <%- include('./partials/header', { page: 'cart' }) %>
 
     <div class="cart-container">
         <!-- Cart Header -->
@@ -495,10 +495,9 @@
                 showNotification('Your cart is empty', 'warning');
                 return;
             }
-
-            // For now, just show a placeholder message
-            showNotification('Checkout functionality will be implemented next', 'info');
-            // TODO: Implement checkout/payment functionality
+            
+            // Redirect to checkout page
+            window.location.href = '/checkout';
         }
 
         function showError(message) {

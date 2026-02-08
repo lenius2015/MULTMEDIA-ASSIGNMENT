@@ -159,13 +159,9 @@ class Logger {
             };
 
             await db.query(`
-                INSERT INTO access_logs (ip, method, url, status_code, response_time, user_agent, referer, user_id,
-                                       time_zone, user_timezone_timestamp, browser, browser_version,
-                                       device_type, os, os_version)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `, [userInfo.ip, method, url, statusCode, responseTime, userInfo.userAgent, referer, userId,
-                userInfo.timeZone, userInfo.userTimeZoneTimestamp, userInfo.browser,
-                userInfo.browserVersion, userInfo.deviceType, userInfo.os, userInfo.osVersion]);
+                INSERT INTO access_logs (ip, method, url, status_code, response_time, user_agent, referer, user_id, timestamp)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
+            `, [userInfo.ip, method, url, statusCode, responseTime, userInfo.userAgent, referer, userId]);
         } catch (error) {
             console.error('Failed to log access:', error);
         }

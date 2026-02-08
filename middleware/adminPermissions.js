@@ -12,16 +12,28 @@ const requirePermission = (permission) => {
         try {
             // Check if admin is authenticated
             if (!req.session || !req.session.adminId) {
+                // For API requests, return JSON error
+                if (req.xhr || req.path.startsWith('/api')) {
+                  return res.status(401).json({ success: false, message: 'Authentication required' });
+                }
                 return res.redirect('/admin/login');
             }
 
             // Super admin has all permissions
-            if (req.session.adminIsSuperAdmin) {
+            if (req.session.adminIsSuperAdmin === true) {
                 return next();
             }
 
             // Check if admin has the required permission
-            if (!req.session.adminPermissions || !req.session.adminPermissions.includes(permission)) {
+            const permissions = req.session.adminPermissions || [];
+            if (!permissions.includes(permission)) {
+                // For API requests, return JSON error
+                if (req.xhr || req.path.startsWith('/api')) {
+                  return res.status(403).json({ 
+                    success: false, 
+                    message: 'Access denied: Missing permission ' + permission 
+                  });
+                }
                 return res.status(403).render('admin/error', {
                     title: 'Access Denied - OMUNJU SHOPPERS',
                     message: 'You do not have permission to access this resource.',
@@ -32,7 +44,15 @@ const requirePermission = (permission) => {
             next();
         } catch (error) {
             console.error('Permission check error:', error);
-            res.status(500).render('error', { message: 'Permission check failed' });
+            const errorMessage = process.env.NODE_ENV === 'development' ? error.message : 'Permission check failed';
+            if (req.xhr || req.path.startsWith('/api')) {
+                return res.status(500).json({ success: false, message: errorMessage });
+            }
+            res.status(500).render('admin/error', { 
+                title: 'Error - OMUNJU SHOPPERS',
+                message: errorMessage,
+                error: { status: 500 }
+            });
         }
     };
 };
@@ -79,10 +99,16 @@ const requireAnyPermission = (permissions) => {
  */
 const requireSuperAdmin = (req, res, next) => {
     if (!req.session || !req.session.adminId) {
+        if (req.xhr || req.path.startsWith('/api')) {
+            return res.status(401).json({ success: false, message: 'Authentication required' });
+        }
         return res.redirect('/admin/login');
     }
 
-    if (!req.session.adminIsSuperAdmin) {
+    if (req.session.adminIsSuperAdmin !== true) {
+        if (req.xhr || req.path.startsWith('/api')) {
+            return res.status(403).json({ success: false, message: 'Super admin access required' });
+        }
         return res.status(403).render('admin/error', {
             title: 'Access Denied - OMUNJU SHOPPERS',
             message: 'Super admin access required.',

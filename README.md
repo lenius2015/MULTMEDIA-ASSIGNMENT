@@ -1,343 +1,378 @@
-# OMUNJU SHOPPERS - E-Commerce Web Application
+# 🛒 OMUNJU SHOPPERS - E-Commerce Web Application
 
-A complete, fully functional e-commerce web application built with Node.js, Express.js, MySQL, and vanilla JavaScript.
+A complete, production-ready full-stack e-commerce platform built with Node.js, Express.js, MySQL, and EJS templates.
 
-## 🚀 Features
+## 📊 Project Overview
+
+| Attribute | Value |
+|-----------|-------|
+| **Version** | 1.0.0 |
+| **Status** | ✅ Production Ready |
+| **License** | ISC |
+
+---
+
+## 🚀 Quick Start (5 Minutes)
+
+### Prerequisites
+- Node.js v14+ 
+- MySQL/MariaDB installed and running
+- npm or yarn
+
+### Installation
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Setup database
+mysql -u root -p < db_init.sql
+
+# 3. Configure environment
+cp .env.example .env
+# Edit .env with your database credentials
+
+# 4. Start server
+npm run dev
+
+# 5. Open browser
+http://localhost:3000
+```
+
+### Default Credentials
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@ecommerce.com | Admin@123 |
+| User | (Register at /signup) | (Your choice) |
+
+---
+
+## ✨ Features
 
 ### User Features
-- **Guest Browsing**: Browse products without an account
-- **User Authentication**: Secure registration and login system
-- **Product Catalog**: Browse products by categories with advanced filtering
-- **Search & Filter**: Search products by name, filter by category, price, and discounts
-- **Shopping Cart**: Add products to cart (requires login)
-- **Order Management**: Place orders and track order history
-- **User Profile**: Edit profile information and change password
-- **Notifications**: Real-time notifications for new products and discounts
-- **Contact Form**: Submit inquiries and support requests
-- **Chatbot**: AI-powered shopping assistant for customer support
-- **Responsive Design**: Mobile-friendly interface
+- ✅ Guest browsing without account
+- ✅ Secure registration and login
+- ✅ Product catalog with advanced filtering
+- ✅ Search by name, category, price, discounts
+- ✅ Shopping cart (login required)
+- ✅ Order placement and tracking
+- ✅ User profile management
+- ✅ Real-time notifications
+- ✅ Contact form
+- ✅ Chatbot assistant
+- ✅ Responsive design
 
-### Product Features
-- Product categories (T-Shirts, Jackets, Jeans, Dresses, Sweaters)
-- Discount badges and pricing
-- New arrival indicators
-- Product images and descriptions
-- Stock management
+### Admin Panel
+- ✅ Dashboard with analytics widgets
+- ✅ Product management (CRUD)
+- ✅ Category management
+- ✅ Order management
+- ✅ Customer management
+- ✅ Message inbox
+- ✅ Notification system
+- ✅ Activity logs
+- ✅ Invoice generation
 
-### Admin Features (Backend Ready)
-- User management
-- Product management
-- Order management
-- Notification system
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Backend | Node.js + Express.js |
+| Database | MySQL/MariaDB |
+| Frontend | HTML5, CSS3, JavaScript ES6+ |
+| Templates | EJS |
+| Auth | bcryptjs + express-session |
+| Security | helmet, cors, rate-limiting |
+| Real-time | Socket.io |
+| File Upload | Multer |
+| Config | dotenv |
+
+---
 
 ## 📁 Project Structure
 
 ```
-e-commerce-website/
-├── config.js                 # Configuration file
-├── db.js                     # Database connection
-├── db_init.sql              # Database schema and sample data
-├── server.js                # Main server file
-├── .env                     # Environment variables
-├── package.json             # Dependencies
+MULTMEDIA-ASSIGNMENT-main/
+├── server.js                    # Main server entry point
+├── config.js                    # Configuration
+├── db.js                        # Database connection
+├── .env                         # Environment variables
+├── package.json                 # Dependencies
+│
+├── config/
+│   └── security.js              # Security middleware config
+│
+├── controllers/
+│   └── adminAuth.controller.js  # Admin authentication logic
+│
 ├── middleware/
-│   └── auth.js              # Authentication middleware
+│   ├── auth.js                  # User authentication
+│   ├── adminAuth.js             # Admin authentication
+│   └── adminPermissions.js      # Role-based access control
+│
 ├── routes/
-│   ├── auth.js              # Authentication routes
-│   ├── products.js          # Product routes
-│   ├── cart.js              # Shopping cart routes
-│   ├── orders.js            # Order management routes
-│   ├── profile.js           # User profile routes
-│   ├── notifications.js     # Notification routes
-│   └── contact.js           # Contact form routes
+│   ├── auth.js                  # User auth routes
+│   ├── adminAuth.routes.js      # Admin login routes
+│   ├── adminDashboard.routes.js  # Admin panel routes
+│   ├── products.js              # Product routes
+│   ├── cart.js                  # Shopping cart routes
+│   ├── orders.js                # Order routes
+│   ├── profile.js               # User profile routes
+│   ├── notifications.js         # Notification routes
+│   ├── wishlist.js              # Wishlist routes
+│   ├── reviews.js               # Product reviews
+│   ├── delivery.js              # Delivery tracking
+│   ├── contact.js               # Contact form
+│   └── invoices.js              # Invoice routes
+│
 ├── views/
-│   ├── index.ejs            # Home page (guest)
-│   ├── login.ejs            # Login page
-│   ├── signup.ejs           # Registration page
-│   ├── dashboard.ejs        # User dashboard
-│   ├── profile.ejs          # User profile page
-│   ├── contact.ejs          # Contact page
-│   ├── about.ejs            # About page
-│   └── 404.ejs              # 404 error page
-└── public/
-    ├── style.css            # Main stylesheet
-    ├── login.css            # Login page styles
-    ├── signup.css           # Signup page styles
-    ├── script.js            # Main JavaScript file
-    ├── login.js             # Login functionality
-    └── signup.js            # Signup functionality
+│   ├── index.ejs                # Home page
+│   ├── login.ejs                # User login
+│   ├── signup.ejs               # User registration
+│   ├── dashboard.ejs            # User dashboard
+│   ├── profile.ejs              # User profile
+│   ├── products.ejs             # Product listing
+│   ├── product.ejs              # Product detail
+│   ├── cart.ejs                 # Shopping cart
+│   ├── checkout.ejs             # Checkout
+│   ├── orders.ejs               # Order history
+│   ├── wishlist.ejs             # Wishlist
+│   ├── notifications.ejs         # Notifications
+│   ├── admin/
+│   │   ├── login.ejs            # Admin login
+│   │   ├── dashboard.ejs       # Admin dashboard
+│   │   ├── products.ejs        # Product management
+│   │   ├── categories.ejs      # Category management
+│   │   ├── orders.ejs          # Order management
+│   │   ├── customers.ejs       # Customer management
+│   │   ├── messages-dashboard.ejs # Message management
+│   │   └── analytics.ejs       # Analytics
+│   └── partials/
+│       ├── header.ejs
+│       ├── footer.ejs
+│       └── sidebar.ejs
+│
+├── public/
+│   ├── style.css               # Main styles
+│   ├── admin-enhanced.css      # Admin styles
+│   ├── script.js               # Main JavaScript
+│   ├── admin-enhanced.js       # Admin JavaScript
+│   └── images/                 # Static images
+│
+├── db_init.sql                 # Main database schema
+├── db_chat_init.sql            # Chat system schema
+├── db_auction_init.sql         # Auction system schema
+├── db_delivery_init.sql        # Delivery system schema
+└── db_promotions.sql           # Promotions schema
 ```
 
-## 🛠️ Technologies Used
-
-### Backend
-- **Node.js** - JavaScript runtime
-- **Express.js** - Web application framework
-- **MySQL/MariaDB** - Relational database
-- **bcryptjs** - Password hashing
-- **express-session** - Session management
-- **dotenv** - Environment variable management
-
-### Frontend
-- **HTML5** - Markup language
-- **CSS3** - Styling
-- **Vanilla JavaScript** - Client-side functionality
-- **EJS** - Template engine
-- **Font Awesome** - Icons
-- **Google Fonts** - Typography
-
-## 📋 Prerequisites
-
-Before you begin, ensure you have the following installed:
-- Node.js (v14 or higher)
-- MySQL or MariaDB
-- npm or yarn package manager
-
-## ⚙️ Installation & Setup
-
-### 1. Clone the Repository
-```bash
-git clone <repository-url>
-cd e-commerce-website
-```
-
-### 2. Install Dependencies
-```bash
-npm install
-```
-
-### 3. Configure Environment Variables
-Create a `.env` file in the root directory:
-
-```env
-# Database Configuration
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=ecommerce
-
-# Server Configuration
-PORT=3000
-NODE_ENV=development
-
-# Session Configuration
-SESSION_SECRET=your_secret_key_change_this_to_something_secure
-```
-
-### 4. Setup Database
-
-#### Option 1: Using MySQL Command Line
-```bash
-mysql -u root -p < db_init.sql
-```
-
-#### Option 2: Using MySQL Workbench or phpMyAdmin
-1. Open your MySQL client
-2. Create a new database named `ecommerce`
-3. Import the `db_init.sql` file
-
-### 5. Start the Server
-
-#### Development Mode (with auto-restart)
-```bash
-npm run dev
-```
-
-#### Production Mode
-```bash
-npm start
-```
-
-The server will start on `http://localhost:3000`
-
-## 🗄️ Database Schema
-
-### Tables
-- **users** - User accounts and authentication
-- **products** - Product catalog
-- **cart** - Shopping cart items
-- **wishlist** - User wishlists
-- **orders** - Order records
-- **order_items** - Order line items
-- **notifications** - User notifications
-- **contact_messages** - Contact form submissions
-- **partner_links** - Partner website links
+---
 
 ## 🔐 API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
-- `GET /api/auth/status` - Check authentication status
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/register` | Register new user |
+| POST | `/api/auth/login` | User login |
+| POST | `/api/auth/logout` | User logout |
+| GET | `/api/auth/status` | Check auth status |
 
 ### Products
-- `GET /api/products` - Get all products (with filters)
-- `GET /api/products/:id` - Get single product
-- `GET /api/products/filter/new` - Get new products
-- `GET /api/products/filter/discounted` - Get discounted products
-- `GET /api/products/categories/list` - Get product categories
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/products` | Get all products (filters) |
+| GET | `/api/products/:id` | Get single product |
+| GET | `/products` | Product listing page |
+| GET | `/products/:id` | Product detail page |
 
 ### Shopping Cart
-- `GET /api/cart` - Get user's cart
-- `POST /api/cart/add` - Add item to cart
-- `PUT /api/cart/update/:productId` - Update cart item quantity
-- `DELETE /api/cart/remove/:productId` - Remove item from cart
-- `DELETE /api/cart/clear` - Clear entire cart
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/cart` | Get user's cart |
+| POST | `/api/cart/add` | Add item to cart |
+| PUT | `/api/cart/update/:productId` | Update quantity |
+| DELETE | `/api/cart/remove/:productId` | Remove item |
 
 ### Orders
-- `POST /api/orders/create` - Create new order
-- `GET /api/orders` - Get user's orders
-- `GET /api/orders/:orderId` - Get order details
-- `PUT /api/orders/:orderId/cancel` - Cancel order
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/orders/create` | Create new order |
+| GET | `/api/orders` | Get user's orders |
+| GET | `/api/orders/:id` | Get order details |
 
-### User Profile
-- `GET /api/profile` - Get user profile
-- `PUT /api/profile/update` - Update profile information
-- `PUT /api/profile/change-password` - Change password
-- `GET /api/profile/orders` - Get user orders
-- `GET /api/profile/orders/:orderId` - Get order details
+### Admin
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/admin/login` | Admin login page |
+| POST | `/admin/login` | Admin login submit |
+| GET | `/admin/dashboard` | Admin dashboard |
+| GET | `/admin/products` | Product management |
+| GET | `/admin/orders` | Order management |
+| GET | `/admin/customers` | Customer management |
+| GET | `/admin/messages` | Message inbox |
 
-### Notifications
-- `GET /api/notifications` - Get user notifications
-- `PUT /api/notifications/:id/read` - Mark notification as read
-- `PUT /api/notifications/read-all` - Mark all as read
-- `DELETE /api/notifications/:id` - Delete notification
+---
 
-### Contact
-- `POST /api/contact/submit` - Submit contact form
-- `GET /api/contact/partners` - Get partner links
+## 🗄️ Database Schema
 
-## 🎨 Features Walkthrough
+### Main Tables
+- **users** - User accounts and authentication
+- **products** - Product catalog
+- **categories** - Product categories
+- **cart** - Shopping cart items
+- **orders** - Order records
+- **order_items** - Order line items
+- **wishlist** - User wishlists
+- **notifications** - User notifications
+- **contact_messages** - Contact form submissions
 
-### For Guest Users
-1. Browse products on the home page
-2. Use search and filters to find products
-3. Click "Buy Now" to be redirected to login/register
-4. View About Us and Contact pages
+### Extended Tables
+- **conversations** - Chat conversations
+- **messages** - Chat messages
+- **invoices** - Invoice records
+- **delivery_requests** - Delivery tracking
+- **promotions** - Promotions and deals
+- **activity_logs** - Admin activity logging
 
-### For Registered Users
-1. **Register**: Create an account via `/signup`
-2. **Login**: Access your account via `/login`
-3. **Dashboard**: View personalized dashboard with:
-   - New arrivals
-   - Hot deals (discounted products)
-   - All products with filters
-   - Quick stats (orders, cart items, notifications)
-4. **Shopping**:
-   - Add products to cart
-   - View cart summary
-   - Place orders
-5. **Profile Management**:
-   - Edit personal information
-   - Change password
-   - View order history
-6. **Notifications**: Receive updates about new products and discounts
-7. **Chatbot**: Get instant help with common questions
-8. **Contact**: Submit inquiries via contact form
-
-## 🤖 Chatbot Features
-
-The integrated chatbot can help with:
-- Product information
-- Pricing inquiries
-- Shipping and delivery details
-- Return and refund policies
-- Account registration
-- Contact information
-- General support
+---
 
 ## 🔒 Security Features
 
-- Password hashing with bcryptjs
-- Session-based authentication
-- SQL injection prevention with parameterized queries
-- Input validation on both client and server
-- CSRF protection via session management
-- Secure password requirements (minimum 6 characters)
+- ✅ Password hashing with bcryptjs
+- ✅ Session-based authentication
+- ✅ SQL injection prevention (parameterized queries)
+- ✅ Input validation (client & server)
+- ✅ XSS protection
+- ✅ CSRF protection
+- ✅ Rate limiting
+- ✅ Security headers (Helmet)
+- ✅ Role-based access control
+- ✅ Admin route protection
+- ✅ Access logging
 
-## 📱 Responsive Design
+---
 
-The application is fully responsive and works on:
-- Desktop computers
-- Tablets
-- Mobile phones
+## 📱 Pages
+
+### User Pages
+| Route | Description |
+|-------|-------------|
+| `/` | Home page |
+| `/products` | Product listing |
+| `/products/:id` | Product detail |
+| `/login` | User login |
+| `/signup` | User registration |
+| `/dashboard` | User dashboard |
+| `/cart` | Shopping cart |
+| `/checkout` | Checkout |
+| `/orders` | Order history |
+| `/profile` | User profile |
+| `/wishlist` | Wishlist |
+| `/notifications` | Notifications |
+| `/contact` | Contact form |
+| `/about` | About page |
+
+### Admin Pages
+| Route | Description |
+|-------|-------------|
+| `/admin/login` | Admin login |
+| `/admin/dashboard` | Admin dashboard |
+| `/admin/products` | Product management |
+| `/admin/categories` | Category management |
+| `/admin/orders` | Order management |
+| `/admin/customers` | Customer management |
+| `/admin/messages` | Message inbox |
+| `/admin/analytics` | Analytics |
+| `/admin/notifications` | Notification system |
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run specific test
+node test-admin-panel.js
+node test-api-endpoint.js
+```
+
+---
 
 ## 🚀 Deployment
 
-### Prerequisites for Production
-1. Set `NODE_ENV=production` in `.env`
-2. Use a strong `SESSION_SECRET`
-3. Enable HTTPS and set `cookie.secure = true` in session config
-4. Use a production-grade database server
-5. Set up proper error logging
+### Production Setup
 
-### Recommended Hosting Platforms
+```bash
+# Set environment variables
+NODE_ENV=production
+SESSION_SECRET=your-secure-secret
+DB_HOST=your-db-host
+```
+
+### Recommended Platforms
 - **Backend**: Heroku, DigitalOcean, AWS, Railway
-- **Database**: AWS RDS, DigitalOcean Managed Databases, PlanetScale
-- **Frontend**: Can be served from the same Node.js server
+- **Database**: AWS RDS, DigitalOcean Managed Databases
+- **Static Files**: Can be served from same Node.js server
+
+---
+
+## 📖 Documentation
+
+| File | Description |
+|------|-------------|
+| `QUICK_START.md` | 5-minute setup guide |
+| `SETUP_GUIDE.md` | Detailed installation guide |
+| `COMPLETE_IMPLEMENTATION_GUIDE.md` | Full implementation guide |
+| `API_DATABASE_REFERENCE.md` | Complete API reference |
+| `CART_ORDER_SYSTEM_GUIDE.md` | Cart & orders documentation |
+| `FINAL_MESSAGING_SYSTEM_SUMMARY.md` | Messaging system docs |
+| `ADMIN_PANEL_FIXES_SUMMARY.md` | Admin panel fixes |
+
+---
 
 ## 🐛 Troubleshooting
 
 ### Database Connection Issues
-- Verify MySQL is running
-- Check database credentials in `.env`
-- Ensure database `ecommerce` exists
+```bash
+# Check MySQL is running
+net start MySQL80  # Windows
+sudo systemctl start mysql  # Linux/Mac
+```
 
 ### Port Already in Use
-- Change `PORT` in `.env` file
-- Or kill the process using port 3000
+Change `PORT` in `.env` file to a different value.
 
-### Session Issues
-- Clear browser cookies
-- Restart the server
-- Check `SESSION_SECRET` is set
-
-## 📝 Sample Credentials
-
-After running `db_init.sql`, you can use these credentials:
-
-**Admin Account:**
-- Email: admin@omunju.com
-- Password: admin123 (Note: Update the hashed password in db_init.sql)
-
-**Note**: For security, generate proper bcrypt hashes for passwords before production use.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the ISC License.
-
-## 👥 Support
-
-For support, email support@omunjushoppers.com or use the contact form in the application.
-
-## 🎯 Future Enhancements
-
-- Payment gateway integration (Stripe, PayPal)
-- Email notifications
-- Product reviews and ratings
-- Wishlist functionality
-- Advanced admin dashboard
-- Order tracking with real-time updates
-- Social media authentication
-- Multi-language support
-- Product recommendations
-- Inventory management system
-
-## 📞 Contact
-
-- Website: [OMUNJU SHOPPERS](#)
-- Email: info@omunjushoppers.com
-- Phone: +254 700 123 456
+### Module Not Found
+```bash
+rm -rf node_modules
+npm install
+```
 
 ---
 
-**Built with ❤️ by OMUNJU SHOPPERS Team**
+## 📞 Support
+
+- Email: support@omunjushoppers.com
+- Issues: Open a GitHub issue
+
+---
+
+## 📝 License
+
+This project is licensed under the ISC License.
+
+---
+
+## 🙏 Acknowledgments
+
+Built with ❤️ by OMUNJU SHOPPERS Development Team
+
+---
+
+**Questions? Check the documentation files or open an issue!**

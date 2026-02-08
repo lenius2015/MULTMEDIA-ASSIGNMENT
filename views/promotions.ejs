@@ -3,517 +3,814 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
+    <title>Promotions & Discounts - OMUNJU SHOPPERS</title>
     <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/admin-enhanced.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* Promotions Page Specific Styles */
         .promotions-hero {
-            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            background: linear-gradient(135deg, #f39c12, #e67e22);
             color: white;
-            padding: 80px 0;
+            padding: 4rem 0;
             text-align: center;
+            margin-bottom: 3rem;
         }
 
         .promotions-hero h1 {
-            font-size: 3rem;
-            margin-bottom: 16px;
-            font-weight: 700;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .promotions-hero p {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             opacity: 0.9;
-            max-width: 600px;
+        }
+
+        .promotions-container {
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 0 2rem;
         }
 
-        .promotions-controls {
+        /* Coupon Code Section */
+        .coupon-section {
             background: white;
-            padding: 30px 0;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 3rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 3rem;
         }
 
-        .controls-container {
+        .coupon-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .coupon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .coupon-card {
+            background: var(--bg-color);
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .coupon-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: var(--secondary-color);
+        }
+
+        .coupon-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--accent-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .coupon-icon {
+            font-size: 3rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        .coupon-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .coupon-code {
+            background: white;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            border: 2px dashed var(--secondary-color);
+            margin: 1rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .coupon-code:hover {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .coupon-description {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .coupon-validity {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1rem;
+        }
+
+        .coupon-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn-coupon {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-coupon-primary {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-coupon-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-coupon-secondary {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid #ddd;
+        }
+
+        .btn-coupon-secondary:hover {
+            background: #f8f9fa;
+            border-color: var(--text-color);
+        }
+
+        /* Special Offers Section */
+        .offers-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--bg-color);
         }
 
-        .sort-controls {
-            display: flex;
-            gap: 16px;
-            align-items: center;
+        .section-title {
+            font-size: 2rem;
+            color: var(--text-color);
+            font-weight: 700;
         }
 
-        .sort-label {
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .sort-select {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            background: white;
-            font-size: 14px;
-        }
-
-        .results-count {
-            color: #7f8c8d;
-            font-size: 14px;
-        }
-
-        .products-section {
-            padding: 60px 0;
-        }
-
-        .products-grid {
+        .offers-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
         }
 
-        .product-card {
+        .offer-card {
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            border-radius: 8px;
             overflow: hidden;
+            box-shadow: var(--shadow);
             transition: all 0.3s ease;
             position: relative;
+            border: 2px solid transparent;
         }
 
-        .product-card:hover {
+        .offer-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            border-color: var(--secondary-color);
         }
 
-        .product-badge {
+        .offer-image {
+            width: 100%;
+            height: 200px;
+            background: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .offer-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .offer-card:hover .offer-image img {
+            transform: scale(1.05);
+        }
+
+        .offer-badge {
             position: absolute;
-            top: 12px;
-            left: 12px;
-            background: #e74c3c;
+            top: 1rem;
+            left: 1rem;
+            background: var(--accent-color);
             color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
             text-transform: uppercase;
             z-index: 2;
         }
 
-        .product-image {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            position: relative;
+        .offer-info {
+            padding: 1.5rem;
         }
 
-        .product-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .product-card:hover .product-overlay {
-            opacity: 1;
-        }
-
-        .quick-view-btn {
-            background: white;
-            color: #2c3e50;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
+        .offer-category {
+            color: var(--secondary-color);
+            font-size: 0.8rem;
             font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
         }
 
-        .quick-view-btn:hover {
-            background: #f8f9fa;
-            transform: scale(1.05);
-        }
-
-        .product-info {
-            padding: 20px;
-        }
-
-        .product-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 8px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .product-rating {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-bottom: 12px;
-        }
-
-        .product-rating i {
-            color: #f39c12;
-            font-size: 0.9rem;
-        }
-
-        .rating-count {
-            color: #7f8c8d;
-            font-size: 0.85rem;
-            margin-left: 4px;
-        }
-
-        .product-price {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .price-current {
+        .offer-title {
             font-size: 1.3rem;
             font-weight: 700;
-            color: #2c3e50;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
         }
 
-        .price-original {
-            font-size: 1rem;
-            color: #7f8c8d;
+        .offer-description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .offer-details {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .offer-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .offer-original-price {
+            font-size: 1.1rem;
+            color: #999;
             text-decoration: line-through;
         }
 
-        .price-discount {
-            background: #e74c3c;
+        .offer-discount {
+            background: var(--accent-color);
             color: white;
-            padding: 2px 6px;
+            padding: 0.5rem 1rem;
             border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 1rem;
+            font-weight: bold;
         }
 
-        .product-savings {
-            color: #27ae60;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 16px;
+        .offer-actions {
+            display: flex;
+            gap: 1rem;
         }
 
-        .add-to-cart-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #27ae60, #229954);
-            color: white;
+        .btn-offer {
+            flex: 1;
+            padding: 0.75rem;
             border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: 600;
+            border-radius: 4px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            font-weight: 600;
             transition: all 0.3s ease;
-        }
-
-        .add-to-cart-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            margin-top: 40px;
-        }
-
-        .pagination-btn {
-            padding: 10px 16px;
-            border: 1px solid #ddd;
-            background: white;
-            color: #2c3e50;
             text-decoration: none;
-            border-radius: 6px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-offer-primary {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-offer-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-offer-secondary {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid #ddd;
+        }
+
+        .btn-offer-secondary:hover {
+            background: #f8f9fa;
+            border-color: var(--text-color);
+        }
+
+        /* Promo Code Input Section */
+        .promo-input-section {
+            background: white;
+            padding: 3rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 3rem;
+        }
+
+        .promo-form {
+            display: flex;
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .promo-input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .promo-input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .btn-apply {
+            background: var(--secondary-color);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
             transition: all 0.3s ease;
         }
 
-        .pagination-btn:hover,
-        .pagination-btn.active {
-            background: #3498db;
-            color: white;
-            border-color: #3498db;
+        .btn-apply:hover {
+            background: #2980b9;
         }
 
-        .no-products {
+        .promo-result {
             text-align: center;
-            padding: 80px 20px;
-            color: #7f8c8d;
+            margin-top: 1rem;
+            min-height: 1.5rem;
         }
 
-        .no-products i {
+        .promo-success {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .promo-error {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        /* Loading and Empty States */
+        .loading-promotions {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-color);
+        }
+
+        .no-promotions {
+            text-align: center;
+            padding: 4rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .no-promotions i {
             font-size: 4rem;
-            margin-bottom: 20px;
-            display: block;
+            color: #ddd;
+            margin-bottom: 1rem;
         }
 
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .promotions-hero {
-                padding: 60px 20px;
-            }
-
             .promotions-hero h1 {
                 font-size: 2.5rem;
             }
 
-            .controls-container {
+            .coupon-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .offers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .promo-form {
                 flex-direction: column;
-                gap: 20px;
-                align-items: stretch;
-            }
-
-            .sort-controls {
-                justify-content: center;
-            }
-
-            .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-                gap: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <%- include('./partials/header', { page: 'promotions', user: user }) %>
+    <!-- Enhanced Navigation -->
+    <%- include('partials/navigation-enhanced', { currentPage: 'promotions', user: user }) %>
 
-    <!-- Hero Section -->
+    <!-- Promotions Hero Section -->
     <section class="promotions-hero">
-        <div class="container">
-            <h1>🔥 Special Deals & Promotions</h1>
-            <p>Discover amazing discounts on your favorite products. Limited time offers!</p>
+        <div class="promotions-container">
+            <h1>Special Promotions & Discounts</h1>
+            <p>Unlock amazing savings with our exclusive promo codes and special offers!</p>
         </div>
     </section>
 
-    <!-- Controls Section -->
-    <section class="promotions-controls">
-        <div class="controls-container">
-            <div class="sort-controls">
-                <span class="sort-label">Sort by:</span>
-                <select class="sort-select" onchange="changeSort(this.value)">
-                    <option value="newest" <%= sort === 'newest' ? 'selected' : '' %>>Newest</option>
-                    <option value="price_low" <%= sort === 'price_low' ? 'selected' : '' %>>Price: Low to High</option>
-                    <option value="price_high" <%= sort === 'price_high' ? 'selected' : '' %>>Price: High to Low</option>
-                    <option value="discount_high" <%= sort === 'discount_high' ? 'selected' : '' %>>Highest Discount</option>
-                    <option value="name" <%= sort === 'name' ? 'selected' : '' %>>Name A-Z</option>
-                </select>
-            </div>
-            <div class="results-count">
-                Showing <%= products.length %> of <%= totalProducts %> products
-            </div>
-        </div>
-    </section>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="promotions-container">
+            <!-- Promo Code Input Section -->
+            <section class="promo-input-section">
+                <div class="coupon-header">
+                    <h2>Have a Promo Code?</h2>
+                    <p>Enter your code below to apply discounts to your order</p>
+                </div>
+                
+                <div class="promo-form">
+                    <input type="text" id="promoCodeInput" class="promo-input" placeholder="Enter your promo code here...">
+                    <button class="btn-apply" onclick="applyPromoCode()">Apply Code</button>
+                </div>
+                
+                <div id="promoResult" class="promo-result"></div>
+            </section>
 
-    <!-- Products Section -->
-    <section class="products-section">
-        <% if (products && products.length > 0) { %>
-            <div class="products-grid">
-                <% products.forEach(product => { %>
-                    <div class="product-card" data-product-id="<%= product.id %>">
-                        <div class="product-badge"><%= product.discount %>% OFF</div>
-                        <div class="product-image">
-                            <img src="<%= product.image_url || '/images/product-placeholder.jpg' %>"
-                                 alt="<%= product.name %>">
-                            <div class="product-overlay">
-                                <button class="quick-view-btn" data-product-id="<%= product.id %>">
-                                    <i class="fas fa-eye"></i>
-                                    Quick View
-                                </button>
-                            </div>
+            <!-- Available Coupons Section -->
+            <section class="coupon-section">
+                <div class="coupon-header">
+                    <h2>Available Promo Codes</h2>
+                    <p>Use these codes at checkout to save on your purchases</p>
+                </div>
+                
+                <div id="couponsGrid" class="coupon-grid">
+                    <!-- Coupons will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Special Offers Section -->
+            <section class="offers-section">
+                <div class="section-header">
+                    <h2 class="section-title">Special Offers</h2>
+                    <a href="/categories" class="view-all-btn">View All Products</a>
+                </div>
+                
+                <div id="offersGrid" class="offers-grid">
+                    <!-- Offers will be loaded here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <%- include('partials/footer') %>
+
+    <!-- Scripts -->
+    <script>
+        // Promotions Page JavaScript
+        let coupons = [];
+        let offers = [];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCoupons();
+            loadOffers();
+            setupEventListeners();
+        });
+
+        // Load coupons from database
+        async function loadCoupons() {
+            try {
+                const response = await fetch('/api/promotions/coupons');
+                const data = await response.json();
+
+                if (data.success) {
+                    coupons = data.coupons;
+                    renderCoupons();
+                } else {
+                    showNoCoupons('Failed to load coupons. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error loading coupons:', error);
+                showNoCoupons('Error loading coupons. Please check your connection.');
+            }
+        }
+
+        // Load offers from database
+        async function loadOffers() {
+            try {
+                const response = await fetch('/api/promotions/offers');
+                const data = await response.json();
+
+                if (data.success) {
+                    offers = data.offers;
+                    renderOffers();
+                } else {
+                    showNoOffers('Failed to load offers. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error loading offers:', error);
+                showNoOffers('Error loading offers. Please check your connection.');
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Promo code input
+            const promoInput = document.getElementById('promoCodeInput');
+            promoInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    applyPromoCode();
+                }
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('globalSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    if (searchTerm.length > 2) {
+                        const filteredCoupons = coupons.filter(coupon => 
+                            coupon.code.toLowerCase().includes(searchTerm) ||
+                            coupon.description.toLowerCase().includes(searchTerm)
+                        );
+                        const filteredOffers = offers.filter(offer => 
+                            offer.name.toLowerCase().includes(searchTerm) ||
+                            offer.description.toLowerCase().includes(searchTerm) ||
+                            offer.category.toLowerCase().includes(searchTerm)
+                        );
+                        renderCoupons(filteredCoupons);
+                        renderOffers(filteredOffers);
+                    } else if (searchTerm.length === 0) {
+                        renderCoupons(coupons);
+                        renderOffers(offers);
+                    }
+                });
+            }
+        }
+
+        // Render coupons
+        function renderCoupons(couponsToShow = coupons) {
+            const couponsGrid = document.getElementById('couponsGrid');
+
+            if (couponsToShow.length === 0) {
+                showNoCoupons('No promo codes available at the moment. Check back soon!');
+                return;
+            }
+
+            couponsGrid.innerHTML = couponsToShow.map(coupon => `
+                <div class="coupon-card">
+                    <div class="coupon-badge">Active</div>
+                    <div class="coupon-icon">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <h3 class="coupon-title">${coupon.name}</h3>
+                    <div class="coupon-code" onclick="copyCouponCode('${coupon.code}')">
+                        ${coupon.code}
+                    </div>
+                    <p class="coupon-description">${coupon.description}</p>
+                    <div class="coupon-validity">
+                        Valid until: ${formatDate(coupon.expiry_date)}
+                    </div>
+                    <div class="coupon-actions">
+                        <button class="btn-coupon btn-coupon-primary" onclick="copyCouponCode('${coupon.code}')">
+                            <i class="fas fa-copy"></i> Copy Code
+                        </button>
+                        <button class="btn-coupon btn-coupon-secondary" onclick="applyPromoCode('${coupon.code}')">
+                            <i class="fas fa-shopping-cart"></i> Apply Now
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render offers
+        function renderOffers(offersToShow = offers) {
+            const offersGrid = document.getElementById('offersGrid');
+
+            if (offersToShow.length === 0) {
+                showNoOffers('No special offers available at the moment. Check back soon!');
+                return;
+            }
+
+            offersGrid.innerHTML = offersToShow.map(offer => `
+                <div class="offer-card">
+                    <div class="offer-badge">${offer.type}</div>
+                    <div class="offer-image">
+                        <img src="${offer.image_url || '/images/default-product.jpg'}" alt="${offer.name}">
+                    </div>
+                    <div class="offer-info">
+                        <div class="offer-category">${offer.category || 'General'}</div>
+                        <h3 class="offer-title">${offer.name}</h3>
+                        <p class="offer-description">${offer.description}</p>
+                        
+                        <div class="offer-details">
+                            <span class="offer-price">KSh ${formatPrice(offer.price)}</span>
+                            ${offer.original_price ? `<span class="offer-original-price">KSh ${formatPrice(offer.original_price)}</span>` : ''}
+                            ${offer.discount ? `<span class="offer-discount">-${offer.discount}% OFF</span>` : ''}
                         </div>
-                        <div class="product-info">
-                            <h3 class="product-title"><%= product.name %></h3>
-                            <div class="product-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="far fa-star"></i>
-                                <span class="rating-count">(4.2)</span>
-                            </div>
-                            <div class="product-price">
-                                <span class="price-current">$<%= product.discounted_price %></span>
-                                <span class="price-original">$<%= product.price %></span>
-                                <span class="price-discount"><%= product.discount %>% OFF</span>
-                            </div>
-                            <div class="product-savings">
-                                You save $<%= product.discount_amount %>
-                            </div>
-                            <button class="add-to-cart-btn" data-product-id="<%= product.id %>">
-                                <i class="fas fa-shopping-cart"></i>
-                                Add to Cart
+
+                        <div class="offer-actions">
+                            <button class="btn-offer btn-offer-primary" onclick="addToCart(${offer.id})">
+                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                            </button>
+                            <button class="btn-offer btn-offer-secondary" onclick="viewProduct(${offer.id})">
+                                <i class="fas fa-eye"></i> View Details
                             </button>
                         </div>
                     </div>
-                <% }); %>
-            </div>
-
-            <!-- Pagination -->
-            <% if (totalPages > 1) { %>
-                <div class="pagination">
-                    <% if (page > 1) { %>
-                        <a href="?page=<%= page - 1 %>&sort=<%= sort %>" class="pagination-btn">Previous</a>
-                    <% } %>
-
-                    <% for (let i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) { %>
-                        <a href="?page=<%= i %>&sort=<%= sort %>"
-                           class="pagination-btn <%= i === page ? 'active' : '' %>"><%= i %></a>
-                    <% } %>
-
-                    <% if (page < totalPages) { %>
-                        <a href="?page=<%= page + 1 %>&sort=<%= sort %>" class="pagination-btn">Next</a>
-                    <% } %>
                 </div>
-            <% } %>
-        <% } else { %>
-            <div class="no-products">
-                <i class="fas fa-tags"></i>
-                <h3>No promotions available</h3>
-                <p>Check back later for amazing deals and discounts!</p>
-                <a href="/" class="add-to-cart-btn" style="margin-top: 20px; display: inline-flex; text-decoration: none;">
-                    <i class="fas fa-home"></i>
-                    Back to Home
-                </a>
-            </div>
-        <% } %>
-    </section>
+            `).join('');
+        }
 
-    <%- include('./partials/footer') %>
+        // Apply promo code
+        async function applyPromoCode(code = null) {
+            const promoInput = document.getElementById('promoCodeInput');
+            const promoResult = document.getElementById('promoResult');
+            
+            const promoCode = code || promoInput.value.trim();
+            
+            if (!promoCode) {
+                promoResult.innerHTML = '<span class="promo-error">Please enter a promo code</span>';
+                return;
+            }
 
-    <!-- Hidden user data -->
-    <div id="user-data" style="display: none;" data-logged-in="<%- user ? 'true' : 'false' %>"></div>
+            try {
+                const response = await fetch('/api/promotions/validate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        code: promoCode
+                    })
+                });
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add event delegation for buttons
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('quick-view-btn') || e.target.closest('.quick-view-btn')) {
-                    const button = e.target.classList.contains('quick-view-btn') ? e.target : e.target.closest('.quick-view-btn');
-                    const productId = button.dataset.productId;
-                    quickView(productId);
+                const data = await response.json();
+                
+                if (data.success) {
+                    promoResult.innerHTML = `
+                        <span class="promo-success">
+                            <i class="fas fa-check-circle"></i> 
+                            Promo code applied! You saved KSh ${formatPrice(data.discount_amount)}
+                        </span>
+                    `;
+                    promoInput.value = '';
+                    
+                    // Store the applied promo code for checkout
+                    localStorage.setItem('appliedPromoCode', promoCode);
+                    localStorage.setItem('promoDiscount', data.discount_amount);
+                } else {
+                    promoResult.innerHTML = `
+                        <span class="promo-error">
+                            <i class="fas fa-times-circle"></i> 
+                            ${data.message || 'Invalid promo code'}
+                        </span>
+                    `;
                 }
+            } catch (error) {
+                console.error('Error applying promo code:', error);
+                promoResult.innerHTML = `
+                    <span class="promo-error">
+                        <i class="fas fa-times-circle"></i> 
+                        Error applying promo code. Please try again.
+                    </span>
+                `;
+            }
+        }
 
-                if (e.target.classList.contains('add-to-cart-btn') || e.target.closest('.add-to-cart-btn')) {
-                    const button = e.target.classList.contains('add-to-cart-btn') ? e.target : e.target.closest('.add-to-cart-btn');
-                    const productId = button.dataset.productId;
-                    addToCart(productId);
-                }
+        // Copy coupon code to clipboard
+        function copyCouponCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                // Show success message
+                const result = document.createElement('div');
+                result.className = 'promo-success';
+                result.innerHTML = '<i class="fas fa-check-circle"></i> Code copied to clipboard!';
+                document.getElementById('promoResult').appendChild(result);
+                
+                // Remove message after 3 seconds
+                setTimeout(() => {
+                    result.remove();
+                }, 3000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
             });
-        });
-
-        function changeSort(sortValue) {
-            const url = new URL(window.location);
-            url.searchParams.set('sort', sortValue);
-            url.searchParams.set('page', '1'); // Reset to first page
-            window.location.href = url.toString();
         }
 
+        // Helper functions
+        function formatPrice(price) {
+            return new Intl.NumberFormat('en-KE', {
+                style: 'currency',
+                currency: 'KES',
+                minimumFractionDigits: 0
+            }).format(price);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-KE', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        // Product actions
         async function addToCart(productId) {
-            const userData = document.getElementById('user-data');
-            const isLoggedIn = userData && userData.dataset.loggedIn === 'true';
+            if (!isLoggedIn) {
+                alert('Please login to add products to cart.');
+                window.location.href = '/login';
+                return;
+            }
 
-            if (isLoggedIn) {
-                try {
-                    const response = await fetch('/api/cart', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            product_id: productId,
-                            quantity: 1
-                        })
-                    });
+            try {
+                const response = await fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: 1
+                    })
+                });
 
-                    const result = await response.json();
-
-                    if (result.success) {
-                        showToast('Product added to cart!', 'success');
-                        updateCartBadge();
-                    } else {
-                        if (response.status === 401) {
-                            window.location.href = '/login';
-                        } else {
-                            showToast('Failed to add to cart: ' + result.message, 'error');
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error adding to cart:', error);
-                    showToast('Error adding to cart', 'error');
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Product added to cart!');
+                    updateCartCount();
+                } else {
+                    alert('Failed to add product to cart.');
                 }
-            } else {
-                // Redirect to login for non-authenticated users
-                window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+                alert('Error adding product to cart.');
             }
         }
 
-        function quickView(productId) {
-            // For now, redirect to product details. In a full implementation, this would open a modal
-            window.location.href = `/products/${productId}`;
+        function viewProduct(productId) {
+            window.location.href = `/product/${productId}`;
         }
 
-        function updateCartBadge() {
-            // Update cart badge if it exists
-            const cartBadge = document.querySelector('.cart-badge');
-            if (cartBadge) {
-                const currentCount = parseInt(cartBadge.textContent) || 0;
-                cartBadge.textContent = currentCount + 1;
-            }
-        }
-
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${type === 'success' ? '#d4edda' : '#f8d7da'};
-                color: ${type === 'success' ? '#155724' : '#721c24'};
-                padding: 12px 16px;
-                border-radius: 4px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-                z-index: 10000;
-                max-width: 300px;
+        function showNoCoupons(message) {
+            const couponsGrid = document.getElementById('couponsGrid');
+            couponsGrid.innerHTML = `
+                <div class="no-promotions">
+                    <i class="fas fa-ticket-alt"></i>
+                    <h3>No Promo Codes Available</h3>
+                    <p>${message}</p>
+                    <a href="/categories" class="view-all-btn">Browse Products</a>
+                </div>
             `;
-            toast.textContent = message;
+        }
 
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
+        function showNoOffers(message) {
+            const offersGrid = document.getElementById('offersGrid');
+            offersGrid.innerHTML = `
+                <div class="no-promotions">
+                    <i class="fas fa-gift"></i>
+                    <h3>No Special Offers Available</h3>
+                    <p>${message}</p>
+                    <a href="/categories" class="view-all-btn">Browse Products</a>
+                </div>
+            `;
         }
     </script>
-    <script src="/script.js"></script>
 </body>
 </html>

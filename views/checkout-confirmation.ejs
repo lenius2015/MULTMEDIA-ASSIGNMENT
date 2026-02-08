@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed - OMUNJU SHOPPERS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff6b35;
+            --success: #10b981;
+            --bg-primary: #f8fafc;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Header */
+        .confirmation-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            animation: scaleIn 0.5s ease-out;
+        }
+        
+        @keyframes scaleIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .success-icon i {
+            font-size: 3rem;
+            color: white;
+        }
+        
+        .confirmation-header h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .confirmation-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        
+        .order-number {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-top: 16px;
+        }
+        
+        /* Order Details Card */
+        .order-details-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .card-header h2 {
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .card-header h2 i {
+            color: var(--primary);
+        }
+        
+        .order-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .order-status i {
+            font-size: 0.8rem;
+        }
+        
+        /* Order Info Grid */
+        .order-info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .info-item h4 {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-item p {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        /* Order Items */
+        .order-items {
+            margin-bottom: 24px;
+        }
+        
+        .item-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .item-row:last-child {
+            border-bottom: none;
+        }
+        
+        .item-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        
+        .item-details {
+            flex: 1;
+        }
+        
+        .item-details h4 {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .item-details p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .item-qty {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .item-price {
+            font-weight: 600;
+            min-width: 80px;
+            text-align: right;
+        }
+        
+        /* Order Total */
+        .order-total {
+            border-top: 2px solid var(--border-color);
+            padding-top: 20px;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: var(--text-secondary);
+        }
+        
+        .total-row.grand-total {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            border-top: 1px solid var(--border-color);
+            margin-top: 12px;
+            padding-top: 16px;
+        }
+        
+        /* Delivery Info */
+        .delivery-info {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+        
+        .delivery-info h3 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .delivery-info h3 i {
+            color: var(--primary);
+        }
+        
+        .delivery-info p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        /* Payment Info */
+        .payment-info {
+            background: rgba(255, 107, 53, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 16px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .payment-info h3 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .payment-info h3 i {
+            color: var(--primary);
+        }
+        
+        .payment-info p {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .payment-instructions {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        /* Actions */
+        .actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: #e55a2b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        /* Timeline */
+        .order-timeline {
+            margin-top: 32px;
+        }
+        
+        .timeline-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background: var(--border-color);
+        }
+        
+        .timeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .step-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .timeline-step.completed .step-icon {
+            background: var(--success);
+            color: white;
+        }
+        
+        .timeline-step.active .step-icon {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .timeline-step span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+        
+        .timeline-step.completed span,
+        .timeline-step.active span {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .order-info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .timeline span {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Confirmation Header -->
+        <div class="confirmation-header">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h1>Order Confirmed!</h1>
+            <p>Thank you for your purchase. Your order has been received.</p>
+            <div class="order-number">
+                Order #<%= order.order_number %>
+            </div>
+        </div>
+        
+        <!-- Order Details -->
+        <div class="order-details-card">
+            <div class="card-header">
+                <h2><i class="fas fa-box-open"></i> Order Details</h2>
+                <span class="order-status">
+                    <i class="fas fa-circle"></i>
+                    <%= order.status %>
+                </span>
+            </div>
+            
+            <div class="order-info-grid">
+                <div class="info-item">
+                    <h4>Date Ordered</h4>
+                    <p><%= new Date(order.created_at).toLocaleDateString('en-TZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                </div>
+                <div class="info-item">
+                    <h4>Payment Method</h4>
+                    <p><%= order.payment_method %></p>
+                </div>
+                <div class="info-item">
+                    <h4>Delivery Method</h4>
+                    <p><%= order.delivery_method.replace('_', ' ') %></p>
+                </div>
+            </div>
+            
+            <!-- Order Items -->
+            <div class="order-items">
+                <% order.items.forEach(item => { %>
+                <div class="item-row">
+                    <img src="<%= item.image_url || '/images/product-placeholder.jpg' %>" 
+                         alt="<%= item.name %>" class="item-image"
+                         onerror="this.src='/images/product-placeholder.jpg'">
+                    <div class="item-details">
+                        <h4><%= item.name %></h4>
+                        <p>Unit Price: <%= formatCurrency(item.price) %></p>
+                    </div>
+                    <span class="item-qty">x<%= item.quantity %></span>
+                    <span class="item-price"><%= formatCurrency(item.price * item.quantity) %></span>
+                </div>
+                <% }); %>
+            </div>
+            
+            <!-- Order Total -->
+            <div class="order-total">
+                <div class="total-row">
+                    <span>Subtotal</span>
+                    <span><%= formatCurrency(order.subtotal) %></span>
+                </div>
+                <div class="total-row">
+                    <span>Delivery</span>
+                    <span><%= formatCurrency(order.delivery_fee) %></span>
+                </div>
+                <% if (order.discount > 0) { %>
+                <div class="total-row" style="color: var(--success);">
+                    <span>Discount</span>
+                    <span>-<%= formatCurrency(order.discount) %></span>
+                </div>
+                <% } %>
+                <div class="total-row grand-total">
+                    <span>Total</span>
+                    <span><%= formatCurrency(order.total_amount) %></span>
+                </div>
+            </div>
+            
+            <!-- Delivery Info -->
+            <div class="delivery-info">
+                <h3><i class="fas fa-truck"></i> Delivery Address</h3>
+                <p>
+                    <strong><%= order.customer_name %></strong><br>
+                    <%= order.shipping_address %><br>
+                    <%= order.city %>, <%= order.region %><br>
+                    Phone: <%= order.customer_phone %>
+                </p>
+            </div>
+            
+            <!-- Payment Info -->
+            <% if (order.payment_method === 'mpesa' || order.payment_method === 'airtel_money' || order.payment_method === 'tigo_pesa') { %>
+            <div class="payment-info">
+                <h3><i class="fas fa-mobile-alt"></i> Payment Instructions</h3>
+                <p>Please complete your payment using the details below:</p>
+                <div class="payment-instructions">
+                    <% if (order.payment_method === 'mpesa') { %>
+                        <p><strong>Pay via M-Pesa:</strong></p>
+                        <p>1. Go to M-Pesa menu</p>
+                        <p>2. Select Lipa na M-Pesa</p>
+                        <p>3. Enter Business Number: <strong>000000</strong></p>
+                        <p>4. Enter Amount: <strong><%= formatCurrency(order.total_amount) %></strong></p>
+                        <p>5. Enter Reference: <strong><%= order.order_number %></strong></p>
+                    <% } else if (order.payment_method === 'airtel_money') { %>
+                        <p><strong>Pay via Airtel Money:</strong></p>
+                        <p>1. Go to Airtel Money menu</p>
+                        <p>2. Select Make Payments</p>
+                        <p>3. Enter Merchant Number: <strong>000000</strong></p>
+                        <p>4. Enter Amount: <strong><%= formatCurrency(order.total_amount) %></strong></p>
+                        <p>5. Enter Reference: <strong><%= order.order_number %></strong></p>
+                    <% } else { %>
+                        <p><strong>Pay via Tigo Pesa:</strong></p>
+                        <p>1. Go to Tigo Pesa menu</p>
+                        <p>2. Select Payments</p>
+                        <p>3. Enter Merchant Number: <strong>000000</strong></p>
+                        <p>4. Enter Amount: <strong><%= formatCurrency(order.total_amount) %></strong></p>
+                        <p>5. Enter Reference: <strong><%= order.order_number %></strong></p>
+                    <% } %>
+                </div>
+            </div>
+            <% } %>
+        </div>
+        
+        <!-- Order Timeline -->
+        <div class="order-timeline">
+            <h3 class="timeline-title">Order Progress</h3>
+            <div class="timeline">
+                <div class="timeline-step completed">
+                    <div class="step-icon"><i class="fas fa-check"></i></div>
+                    <span>Order Placed</span>
+                </div>
+                <div class="timeline-step <%= ['processing', 'shipped', 'delivered'].includes(order.status) ? 'completed' : '' %>">
+                    <div class="step-icon"><i class="fas fa-cog"></i></div>
+                    <span>Processing</span>
+                </div>
+                <div class="timeline-step <%= ['shipped', 'delivered'].includes(order.status) ? 'completed' : '' %>">
+                    <div class="step-icon"><i class="fas fa-truck"></i></div>
+                    <span>Shipped</span>
+                </div>
+                <div class="timeline-step <%= order.status === 'delivered' ? 'active' : '' %>">
+                    <div class="step-icon"><i class="fas fa-home"></i></div>
+                    <span>Delivered</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="actions">
+            <a href="/products" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Continue Shopping
+            </a>
+            <a href="/user/orders" class="btn btn-primary">
+                <i class="fas fa-list"></i>
+                View All Orders
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        // Format currency helper
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-TZ', {
+                style: 'currency',
+                currency: 'TZS',
+                minimumFractionDigits: 0
+            }).format(amount).replace('TZS', 'TSh ');
+        }
+    </script>
+</body>
+</html>
