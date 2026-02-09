@@ -4,6 +4,7 @@
 
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { api } from '../services/api';
 import '../styles/pages/Contact.css';
 
 export function ContactPage() {
@@ -14,19 +15,34 @@ export function ContactPage() {
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In production, this would send data to a backend API
-    console.log('Form submitted:', formData);
-    setSubmitted(true);
-    setFormData({ name: '', email: '', subject: '', message: '' });
-    setTimeout(() => setSubmitted(false), 3000);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await api.post('/contact', formData);
+      if (response.success) {
+        setSubmitted(true);
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        setTimeout(() => setSubmitted(false), 5000);
+      } else {
+        setError(response.message || 'Failed to send message');
+      }
+    } catch (err) {
+      console.error('Contact form error:', err);
+      setError('Failed to send message. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -68,6 +84,7 @@ export function ContactPage() {
           <div className="contact-form-section">
             <h2>Send us a Message</h2>
             {submitted && <div className="success-message">Thank you! Your message has been sent.</div>}
+            {error && <div className="error-message">{error}</div>}
             <form className="contact-form" onSubmit={handleSubmit}>
               <div className="form-group">
                 <label htmlFor="name">Name</label>
@@ -79,6 +96,7 @@ export function ContactPage() {
                   onChange={handleChange}
                   required
                   placeholder="Your name"
+                  disabled={loading}
                 />
               </div>
 
@@ -92,6 +110,7 @@ export function ContactPage() {
                   onChange={handleChange}
                   required
                   placeholder="your@email.com"
+                  disabled={loading}
                 />
               </div>
 
@@ -105,6 +124,7 @@ export function ContactPage() {
                   onChange={handleChange}
                   required
                   placeholder="How can we help?"
+                  disabled={loading}
                 />
               </div>
 
@@ -118,10 +138,13 @@ export function ContactPage() {
                   required
                   placeholder="Your message here..."
                   rows="5"
+                  disabled={loading}
                 />
               </div>
 
-              <button type="submit" className="submit-btn">Send Message</button>
+              <button type="submit" className="submit-btn" disabled={loading}>
+                {loading ? 'Sending...' : 'Send Message'}
+              </button>
             </form>
           </div>
         </div>

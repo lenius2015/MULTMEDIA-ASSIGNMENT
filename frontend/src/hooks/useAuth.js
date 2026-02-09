@@ -106,6 +106,20 @@ export function useAuth() {
     }
   }, []);
 
+  const updateProfilePicture = useCallback(async (formData) => {
+    try {
+      setError(null);
+      const response = await authAPI.updateProfilePicture(formData);
+      if (response.success) {
+        setUser(response.data);
+        return response.data;
+      }
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  }, []);
+
   return {
     user,
     loading,
@@ -114,6 +128,7 @@ export function useAuth() {
     register,
     login,
     logout,
-    updateProfile
+    updateProfile,
+    updateProfilePicture
   };
 }

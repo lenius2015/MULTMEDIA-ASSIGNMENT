@@ -5,6 +5,9 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const MicrosoftStrategy = require('passport-microsoft').Strategy;
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const pool = require('../db');
 const Logger = require('../utils/logger');
 const NotificationService = require('../utils/notificationService');
@@ -456,5 +459,168 @@ router.get('/microsoft/callback', passport.authenticate('microsoft', { failureRe
 //   req.session.role = 'user';
 //   res.redirect('/dashboard');
 // });
+
+// Multer configuration for profile picture upload
+const profileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, '../uploads/profile-pictures');
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, 'profile-' + req.session.userId + '-' + uniqueSuffix + ext);
+  }
+});
+
+const profileUpload = multer({
+  storage: profileStorage,
+  limits: {
+    fileSize: 2 * 1024 * 1024 // 2MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    
+    if (extname && mimetype) {
+      return cb(null, true);
+    }
+    cb(new Error('Only image files are allowed'));
+  }
+});
+
+// Profile picture upload route
+router.post('/profile/picture', profileUpload.single('profile_picture'), async (req, res) => {
+  try {
+    if (!req.session || !req.session.userId) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Authentication required' 
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'No file uploaded' 
+      });
+    }
+
+    const userId = req.session.userId;
+    const profilePicturePath = '/uploads/profile-pictures/' + req.file.filename;
+
+    // Update database
+    await pool.query(
+      'UPDATE users SET profile_picture = ? WHERE id = ?',
+      [profilePicturePath, userId]
+    );
+
+    // Update session
+    req.session.userProfilePicture = profilePicturePath;
+
+    // Get updated user data
+    const [users] = await pool.query(
+      'SELECT id, name, email, role, profile_picture FROM users WHERE id = ?',
+      [userId]
+    );
+
+    const user = users[0];
+
+    res.json({
+      success: true,
+      message: 'Profile picture updated successfully',
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        profile_picture: user.profile_picture
+      }
+    });
+  } catch (error) {
+    console.error('Profile picture upload error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to upload profile picture: ' + error.message 
+    });
+  }
+});
+
+// Update profile route
+router.put('/profile', async (req, res) => {
+  try {
+    if (!req.session || !req.session.userId) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Authentication required' 
+      });
+    }
+
+    const userId = req.session.userId;
+    const { name, email } = req.body;
+
+    // Validate input
+    if (!name || !email) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Name and email are required' 
+      });
+    }
+
+    // Check if email is already taken by another user
+    const [existingUsers] = await pool.query(
+      'SELECT id FROM users WHERE email = ? AND id != ?',
+      [email, userId]
+    );
+
+    if (existingUsers.length > 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email already in use' 
+      });
+    }
+
+    // Update user
+    await pool.query(
+      'UPDATE users SET name = ?, email = ? WHERE id = ?',
+      [name, email, userId]
+    );
+
+    // Update session
+    req.session.userName = name;
+    req.session.userEmail = email;
+
+    // Get updated user data
+    const [users] = await pool.query(
+      'SELECT id, name, email, role, profile_picture FROM users WHERE id = ?',
+      [userId]
+    );
+
+    const user = users[0];
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        profile_picture: user.profile_picture
+      }
+    });
+  } catch (error) {
+    console.error('Profile update error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to update profile: ' + error.message 
+    });
+  }
+});
 
 module.exports = router;

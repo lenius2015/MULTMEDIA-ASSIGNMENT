@@ -13,6 +13,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 // Components
 import Navigation from './components/Navigation';
+import ChatPopup from './components/ChatPopup';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -26,6 +27,8 @@ import RegisterPage from './pages/RegisterPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import DashboardPage from './pages/DashboardPage';
+import ProfilePage from './pages/ProfilePage';
+import OrdersPage from './pages/OrdersPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 
 import './App.css';
@@ -110,10 +113,7 @@ function App() {
                 path="/orders"
                 element={
                   <ProtectedRoute isAuthenticated={isAuthenticated} loading={loading}>
-                    <div className="page">
-                      <h1>Your Orders</h1>
-                      <p>Orders feature coming soon...</p>
-                    </div>
+                    <OrdersPage />
                   </ProtectedRoute>
                 }
               />
@@ -158,10 +158,7 @@ function App() {
                 path="/profile"
                 element={
                   <ProtectedRoute isAuthenticated={isAuthenticated} loading={loading}>
-                    <div className="page">
-                      <h1>My Profile</h1>
-                      <p>Profile management coming soon...</p>
-                    </div>
+                    <ProfilePage />
                   </ProtectedRoute>
                 }
               />
@@ -228,6 +225,9 @@ function App() {
           <footer className="app-footer">
             <p>&copy; 2024 OMUNJU SHOPPERS. All rights reserved.</p>
           </footer>
+
+          {/* Chat Popup */}
+          <ChatPopup user={user} />
         </div>
       </Router>
     </HelmetProvider>
